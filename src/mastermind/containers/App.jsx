@@ -5,24 +5,6 @@ import Intro from '../components/Intro';
 import { clearState } from '../script/localStorage';
 import reducer from '../reducers';
 
-import {
-    gameBegin,
-    gameGiveUp,
-    gameWin,
-    gameLose,
-    onPegClick,
-    onChooseColor,
-    beginNewRow,
-    hideColorPicker,
-    giveFeedback,
-    onAdvanceSelector,
-    resetGame,
-    revealSecretCode,
-    randomizeCode,
-    gameIntro,
-    toggleRules
-} from '../actions';
-
 import {NUM_ROWS} from '../script/constants';
 
 function App({state, dispatch}) {
@@ -39,61 +21,58 @@ function App({state, dispatch}) {
         activeRow,
         selectedPeg,
         onPegClick: (id) => {
-            dispatch(onPegClick(id));
+            dispatch({type: 'SHOW_COLOR_PICKER', id});
         },
         onChooseColor: (name) => {
-            const chooseColorAction = onChooseColor(name);
+            const chooseColorAction = {type: 'CHOSE_THIS_COLOR', name};
             const nextState = reducer(state, chooseColorAction);
 
             dispatch(chooseColorAction);
-            dispatch(onAdvanceSelector(nextState.board[nextState.activeRow].pegs));
+            dispatch({type: 'ADVANCE_SELECTOR', pegs: nextState.board[nextState.activeRow].pegs});
         },
         onSubmitRow: () => {
-            const giveFeedbackAction = giveFeedback();
+            const giveFeedbackAction = {type: 'GIVE_FEEDBACK'};
             const nextState = reducer(state, giveFeedbackAction);
             const didSolveCode = nextState.board[nextState.activeRow].feedback.reduce((acc, val) => {
                 return acc && (val === 'red');
             }, true);
 
             dispatch(giveFeedbackAction);
-            dispatch(hideColorPicker());
+            dispatch({type: 'HIDE_COLOR_PICKER'});
             if(didSolveCode){
-                console.log('You solved it');
-                dispatch(gameWin());
+                dispatch({type: 'GAME_WIN'});
             } else {
                 if (NUM_ROWS != (nextState.activeRow+1)) {
-                    dispatch(beginNewRow());
+                    dispatch({type: 'BEGIN_NEW_ROW'});
                     return;
                 }
-                console.log('You lose');
-                dispatch(revealSecretCode());
-                dispatch(gameLose());
+                dispatch({type: 'REVEAL_SECRET_CODE'});
+                dispatch({type: 'GAME_LOSE'});
             }
-            dispatch(revealSecretCode());
+            dispatch({type: 'REVEAL_SECRET_CODE'});
         },
         secretCode,
         isCodeHidden,
         gameStatus,
         onResetAll: ()=>{
-            dispatch(gameIntro());
-            dispatch(resetGame());
+            dispatch({type: 'GAME_INTRO'});
+            dispatch({type: 'RESET_GAME'});
             clearState();
         },
         onGiveUp: () => {
-            dispatch(revealSecretCode());
-            dispatch(hideColorPicker());
-            dispatch(gameGiveUp());
+            dispatch({type: 'REVEAL_SECRET_CODE'});
+            dispatch({type: 'HIDE_COLOR_PICKER'});
+            dispatch({type: 'GAME_GIVE_UP'});
         },
         isRevealHidden
     }
 
     const onStartGame = () => {
-        console.log('startGame');
-        dispatch(randomizeCode());
-        dispatch(gameBegin());
+        dispatch({type: 'RANDOMIZE_SECRET_CODE'});
+        dispatch({type: 'GAME_BEGIN'});
     }
     const onToggleRules = () => {
-        dispatch(toggleRules());
+        dispatch({type: 'TOGGLE_RULES'});
     }
 
     return (

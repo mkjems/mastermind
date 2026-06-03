@@ -9,10 +9,7 @@ const selectedPegReducer = (state=undefined, action) => {
 		case 'ENTER_ROW':
 			return undefined;
 		case 'ADVANCE_SELECTOR':
-			console.log(action);
-			console.log('CURRENT STATE', state);
 			var res = action.pegs.reduce((acc, val, index)=>{
-				console.log('---------', acc, index, val);
 				if(acc===undefined && val=='select'){
 					return index;
 				}
@@ -21,7 +18,6 @@ const selectedPegReducer = (state=undefined, action) => {
 			if (res == undefined){
 				res = undefined;
 			}
-			console.log('**RES**', res);
 			return res;
 		default:
 			return state
