@@ -1,6 +1,8 @@
+export const STORAGE_KEY = 'mastermind-state';
+
 export const loadState = () => {
 	try {
-		const serializedState = sessionStorage.getItem('state');
+		const serializedState = sessionStorage.getItem(STORAGE_KEY);
 		if (serializedState === null) {
 			return undefined;
 		}
@@ -13,7 +15,7 @@ export const loadState = () => {
 export const saveState = (state) => {
 	try {
 		const serializedState = JSON.stringify(state);
-		sessionStorage.setItem('state', serializedState);
+		sessionStorage.setItem(STORAGE_KEY, serializedState);
 	} catch (err) {
 		console.error('error saving state', err);
 	}
@@ -21,7 +23,7 @@ export const saveState = (state) => {
 
 export const clearState = () => {
 	try {
-		sessionStorage.removeItem('state');
+		sessionStorage.removeItem(STORAGE_KEY);
 	} catch (err) {
 		console.error('error clearing state', err);
 	}

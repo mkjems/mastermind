@@ -15,7 +15,7 @@ import {
 import {GAME_STATUS_INTRO} from './gameStatus.js';
 
 function App({state, dispatch}) {
-    const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
+    const {board, showColorPicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
 
     const remaining = board[activeRow].pegs.filter((peg) => {
         return peg === 'select' || peg === 'none';
@@ -24,7 +24,7 @@ function App({state, dispatch}) {
     const props = {
         isCompleteRow: (remaining === 0),
         board,
-        showColorpicker,
+        showColorPicker,
         activeRow,
         selectedPeg,
         onPegClick: (id) => {

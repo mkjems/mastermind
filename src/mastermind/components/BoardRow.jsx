@@ -13,7 +13,7 @@ import {
 } from '../gameStatus.js';
 
 const BoardRow = (props) => {
-    const {isActiveRow, onPegClick, rowindex, gameStatus, showColorpicker, pegs, selectedPeg} = props;
+    const {isActiveRow, onPegClick, rowindex, gameStatus, showColorPicker, pegs, selectedPeg} = props;
     const gaveUp = gameStatus === GAME_STATUS_GAVE_UP;
 
     return (
@@ -38,7 +38,7 @@ const BoardRow = (props) => {
             </div>
         </div>
         {isActiveRow && gameStatus === GAME_STATUS_GAVE_UP ? <Gaveup {...props} /> : null}
-        {isActiveRow && showColorpicker ? <ColorPicker {...props} /> : null}
+        {isActiveRow && showColorPicker ? <ColorPicker {...props} /> : null}
         {isActiveRow && gameStatus === GAME_STATUS_WON ? <Won {...props} /> : null}
         {isActiveRow && gameStatus === GAME_STATUS_LOST ? <Lost {...props} /> : null}
     </div>

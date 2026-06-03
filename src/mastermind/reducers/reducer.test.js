@@ -35,7 +35,7 @@ describe('mastermind reducer', () => {
 		expect(state.activeRow).toBe(0);
 		expect(state.isCodeHidden).toBe(true);
 		expect(state.isRulesHidden).toBe(true);
-		expect(state.showColorpicker).toBe(false);
+		expect(state.showColorPicker).toBe(false);
 		expect(state.board).toHaveLength(NUM_ROWS);
 		expect(state.board[0].pegs).toEqual(['select', 'select', 'select', 'select']);
 		expect(state.board[0].feedback).toEqual(['none', 'none', 'none', 'none']);
@@ -59,7 +59,7 @@ describe('mastermind reducer', () => {
 
 		expect(state.board[0].pegs).toEqual(['yellow', 'select', 'select', 'select']);
 		expect(state.selectedPeg).toBe(1);
-		expect(state.showColorpicker).toBe(true);
+		expect(state.showColorPicker).toBe(true);
 	});
 
 	it('gives red, white, and empty feedback for a submitted row', () => {
@@ -80,7 +80,7 @@ describe('mastermind reducer', () => {
 
 		expect(feedbackState.board[0].feedback).toEqual(['red', 'red', 'white', 'none']);
 		expect(feedbackState.activeRow).toBe(1);
-		expect(feedbackState.showColorpicker).toBe(false);
+		expect(feedbackState.showColorPicker).toBe(false);
 	});
 
 	it('wins when the active row matches the secret code', () => {
@@ -141,7 +141,7 @@ describe('mastermind reducer', () => {
 		expect(gaveUpState.gameStatus).toBe(GAME_STATUS_GAVE_UP);
 		expect(gaveUpState.isCodeHidden).toBe(false);
 		expect(gaveUpState.isRevealHidden).toBe(true);
-		expect(gaveUpState.showColorpicker).toBe(false);
+		expect(gaveUpState.showColorPicker).toBe(false);
 	});
 
 	it('resets game progress and returns to the intro', () => {
@@ -151,7 +151,7 @@ describe('mastermind reducer', () => {
 		expect(resetState.gameStatus).toBe(GAME_STATUS_INTRO);
 		expect(resetState.activeRow).toBe(0);
 		expect(resetState.isCodeHidden).toBe(true);
-		expect(resetState.showColorpicker).toBe(false);
+		expect(resetState.showColorPicker).toBe(false);
 		expect(resetState.board).toHaveLength(NUM_ROWS);
 		expect(resetState.board[0].pegs).toEqual(['select', 'select', 'select', 'select']);
 	});
