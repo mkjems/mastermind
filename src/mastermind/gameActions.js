@@ -21,3 +21,16 @@ export const GAME_WIN = 'GAME_WIN';
 export const GAME_LOSE = 'GAME_LOSE';
 export const GAME_GIVE_UP = 'GAME_GIVE_UP';
 export const GAME_INTRO = 'GAME_INTRO';
+
+export const init = () => ({type: INIT});
+export const showColorPicker = (id) => ({type: SHOW_COLOR_PICKER, id});
+export const chooseColorAndAdvance = (name) => ({
+	type: CHOOSE_COLOR_AND_ADVANCE,
+	name
+});
+export const submitRow = () => ({type: SUBMIT_ROW});
+export const startGame = () => ({type: START_GAME});
+export const resetAll = () => ({type: RESET_ALL});
+export const giveUp = () => ({type: GIVE_UP});
+export const toggleRules = () => ({type: TOGGLE_RULES});
+export const beginNewRow = () => ({type: BEGIN_NEW_ROW});

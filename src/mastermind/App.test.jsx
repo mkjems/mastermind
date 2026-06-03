@@ -5,9 +5,9 @@ import {afterEach, describe, expect, it, vi} from 'vitest';
 
 import App from './App.jsx';
 import reducer from './reducers/index.js';
-import {INIT, START_GAME} from './gameActions.js';
+import {init, startGame} from './gameActions.js';
 
-const initialState = () => reducer(undefined, {type: INIT});
+const initialState = () => reducer(undefined, init());
 
 describe('App', () => {
 	afterEach(() => {
@@ -27,6 +27,6 @@ describe('App', () => {
 		render(<App state={initialState()} dispatch={dispatch} />);
 		fireEvent.click(screen.getByRole('button', {name: 'Start game'}));
 
-		expect(dispatch).toHaveBeenCalledWith({type: START_GAME});
+		expect(dispatch).toHaveBeenCalledWith(startGame());
 	});
 });
