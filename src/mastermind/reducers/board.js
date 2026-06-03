@@ -1,4 +1,11 @@
 import {BOARD_START} from '../script/constants.js';
+import {
+	BEGIN_NEW_ROW,
+	CHOSE_THIS_COLOR,
+	GAME_GIVE_UP,
+	GIVE_FEEDBACK,
+	RESET_GAME
+} from '../gameActions.js';
 
 import rowReducer from './row.js';
 
@@ -19,16 +26,16 @@ const boardReducer = (state = BOARD_START, action, activeRow, selectedPeg, secre
 	};
 
 	switch (action.type) {
-		case 'GAME_GIVE_UP':
-		case 'BEGIN_NEW_ROW':
-		case 'GIVE_FEEDBACK':
+		case GAME_GIVE_UP:
+		case BEGIN_NEW_ROW:
+		case GIVE_FEEDBACK:
 			return updateRows(state, rowAction, activeRow);
-		case 'CHOSE_THIS_COLOR':
+		case CHOSE_THIS_COLOR:
 			if (selectedPeg === undefined) {
 				return state;
 			}
 			return updateRows(state, rowAction, activeRow);
-		case 'RESET_GAME':
+		case RESET_GAME:
 			return BOARD_START;
 		default:
 			return state;

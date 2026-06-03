@@ -3,6 +3,15 @@ import Gameplay from '../components/Gameplay';
 import Intro from '../components/Intro';
 
 import {clearState} from '../script/localStorage';
+import {
+    CHOOSE_COLOR_AND_ADVANCE,
+    GIVE_UP,
+    RESET_ALL,
+    SHOW_COLOR_PICKER,
+    START_GAME,
+    SUBMIT_ROW,
+    TOGGLE_RULES
+} from '../gameActions.js';
 
 function App({state, dispatch}) {
     const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
@@ -18,33 +27,33 @@ function App({state, dispatch}) {
         activeRow,
         selectedPeg,
         onPegClick: (id) => {
-            dispatch({type: 'SHOW_COLOR_PICKER', id});
+            dispatch({type: SHOW_COLOR_PICKER, id});
         },
         onChooseColor: (name) => {
-            dispatch({type: 'CHOOSE_COLOR_AND_ADVANCE', name});
+            dispatch({type: CHOOSE_COLOR_AND_ADVANCE, name});
         },
         onSubmitRow: () => {
-            dispatch({type: 'SUBMIT_ROW'});
+            dispatch({type: SUBMIT_ROW});
         },
         secretCode,
         isCodeHidden,
         gameStatus,
         onResetAll: ()=>{
-            dispatch({type: 'RESET_ALL'});
+            dispatch({type: RESET_ALL});
             clearState();
         },
         onGiveUp: () => {
-            dispatch({type: 'GIVE_UP'});
+            dispatch({type: GIVE_UP});
         },
         isRevealHidden
     };
 
     const onStartGame = () => {
-        dispatch({type: 'START_GAME'});
+        dispatch({type: START_GAME});
     };
 
     const onToggleRules = () => {
-        dispatch({type: 'TOGGLE_RULES'});
+        dispatch({type: TOGGLE_RULES});
     };
 
     return (

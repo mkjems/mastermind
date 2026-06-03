@@ -1,4 +1,5 @@
 import {PEG_COLORS} from '../script/constants.js';
+import {RANDOMIZE_SECRET_CODE, RESET_GAME} from '../gameActions.js';
 
 const createSecretCode = () => {
 	return ['', '', '', ''].reduce((acc) => {
@@ -17,9 +18,9 @@ const createSecretCode = () => {
 
 const secretCodeReducer = (state = createSecretCode(), action) => {
 	switch (action.type) {
-		case 'RESET_GAME':
+		case RESET_GAME:
 			return createSecretCode();
-		case 'RANDOMIZE_SECRET_CODE':
+		case RANDOMIZE_SECRET_CODE:
 			return createSecretCode();
 		default:
 			return state;
