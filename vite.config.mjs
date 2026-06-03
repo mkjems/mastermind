@@ -8,8 +8,7 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        index: path.resolve(__dirname, 'src/index.html'),
-        'mastermind/index': path.resolve(__dirname, 'src/mastermind/index.html')
+        index: path.resolve(__dirname, 'src/index.html')
       }
     }
   },

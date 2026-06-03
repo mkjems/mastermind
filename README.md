@@ -1,6 +1,6 @@
-# martinkjemsdk
+# mastermind
 
-Personal web experiments, now built as a static Vite client.
+The classic Mastermind game, built with React and Vite.
 
 ```sh
 npm install
