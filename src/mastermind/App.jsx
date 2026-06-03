@@ -1,8 +1,8 @@
 import React from 'react';
-import Gameplay from '../components/Gameplay';
-import Intro from '../components/Intro';
+import Gameplay from './components/Gameplay';
+import Intro from './components/Intro';
 
-import {clearState} from '../script/localStorage';
+import {clearState} from './script/sessionStorage.js';
 import {
     CHOOSE_COLOR_AND_ADVANCE,
     GIVE_UP,
@@ -11,7 +11,7 @@ import {
     START_GAME,
     SUBMIT_ROW,
     TOGGLE_RULES
-} from '../gameActions.js';
+} from './gameActions.js';
 
 function App({state, dispatch}) {
     const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;

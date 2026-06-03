@@ -3,8 +3,8 @@ import {createRoot} from 'react-dom/client';
 
 import reducer from './reducers';
 import './style/mastermind.css';
-import App from './containers/App';
-import { loadState, saveState } from './script/localStorage';
+import App from './App.jsx';
+import {loadState, saveState} from './script/sessionStorage.js';
 import {INIT} from './gameActions.js';
 
 const root = createRoot(document.getElementById('app'));
