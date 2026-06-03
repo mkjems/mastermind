@@ -15,8 +15,8 @@
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "react": "^15.3.2",
-    "react-dom": "^15.3.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "redux": "^3.6.0"
   }
 }

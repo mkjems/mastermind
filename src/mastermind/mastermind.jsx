@@ -1,5 +1,5 @@
 import React from 'react';
-import {render} from 'react-dom';
+import {createRoot} from 'react-dom/client';
 import {createStore} from 'redux';
 
 import reducer from './reducers';
@@ -8,9 +8,10 @@ import App from './containers/App';
 import { loadState, saveState } from './script/localStorage';
 
 const store = createStore(reducer, loadState())
+const root = createRoot(document.getElementById('app'));
 
 const renderFunc = () => {
-    render(<App dispatch={store.dispatch} getState={store.getState} />, document.getElementById('app') );
+    root.render(<App dispatch={store.dispatch} getState={store.getState} />);
 };
 
 store.subscribe(renderFunc)
