@@ -6,13 +6,15 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite --host 0.0.0.0",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^8.0.16"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   },
   "dependencies": {
     "react": "^19.2.7",
