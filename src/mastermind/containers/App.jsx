@@ -9,7 +9,7 @@ import {
     gameBegin,
     gameGiveUp,
     gameWin,
-    gameLoose,
+    gameLose,
     onPegClick,
     onChooseColor,
     beginNewRow,
@@ -65,9 +65,9 @@ function App({state, dispatch}) {
                     dispatch(beginNewRow());
                     return;
                 }
-                console.log('You loose');
+                console.log('You lose');
                 dispatch(revealSecretCode());
-                dispatch(gameLoose());
+                dispatch(gameLose());
             }
             dispatch(revealSecretCode());
         },

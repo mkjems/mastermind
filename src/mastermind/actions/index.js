@@ -57,8 +57,8 @@ export const gameWin = () => ({
 	type: 'GAME_WIN'
 });
 
-export const gameLoose = () => ({
-	type: 'GAME_LOOSE'
+export const gameLose = () => ({
+	type: 'GAME_LOSE'
 });
 
 export const gameGiveUp = () => ({
@@ -71,5 +71,4 @@ export const gameIntro = () => ({
 export const toggleRules = () => ({
 	type: 'TOGGLE_RULES'
 });
-
 
