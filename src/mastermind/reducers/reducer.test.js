@@ -7,12 +7,7 @@ const initState = () => reducer(undefined, {type: '@@INIT'});
 
 const chooseColor = (state, pegIndex, color) => {
 	const selectedState = reducer(state, {type: 'SHOW_COLOR_PICKER', id: pegIndex});
-	const colorState = reducer(selectedState, {type: 'CHOSE_THIS_COLOR', name: color});
-
-	return reducer(colorState, {
-		type: 'ADVANCE_SELECTOR',
-		pegs: colorState.board[colorState.activeRow].pegs
-	});
+	return reducer(selectedState, {type: 'CHOOSE_COLOR_AND_ADVANCE', name: color});
 };
 
 describe('mastermind reducer', () => {
@@ -34,8 +29,7 @@ describe('mastermind reducer', () => {
 
 	it('starts a game with a randomized secret code', () => {
 		const initialState = initState();
-		const randomizedState = reducer(initialState, {type: 'RANDOMIZE_SECRET_CODE'});
-		const playingState = reducer(randomizedState, {type: 'GAME_BEGIN'});
+		const playingState = reducer(initialState, {type: 'START_GAME'});
 
 		expect(playingState.gameStatus).toBe('playing');
 		expect(playingState.secretCode).toHaveLength(4);
@@ -65,16 +59,79 @@ describe('mastermind reducer', () => {
 			]
 		};
 
-		const feedbackState = reducer(state, {type: 'GIVE_FEEDBACK'});
+		const feedbackState = reducer(state, {type: 'SUBMIT_ROW'});
 
 		expect(feedbackState.board[0].feedback).toEqual(['red', 'red', 'white', 'none']);
+		expect(feedbackState.activeRow).toBe(1);
+		expect(feedbackState.showColorpicker).toBe(false);
 	});
 
-	it('resets game progress but keeps intro status unless explicitly changed', () => {
-		const playingState = reducer(reducer(initState(), {type: 'GAME_BEGIN'}), {type: 'BEGIN_NEW_ROW'});
-		const resetState = reducer(playingState, {type: 'RESET_GAME'});
+	it('wins when the active row matches the secret code', () => {
+		const initialState = initState();
+		const state = {
+			...initialState,
+			gameStatus: 'playing',
+			secretCode: ['yellow', 'green', 'blue', 'pink'],
+			board: [
+				{
+					pegs: ['yellow', 'green', 'blue', 'pink'],
+					feedback: ['none', 'none', 'none', 'none']
+				},
+				...initialState.board.slice(1)
+			]
+		};
 
-		expect(resetState.gameStatus).toBe('playing');
+		const wonState = reducer(state, {type: 'SUBMIT_ROW'});
+
+		expect(wonState.gameStatus).toBe('won');
+		expect(wonState.isCodeHidden).toBe(false);
+		expect(wonState.isRevealHidden).toBe(true);
+		expect(wonState.board[0].feedback).toEqual(['red', 'red', 'red', 'red']);
+	});
+
+	it('loses when the last row does not match the secret code', () => {
+		const initialState = initState();
+		const lastRow = NUM_ROWS - 1;
+		const board = initialState.board.map((row, index) => {
+			if (index !== lastRow) {
+				return row;
+			}
+
+			return {
+				pegs: ['yellow', 'green', 'blue', 'pink'],
+				feedback: ['none', 'none', 'none', 'none']
+			};
+		});
+		const state = {
+			...initialState,
+			activeRow: lastRow,
+			gameStatus: 'playing',
+			secretCode: ['silver', 'white', 'red', 'orange'],
+			board
+		};
+
+		const lostState = reducer(state, {type: 'SUBMIT_ROW'});
+
+		expect(lostState.gameStatus).toBe('lost');
+		expect(lostState.isCodeHidden).toBe(false);
+		expect(lostState.activeRow).toBe(lastRow);
+		expect(lostState.board[lastRow].feedback).toEqual(['none', 'none', 'none', 'none']);
+	});
+
+	it('reveals the code and marks the game as gave up', () => {
+		const gaveUpState = reducer(reducer(initState(), {type: 'START_GAME'}), {type: 'GIVE_UP'});
+
+		expect(gaveUpState.gameStatus).toBe('gave_up');
+		expect(gaveUpState.isCodeHidden).toBe(false);
+		expect(gaveUpState.isRevealHidden).toBe(true);
+		expect(gaveUpState.showColorpicker).toBe(false);
+	});
+
+	it('resets game progress and returns to the intro', () => {
+		const playingState = reducer(reducer(initState(), {type: 'START_GAME'}), {type: 'BEGIN_NEW_ROW'});
+		const resetState = reducer(playingState, {type: 'RESET_ALL'});
+
+		expect(resetState.gameStatus).toBe('intro');
 		expect(resetState.activeRow).toBe(0);
 		expect(resetState.isCodeHidden).toBe(true);
 		expect(resetState.showColorpicker).toBe(false);
