@@ -17,7 +17,7 @@ export const saveState = (state) => {
 		const serializedState = JSON.stringify(state);
 		localStorage.setItem('state', serializedState);
 	} catch (err) {
-		cosole.log('error retrieving state');
+		console.log('error saving state');
 	}
 }
 
@@ -25,6 +25,6 @@ export const clearState = () => {
 	try {
 		localStorage.removeItem('state');
 	} catch (err) {
-		cosole.log('error clearing state');
+		console.log('error clearing state');
 	}
 }

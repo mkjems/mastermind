@@ -11,8 +11,6 @@ import isRulesHiddenReducer from './isRulesHidden';
 import isRevealHiddenReducer from './isRevealHidden';
 
 const reducer = (state = {}, action) => {
-	console.log('ACTION:',action);
-
 	const isRevealHidden = isRevealHiddenReducer(state.isRevealHidden, action);
 	const isRulesHidden = isRulesHiddenReducer(state.isRulesHidden, action);
 	const gameStatus = gameStatusReducer(state.gameStatus, action);
@@ -35,8 +33,6 @@ const reducer = (state = {}, action) => {
 		showColorpicker
 	};
 
-	console.log('STATE:',newState);
-	console.log('*********************************************************')
 	return newState;
 }
 

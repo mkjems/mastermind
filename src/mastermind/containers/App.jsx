@@ -3,6 +3,7 @@ import Gameplay from '../components/Gameplay';
 import Intro from '../components/Intro';
 
 import { clearState } from '../script/localStorage';
+import reducer from '../reducers';
 
 import {
     gameBegin,
@@ -24,8 +25,8 @@ import {
 
 import {NUM_ROWS} from '../script/constants';
 
-function App({dispatch, getState}) {
-    const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = getState();
+function App({state, dispatch}) {
+    const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
 
     const remaining = board[activeRow].pegs.filter((val)=>{
         return (val =='select' || val == 'none');
@@ -41,22 +42,26 @@ function App({dispatch, getState}) {
             dispatch(onPegClick(id));
         },
         onChooseColor: (name) => {
-            dispatch(onChooseColor(name));
-            const {board, activeRow} = getState();
-            dispatch(onAdvanceSelector(board[activeRow].pegs));
+            const chooseColorAction = onChooseColor(name);
+            const nextState = reducer(state, chooseColorAction);
+
+            dispatch(chooseColorAction);
+            dispatch(onAdvanceSelector(nextState.board[nextState.activeRow].pegs));
         },
         onSubmitRow: () => {
-            dispatch(giveFeedback());
-            const {board, activeRow} = getState();
-            const didSolveCode = board[activeRow].feedback.reduce((acc, val) => {
+            const giveFeedbackAction = giveFeedback();
+            const nextState = reducer(state, giveFeedbackAction);
+            const didSolveCode = nextState.board[nextState.activeRow].feedback.reduce((acc, val) => {
                 return acc && (val === 'red');
             }, true);
+
+            dispatch(giveFeedbackAction);
             dispatch(hideColorPicker());
             if(didSolveCode){
                 console.log('You solved it');
                 dispatch(gameWin());
             } else {
-                if (NUM_ROWS != (activeRow+1)) {
+                if (NUM_ROWS != (nextState.activeRow+1)) {
                     dispatch(beginNewRow());
                     return;
                 }
