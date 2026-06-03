@@ -12,6 +12,13 @@ import {
 	START_GAME,
 	SUBMIT_ROW
 } from '../gameActions.js';
+import {
+	GAME_STATUS_GAVE_UP,
+	GAME_STATUS_INTRO,
+	GAME_STATUS_LOST,
+	GAME_STATUS_PLAYING,
+	GAME_STATUS_WON
+} from '../gameStatus.js';
 
 const initState = () => reducer(undefined, {type: INIT});
 
@@ -24,7 +31,7 @@ describe('mastermind reducer', () => {
 	it('creates the initial intro state', () => {
 		const state = initState();
 
-		expect(state.gameStatus).toBe('intro');
+		expect(state.gameStatus).toBe(GAME_STATUS_INTRO);
 		expect(state.activeRow).toBe(0);
 		expect(state.isCodeHidden).toBe(true);
 		expect(state.isRulesHidden).toBe(true);
@@ -41,7 +48,7 @@ describe('mastermind reducer', () => {
 		const initialState = initState();
 		const playingState = reducer(initialState, {type: START_GAME});
 
-		expect(playingState.gameStatus).toBe('playing');
+		expect(playingState.gameStatus).toBe(GAME_STATUS_PLAYING);
 		expect(playingState.secretCode).toHaveLength(4);
 		expect(new Set(playingState.secretCode).size).toBe(4);
 		expect(playingState.secretCode.every((color) => PEG_COLORS.includes(color))).toBe(true);
@@ -80,7 +87,7 @@ describe('mastermind reducer', () => {
 		const initialState = initState();
 		const state = {
 			...initialState,
-			gameStatus: 'playing',
+			gameStatus: GAME_STATUS_PLAYING,
 			secretCode: ['yellow', 'green', 'blue', 'pink'],
 			board: [
 				{
@@ -93,7 +100,7 @@ describe('mastermind reducer', () => {
 
 		const wonState = reducer(state, {type: SUBMIT_ROW});
 
-		expect(wonState.gameStatus).toBe('won');
+		expect(wonState.gameStatus).toBe(GAME_STATUS_WON);
 		expect(wonState.isCodeHidden).toBe(false);
 		expect(wonState.isRevealHidden).toBe(true);
 		expect(wonState.board[0].feedback).toEqual(['red', 'red', 'red', 'red']);
@@ -115,14 +122,14 @@ describe('mastermind reducer', () => {
 		const state = {
 			...initialState,
 			activeRow: lastRow,
-			gameStatus: 'playing',
+			gameStatus: GAME_STATUS_PLAYING,
 			secretCode: ['silver', 'white', 'red', 'orange'],
 			board
 		};
 
 		const lostState = reducer(state, {type: SUBMIT_ROW});
 
-		expect(lostState.gameStatus).toBe('lost');
+		expect(lostState.gameStatus).toBe(GAME_STATUS_LOST);
 		expect(lostState.isCodeHidden).toBe(false);
 		expect(lostState.activeRow).toBe(lastRow);
 		expect(lostState.board[lastRow].feedback).toEqual(['none', 'none', 'none', 'none']);
@@ -131,7 +138,7 @@ describe('mastermind reducer', () => {
 	it('reveals the code and marks the game as gave up', () => {
 		const gaveUpState = reducer(reducer(initState(), {type: START_GAME}), {type: GIVE_UP});
 
-		expect(gaveUpState.gameStatus).toBe('gave_up');
+		expect(gaveUpState.gameStatus).toBe(GAME_STATUS_GAVE_UP);
 		expect(gaveUpState.isCodeHidden).toBe(false);
 		expect(gaveUpState.isRevealHidden).toBe(true);
 		expect(gaveUpState.showColorpicker).toBe(false);
@@ -141,7 +148,7 @@ describe('mastermind reducer', () => {
 		const playingState = reducer(reducer(initState(), {type: START_GAME}), {type: BEGIN_NEW_ROW});
 		const resetState = reducer(playingState, {type: RESET_ALL});
 
-		expect(resetState.gameStatus).toBe('intro');
+		expect(resetState.gameStatus).toBe(GAME_STATUS_INTRO);
 		expect(resetState.activeRow).toBe(0);
 		expect(resetState.isCodeHidden).toBe(true);
 		expect(resetState.showColorpicker).toBe(false);

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Peg from './Peg';
 
-const Hiddencode = ({secretCode, isCodeHidden}) => {
+const HiddenCode = ({secretCode, isCodeHidden}) => {
 
 	return (
         <div className="board board__secret">
@@ -18,4 +18,4 @@ const Hiddencode = ({secretCode, isCodeHidden}) => {
 	);
 };
 
-export default Hiddencode;
+export default HiddenCode;

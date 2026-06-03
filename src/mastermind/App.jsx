@@ -12,6 +12,7 @@ import {
     SUBMIT_ROW,
     TOGGLE_RULES
 } from './gameActions.js';
+import {GAME_STATUS_INTRO} from './gameStatus.js';
 
 function App({state, dispatch}) {
     const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
@@ -58,8 +59,8 @@ function App({state, dispatch}) {
 
     return (
         <div>
-            {gameStatus !== 'intro' ? <Gameplay {...props} /> : null}
-            {gameStatus === 'intro' ? <Intro isRulesHidden={isRulesHidden} onToggleRules={onToggleRules} onStartGame={onStartGame} /> : null}
+            {gameStatus !== GAME_STATUS_INTRO ? <Gameplay {...props} /> : null}
+            {gameStatus === GAME_STATUS_INTRO ? <Intro isRulesHidden={isRulesHidden} onToggleRules={onToggleRules} onStartGame={onStartGame} /> : null}
         </div>
     );
 }

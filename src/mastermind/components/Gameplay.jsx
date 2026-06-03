@@ -1,16 +1,16 @@
 import React from 'react';
 
-import Hiddencode from './Hiddencode';
-import Boardrow from './Boardrow';
+import HiddenCode from './HiddenCode';
+import BoardRow from './BoardRow';
 
 const Gameplay = (props) => {
     const {board, activeRow, secretCode, isCodeHidden, onGiveUp, isRevealHidden} = props;
     return (
         <div>
-            <Hiddencode {...props}/>
+            <HiddenCode {...props}/>
             {board.map((row, index) => {
                 return (
-                    <Boardrow
+                    <BoardRow
                         key={index}
                         rowindex={index}
                         pegs={row.pegs}

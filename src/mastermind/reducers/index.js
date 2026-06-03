@@ -2,6 +2,13 @@ import boardReducer from './board';
 import secretCodeReducer from './secretCode';
 import {NUM_ROWS} from '../script/constants.js';
 import {
+	GAME_STATUS_GAVE_UP,
+	GAME_STATUS_INTRO,
+	GAME_STATUS_LOST,
+	GAME_STATUS_PLAYING,
+	GAME_STATUS_WON
+} from '../gameStatus.js';
+import {
 	ADVANCE_SELECTOR,
 	BEGIN_NEW_ROW,
 	CHOOSE_COLOR_AND_ADVANCE,
@@ -48,18 +55,18 @@ const isRulesHiddenReducer = (state = true, action) => {
 	}
 };
 
-const gameStatusReducer = (state = 'intro', action) => {
+const gameStatusReducer = (state = GAME_STATUS_INTRO, action) => {
 	switch (action.type) {
 		case GAME_BEGIN:
-			return 'playing';
+			return GAME_STATUS_PLAYING;
 		case GAME_WIN:
-			return 'won';
+			return GAME_STATUS_WON;
 		case GAME_LOSE:
-			return 'lost';
+			return GAME_STATUS_LOST;
 		case GAME_GIVE_UP:
-			return 'gave_up';
+			return GAME_STATUS_GAVE_UP;
 		case GAME_INTRO:
-			return 'intro';
+			return GAME_STATUS_INTRO;
 		default:
 			return state;
 	}

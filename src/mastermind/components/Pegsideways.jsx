@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Pegsideways = ({colors}) => {
+const PegSideways = ({colors}) => {
 
 	return (
 		<svg viewBox="0 0 99.828297 114.93159" className="sidePeg">
@@ -15,4 +15,4 @@ const Pegsideways = ({colors}) => {
 	)
 }
 
-export default Pegsideways
+export default PegSideways;
