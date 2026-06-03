@@ -9,13 +9,14 @@ import Colorpicker from './Colorpicker';
 
 const Boardrow = (props) => {
     const {isActiveRow, onPegClick, rowindex, gameStatus, showColorpicker, pegs, selectedPeg} = props;
-    const gaveUp = (gameStatus === 'gave_up');
+    const gaveUp = gameStatus === 'gave_up';
+
     return (
     <div>
         <div className="board">
             <div className="board-row">
-                {pegs.map((val,index) => {
-                    const isSelected = ( isActiveRow && (selectedPeg == index) );
+                {pegs.map((peg, index) => {
+                    const isSelected = isActiveRow && selectedPeg === index;
                     return (
                         <Peg
                             isActiveRow={isActiveRow}
@@ -23,18 +24,18 @@ const Boardrow = (props) => {
                             isSelected={isSelected}
                             key={index}
                             id={index}
-                            peg={val}
-                            onPegClick={(isActiveRow && !gaveUp) ? onPegClick: ()=>{}}
+                            peg={peg}
+                            onPegClick={(isActiveRow && !gaveUp) ? onPegClick : () => {}}
                         />
                     );
                 })}
                 <Feedback {...props} />
             </div>
         </div>
-        {(isActiveRow && gameStatus=='gave_up') ? <Gaveup {...props} /> : null}
-        {(isActiveRow && showColorpicker) ? <Colorpicker {...props} />:null }
-        {(isActiveRow && gameStatus=='won') ? <Won {...props} /> : null}
-        {(isActiveRow && gameStatus=='lost') ? <Lost {...props} /> : null}
+        {isActiveRow && gameStatus === 'gave_up' ? <Gaveup {...props} /> : null}
+        {isActiveRow && showColorpicker ? <Colorpicker {...props} /> : null}
+        {isActiveRow && gameStatus === 'won' ? <Won {...props} /> : null}
+        {isActiveRow && gameStatus === 'lost' ? <Lost {...props} /> : null}
     </div>
     );
 };

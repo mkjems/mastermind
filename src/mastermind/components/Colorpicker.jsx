@@ -1,9 +1,8 @@
 import React from 'react';
 
-import {SIDEWAYS_COLORS} from '../script/constants'
+import {SIDEWAYS_COLORS} from '../script/constants';
 import Pegsideways from './Pegsideways';
 import Checkmark from './Checkmark';
-
 
 const Colorpicker = ({onChooseColor, onSubmitRow, isCompleteRow}) => {
     return (
@@ -11,7 +10,7 @@ const Colorpicker = ({onChooseColor, onSubmitRow, isCompleteRow}) => {
             {Object.keys(SIDEWAYS_COLORS).map((name) => {
                 const colors = SIDEWAYS_COLORS[name];
                 return (
-                    <div key={name} className="picker-color" onClick={()=>onChooseColor(name)}>
+                    <div key={name} className="picker-color" onClick={() => onChooseColor(name)}>
                         <Pegsideways colors={colors} />
                     </div>
                 );
@@ -21,7 +20,7 @@ const Colorpicker = ({onChooseColor, onSubmitRow, isCompleteRow}) => {
             </div>
             <Checkmark onSubmitRow={onSubmitRow} isActive={isCompleteRow} />
         </div>
-    )
-}
+    );
+};
 
 export default Colorpicker;

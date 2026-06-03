@@ -1,32 +1,30 @@
-import {
-	ROW_START
-} from '../script/constants.js';
+import {ROW_START} from '../script/constants.js';
 
 function calculateFeedback(secret, answer) {
-	const num_reds_arr = secret.map((val, index) => {
-		return val == answer[index];
+	const numReds = secret.filter((color, index) => {
+		return color === answer[index];
+	}).length;
+	const numFoundInSecret = secret.filter((color) => {
+		return answer.includes(color);
 	});
-	const num_reds = num_reds_arr.filter(Boolean).length;
-	const reds_arr = Array(num_reds).fill('red');
-	var num_found_in_secret = secret.map((val) => {
-		return answer.includes(val);
-	});
-	num_found_in_secret = num_found_in_secret.filter(Boolean);
-	const num_whites = (num_found_in_secret.length) - num_reds;
-	const whites_arr = Array(num_whites).fill('white');
-	const none_arr = Array(4 - ( num_whites + num_reds) ).fill('none');
-	return [...reds_arr, ...whites_arr, ...none_arr];
+
+	const numWhites = numFoundInSecret.length - numReds;
+	const reds = Array(numReds).fill('red');
+	const whites = Array(numWhites).fill('white');
+	const empty = Array(4 - (numWhites + numReds)).fill('none');
+
+	return [...reds, ...whites, ...empty];
 }
 
-const PEGS_START = ['none', 'none', 'none','none'];
+const PEGS_START = ['none', 'none', 'none', 'none'];
 const FEEDBACK_START = ['none', 'none', 'none', 'none'];
 
-const pegsReducer = (state=PEGS_START, action) => {
+const pegsReducer = (state = PEGS_START, action) => {
 	switch (action.type) {
 		case 'GAME_GIVE_UP':
-			return state.map((val)=>{
-				if(val !='select' && val !='none'){
-					return val;
+			return state.map((peg) => {
+				if (peg !== 'select' && peg !== 'none') {
+					return peg;
 				}
 				return 'none';
 			});
@@ -36,13 +34,12 @@ const pegsReducer = (state=PEGS_START, action) => {
 			}
 			return state;
 		case 'CHOSE_THIS_COLOR':
-			if(action.isActiveRow) {
-				const pegs = [
+			if (action.isActiveRow) {
+				return [
 					...state.slice(0, action.selectedPeg),
 					action.name,
-					...state.slice(action.selectedPeg+1)
+					...state.slice(action.selectedPeg + 1)
 				];
-				return pegs;
 			}
 			return state;
 		default:
@@ -50,10 +47,10 @@ const pegsReducer = (state=PEGS_START, action) => {
 	}
 };
 
-const feedbackReducer = (state=FEEDBACK_START, action, pegs) => {
+const feedbackReducer = (state = FEEDBACK_START, action, pegs) => {
 	switch (action.type) {
 		case 'GIVE_FEEDBACK':
-			if(action.isActiveRow) {
+			if (action.isActiveRow) {
 				return calculateFeedback(action.secretCode, pegs);
 			}
 			return state;
@@ -62,10 +59,10 @@ const feedbackReducer = (state=FEEDBACK_START, action, pegs) => {
 	}
 };
 
-const rowReducer = (state=ROW_START, action) => {
+const rowReducer = (state = ROW_START, action) => {
 	switch (action.type) {
 		case 'GAME_GIVE_UP':
-			if(action.isActiveRow) {
+			if (action.isActiveRow) {
 				return {
 					pegs: pegsReducer(state.pegs, action),
 					feedback: state.feedback
@@ -73,30 +70,26 @@ const rowReducer = (state=ROW_START, action) => {
 			}
 			return state;
 		case 'BEGIN_NEW_ROW':
-			let betterAction;
-			if(action.isActiveRow && state.pegs.every((peg) => peg === 'none')) {
-				betterAction = Object.assign({}, action, {makeSelectable:true})
-			} else {
-				betterAction = action;
-			}
-			return {
-				pegs: pegsReducer(state.pegs, betterAction),
-				feedback: feedbackReducer(state.feedback, betterAction, state.pegs)
-			};
+			const rowAction = action.isActiveRow && state.pegs.every((peg) => peg === 'none')
+				? {...action, makeSelectable: true}
+				: action;
 
-			return state;
+			return {
+				pegs: pegsReducer(state.pegs, rowAction),
+				feedback: feedbackReducer(state.feedback, rowAction, state.pegs)
+			};
 		case 'CHOSE_THIS_COLOR':
 			return {
 				pegs: pegsReducer(state.pegs, action),
 				feedback: feedbackReducer(state.feedback, action)
-			}
+			};
 		case 'GIVE_FEEDBACK':
 			return {
 				pegs: state.pegs,
 				feedback: feedbackReducer(state.feedback, action, state.pegs)
-			}
+			};
 		default:
-			return state
+			return state;
 	}
 };
 

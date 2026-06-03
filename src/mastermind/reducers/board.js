@@ -1,40 +1,37 @@
-import {
-	BOARD_START
-} from '../script/constants.js';
+import {BOARD_START} from '../script/constants.js';
 
 import rowReducer from './row.js';
 
-const boardReducer = (state=BOARD_START, action, activeRow, selectedPeg, secretCode) => {
-	const betterAction = Object.assign(
-		{},
-		action,
-		{selectedPeg},
-		{secretCode: secretCode}
-	);
+const updateRows = (rows, action, activeRow) => {
+	return rows.map((row, index) => {
+		return rowReducer(row, {
+			...action,
+			isActiveRow: index === activeRow
+		});
+	});
+};
+
+const boardReducer = (state = BOARD_START, action, activeRow, selectedPeg, secretCode) => {
+	const rowAction = {
+		...action,
+		selectedPeg,
+		secretCode
+	};
+
 	switch (action.type) {
 		case 'GAME_GIVE_UP':
-			return state.map((row, index) => {
-				return rowReducer(row, Object.assign({},betterAction,{isActiveRow: (index === activeRow)}));
-			});
 		case 'BEGIN_NEW_ROW':
-			return state.map((row, index) => {
-				return rowReducer(row, Object.assign({},betterAction,{isActiveRow: (index === activeRow)}));
-			});
+		case 'GIVE_FEEDBACK':
+			return updateRows(state, rowAction, activeRow);
 		case 'CHOSE_THIS_COLOR':
-			if(selectedPeg===undefined){
+			if (selectedPeg === undefined) {
 				return state;
 			}
-			return state.map((row, index) => {
-				return rowReducer(row, Object.assign({},betterAction,{isActiveRow: (index === activeRow)}));
-			});
+			return updateRows(state, rowAction, activeRow);
 		case 'RESET_GAME':
 			return BOARD_START;
-		case 'GIVE_FEEDBACK':
-			return state.map((row, index) => {
-				return rowReducer(row, Object.assign({},betterAction,{isActiveRow: (index === activeRow)}));
-			});
 		default:
-			return state
+			return state;
 	}
 };
 

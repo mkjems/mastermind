@@ -1,8 +1,7 @@
-
 import boardReducer from './board';
 import secretCodeReducer from './secretCode';
 
-const isRevealHiddenReducer = (state=false, action)=>{
+const isRevealHiddenReducer = (state = false, action) => {
 	switch (action.type) {
 		case 'GAME_GIVE_UP':
 			return true;
@@ -13,20 +12,20 @@ const isRevealHiddenReducer = (state=false, action)=>{
 		case 'RESET_GAME':
 			return false;
 		default:
-			return state
+			return state;
 	}
 };
 
-const isRulesHiddenReducer = (state=true, action)=>{
+const isRulesHiddenReducer = (state = true, action) => {
 	switch (action.type) {
 		case 'TOGGLE_RULES':
 			return !state;
 		default:
-			return state
+			return state;
 	}
 };
 
-const gameStatusReducer = (state='intro', action)=>{
+const gameStatusReducer = (state = 'intro', action) => {
 	switch (action.type) {
 		case 'GAME_BEGIN':
 			return 'playing';
@@ -39,54 +38,49 @@ const gameStatusReducer = (state='intro', action)=>{
 		case 'GAME_INTRO':
 			return 'intro';
 		default:
-			return state
+			return state;
 	}
 };
 
-const isCodeHiddenReducer = (state=true, action)=>{
+const isCodeHiddenReducer = (state = true, action) => {
 	switch (action.type) {
-		case 'HIDE_SECRET_CODE':
-			return true;
 		case 'REVEAL_SECRET_CODE':
 			return false;
-		case 'TOGGLE_SECRET_CODE':
-			return !state;
 		case 'RESET_GAME':
 			return true;
 		default:
-			return state
+			return state;
 	}
 };
 
-const selectedPegReducer = (state=undefined, action) => {
+const selectedPegReducer = (state = undefined, action) => {
 	switch (action.type) {
 		case 'SHOW_COLOR_PICKER':
 			return action.id;
 		case 'BEGIN_NEW_ROW':
 		case 'RESET_GAME':
-		case 'ENTER_ROW':
 			return undefined;
 		case 'ADVANCE_SELECTOR': {
 			const selectedPeg = action.pegs.findIndex((peg) => peg === 'select');
 			return selectedPeg === -1 ? undefined : selectedPeg;
 		}
 		default:
-			return state
+			return state;
 	}
 };
 
-const activeRowReducer = (state=0, action)=>{
+const activeRowReducer = (state = 0, action) => {
 	switch (action.type) {
 		case 'BEGIN_NEW_ROW':
 			return state + 1;
 		case 'RESET_GAME':
 			return 0;
 		default:
-			return state
+			return state;
 	}
 };
 
-const showColorsReducer = (state=false, action) => {
+const showColorsReducer = (state = false, action) => {
 	switch (action.type) {
 		case 'SHOW_COLOR_PICKER':
 			return true;
@@ -95,7 +89,7 @@ const showColorsReducer = (state=false, action) => {
 		case 'RESET_GAME':
 			return false;
 		default:
-			return state
+			return state;
 	}
 };
 
@@ -110,7 +104,7 @@ const reducer = (state = {}, action) => {
 	const board = boardReducer(state.board, action, activeRow, selectedPeg, secretCode);
 	const showColorpicker = showColorsReducer(state.showColorpicker, action);
 
-	const newState =  {
+	return {
 		isRevealHidden,
 		isRulesHidden,
 		gameStatus,
@@ -121,8 +115,6 @@ const reducer = (state = {}, action) => {
 		secretCode,
 		showColorpicker
 	};
-
-	return newState;
-}
+};
 
 export default reducer;

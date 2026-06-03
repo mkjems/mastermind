@@ -8,20 +8,23 @@ const Gameplay = (props) => {
     return (
         <div>
             <Hiddencode {...props}/>
-            {board.map((row, index)=>{
-                return <Boardrow
-                	key={index}
-                	rowindex={index}
-                	pegs={row.pegs}
-                	isActiveRow={(activeRow===index)}
-                	feedbackPegs={row.feedback}
-                	{...props} />;
+            {board.map((row, index) => {
+                return (
+                    <Boardrow
+                        key={index}
+                        rowindex={index}
+                        pegs={row.pegs}
+                        isActiveRow={activeRow === index}
+                        feedbackPegs={row.feedback}
+                        {...props}
+                    />
+                );
             })}
             <div className="board bottom-part" >
-	        { !isRevealHidden ? <button onClick={onGiveUp} >Give up</button> : null}
-	        </div>
+                {!isRevealHidden ? <button onClick={onGiveUp} >Give up</button> : null}
+            </div>
         </div>
-    )
+    );
 };
 
 export default Gameplay;

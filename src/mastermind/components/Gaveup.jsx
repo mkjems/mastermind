@@ -6,7 +6,7 @@ const Gaveup = ({onResetAll, rowindex}) => {
 			<p>You gave up after {rowindex} attempts.</p>
 			<button onClick={onResetAll}>Ok</button>
 		</div>
-	)
-}
+	);
+};
 
-export default Gaveup
+export default Gaveup;

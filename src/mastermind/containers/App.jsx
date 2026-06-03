@@ -2,7 +2,7 @@ import React from 'react';
 import Gameplay from '../components/Gameplay';
 import Intro from '../components/Intro';
 
-import { clearState } from '../script/localStorage';
+import {clearState} from '../script/localStorage';
 import reducer from '../reducers';
 
 import {NUM_ROWS} from '../script/constants';
@@ -10,8 +10,8 @@ import {NUM_ROWS} from '../script/constants';
 function App({state, dispatch}) {
     const {board, showColorpicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
 
-    const remaining = board[activeRow].pegs.filter((val)=>{
-        return (val =='select' || val == 'none');
+    const remaining = board[activeRow].pegs.filter((peg) => {
+        return peg === 'select' || peg === 'none';
     }).length;
 
     const props = {
@@ -33,16 +33,16 @@ function App({state, dispatch}) {
         onSubmitRow: () => {
             const giveFeedbackAction = {type: 'GIVE_FEEDBACK'};
             const nextState = reducer(state, giveFeedbackAction);
-            const didSolveCode = nextState.board[nextState.activeRow].feedback.reduce((acc, val) => {
-                return acc && (val === 'red');
+            const didSolveCode = nextState.board[nextState.activeRow].feedback.reduce((acc, peg) => {
+                return acc && peg === 'red';
             }, true);
 
             dispatch(giveFeedbackAction);
             dispatch({type: 'HIDE_COLOR_PICKER'});
-            if(didSolveCode){
+            if (didSolveCode) {
                 dispatch({type: 'GAME_WIN'});
             } else {
-                if (NUM_ROWS != (nextState.activeRow+1)) {
+                if (NUM_ROWS !== nextState.activeRow + 1) {
                     dispatch({type: 'BEGIN_NEW_ROW'});
                     return;
                 }
@@ -65,22 +65,23 @@ function App({state, dispatch}) {
             dispatch({type: 'GAME_GIVE_UP'});
         },
         isRevealHidden
-    }
+    };
 
     const onStartGame = () => {
         dispatch({type: 'RANDOMIZE_SECRET_CODE'});
         dispatch({type: 'GAME_BEGIN'});
-    }
+    };
+
     const onToggleRules = () => {
         dispatch({type: 'TOGGLE_RULES'});
-    }
+    };
 
     return (
         <div>
-            {(gameStatus!='intro') ? <Gameplay {...props} /> : null}
-            {(gameStatus=='intro') ? <Intro isRulesHidden={isRulesHidden} onToggleRules={onToggleRules} onStartGame={onStartGame} /> : null}
+            {gameStatus !== 'intro' ? <Gameplay {...props} /> : null}
+            {gameStatus === 'intro' ? <Intro isRulesHidden={isRulesHidden} onToggleRules={onToggleRules} onStartGame={onStartGame} /> : null}
         </div>
-    )
+    );
 }
 
 export default App;
