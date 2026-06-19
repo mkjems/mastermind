@@ -3,9 +3,9 @@ import React from 'react';
 import {cleanup, fireEvent, render, screen} from '@testing-library/react';
 import {afterEach, describe, expect, it, vi} from 'vitest';
 
-import App from './App.jsx';
-import reducer from './reducers/index.js';
-import {init, showColorPicker, startGame} from './gameActions.js';
+import App from './App';
+import reducer from './reducers';
+import {init, showColorPicker, startGame} from './gameActions';
 
 const initialState = () => reducer(undefined, init());
 
@@ -35,7 +35,7 @@ describe('App', () => {
 		const playingState = reducer(initialState(), startGame());
 		const {container} = render(<App state={playingState} dispatch={dispatch} />);
 
-		fireEvent.click(container.querySelector('.board-row .peg'));
+		fireEvent.click(container.querySelector('.board-row .peg')!);
 
 		expect(dispatch).toHaveBeenCalledWith(showColorPicker(0));
 	});

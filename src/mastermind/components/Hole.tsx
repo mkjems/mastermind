@@ -1,6 +1,11 @@
 import React from 'react';
 
-const Hole = ({isSelected=false, isActiveRow=false}) => {
+interface HoleProps {
+    isSelected?: boolean;
+    isActiveRow?: boolean;
+}
+
+const Hole = ({isSelected = false, isActiveRow = false}: HoleProps) => {
 
     return (
         <svg viewBox="0 0 269.15568 267.25497" className="svg-hole">

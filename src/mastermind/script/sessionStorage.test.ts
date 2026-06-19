@@ -1,12 +1,13 @@
 // @vitest-environment jsdom
 import {beforeEach, describe, expect, it, vi} from 'vitest';
 
-import {clearState, loadState, saveState, STORAGE_KEY} from './sessionStorage.js';
+import {clearState, loadState, saveState, STORAGE_KEY} from './sessionStorage';
 import {
 	GAME_STATUS_LOST,
 	GAME_STATUS_PLAYING,
 	GAME_STATUS_WON
-} from '../gameStatus.js';
+} from '../gameStatus';
+import type {GameState} from '../types';
 
 describe('sessionStorage state helpers', () => {
 	beforeEach(() => {
@@ -33,7 +34,7 @@ describe('sessionStorage state helpers', () => {
 	});
 
 	it('saves state as JSON', () => {
-		const state = {gameStatus: GAME_STATUS_WON};
+		const state = {gameStatus: GAME_STATUS_WON} as GameState;
 
 		saveState(state);
 

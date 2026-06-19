@@ -1,6 +1,11 @@
 import React from 'react';
 
-const Checkmark = ({onSubmitRow, isActive}) => {
+interface CheckmarkProps {
+    onSubmitRow: () => void;
+    isActive: boolean;
+}
+
+const Checkmark = ({onSubmitRow, isActive}: CheckmarkProps) => {
     const checkMarkClasses = isActive ? 'picker-checkmark picker-checkmark-active' : 'picker-checkmark';
     return (
         <div className="picker-color" onClick={isActive ? onSubmitRow : () => {}}>

@@ -28,13 +28,13 @@ const empty_rows: Row[] = new Array(num_additional_rows).fill(empty_row);
 
 export const BOARD_START: Board = [...first_row, ...empty_rows];
 
-interface TopViewColor {
+export interface TopViewColor {
 	hat: string;
 	self_shadow: string;
 	highlight: string;
 }
 
-interface SidewaysColor extends TopViewColor {
+export interface SidewaysColor extends TopViewColor {
 	stem: string;
 	cast_shadow: string;
 }

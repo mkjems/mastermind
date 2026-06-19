@@ -1,7 +1,7 @@
 import {describe, expect, it} from 'vitest';
 
-import reducer from './index.js';
-import {NUM_ROWS, PEG_COLORS} from '../script/constants.js';
+import reducer from './index';
+import {NUM_ROWS, PEG_COLORS} from '../script/constants';
 import {
 	chooseColorAndAdvance,
 	giveUp,
@@ -10,7 +10,7 @@ import {
 	showColorPicker,
 	startGame,
 	submitRow
-} from '../gameActions.js';
+} from '../gameActions';
 import {
 	canGiveUp,
 	GAME_STATUS_GAVE_UP,
@@ -19,11 +19,12 @@ import {
 	GAME_STATUS_PLAYING,
 	GAME_STATUS_WON,
 	isCodeHidden
-} from '../gameStatus.js';
+} from '../gameStatus';
+import type {Color, GameState, Row} from '../types';
 
-const initState = () => reducer(undefined, init());
+const initState = (): GameState => reducer(undefined, init());
 
-const chooseColor = (state, pegIndex, color) => {
+const chooseColor = (state: GameState, pegIndex: number, color: Color): GameState => {
 	const selectedState = reducer(state, showColorPicker(pegIndex));
 	return reducer(selectedState, chooseColorAndAdvance(color));
 };
@@ -65,7 +66,7 @@ describe('mastermind reducer', () => {
 
 	it('gives red, white, and empty feedback for a submitted row', () => {
 		const initialState = initState();
-		const state = {
+		const state: GameState = {
 			...initialState,
 			secretCode: ['yellow', 'green', 'blue', 'pink'],
 			board: [
@@ -86,7 +87,7 @@ describe('mastermind reducer', () => {
 
 	it('makes the next row active and selectable after a non-winning submit', () => {
 		const initialState = initState();
-		const state = {
+		const state: GameState = {
 			...initialState,
 			gameStatus: GAME_STATUS_PLAYING,
 			secretCode: ['yellow', 'green', 'blue', 'pink'],
@@ -108,7 +109,7 @@ describe('mastermind reducer', () => {
 
 	it('wins when the active row matches the secret code', () => {
 		const initialState = initState();
-		const state = {
+		const state: GameState = {
 			...initialState,
 			gameStatus: GAME_STATUS_PLAYING,
 			secretCode: ['yellow', 'green', 'blue', 'pink'],
@@ -132,7 +133,7 @@ describe('mastermind reducer', () => {
 	it('loses when the last row does not match the secret code', () => {
 		const initialState = initState();
 		const lastRow = NUM_ROWS - 1;
-		const board = initialState.board.map((row, index) => {
+		const board = initialState.board.map((row, index): Row => {
 			if (index !== lastRow) {
 				return row;
 			}
@@ -142,7 +143,7 @@ describe('mastermind reducer', () => {
 				feedback: ['none', 'none', 'none', 'none']
 			};
 		});
-		const state = {
+		const state: GameState = {
 			...initialState,
 			activeRow: lastRow,
 			gameStatus: GAME_STATUS_PLAYING,

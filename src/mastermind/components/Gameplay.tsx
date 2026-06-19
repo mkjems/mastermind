@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useGame} from '../GameContext.js';
+import {useGame} from '../GameContext';
 import HiddenCode from './HiddenCode';
 import BoardRow from './BoardRow';
 

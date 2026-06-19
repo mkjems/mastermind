@@ -1,6 +1,8 @@
 import React from 'react';
 
-const colors = {
+type FeedbackPegType = 'red' | 'white';
+
+const colors: Record<FeedbackPegType, {color: string; cast_shadow: string}> = {
     red: {
         color: '#ca1616',
         cast_shadow: '#9b1111'
@@ -11,7 +13,11 @@ const colors = {
     }
 };
 
-const SmallFeedbackPeg = ({type = 'red'}) => {
+interface SmallFeedbackPegProps {
+    type?: FeedbackPegType;
+}
+
+const SmallFeedbackPeg = ({type = 'red'}: SmallFeedbackPegProps) => {
     const color = colors[type];
     return (
         <svg viewBox="0 0 199.99999 199.99999" className="svg-feedback-peg">

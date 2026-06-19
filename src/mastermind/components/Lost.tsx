@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useGame} from '../GameContext.js';
+import {useGame} from '../GameContext';
 
 const Lost = () => {
 	const {onResetAll} = useGame();

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {useGame} from '../GameContext.js';
+import {useGame} from '../GameContext';
 import Peg from './Peg';
 import Feedback from './Feedback';
 import Gaveup from './Gaveup';
@@ -11,9 +11,16 @@ import {
     GAME_STATUS_GAVE_UP,
     GAME_STATUS_LOST,
     GAME_STATUS_WON
-} from '../gameStatus.js';
+} from '../gameStatus';
+import type {FeedbackPeg, PegValue} from '../types';
 
-const BoardRow = ({pegs, feedbackPegs, isActiveRow}) => {
+interface BoardRowProps {
+    pegs: PegValue[];
+    feedbackPegs: FeedbackPeg[];
+    isActiveRow: boolean;
+}
+
+const BoardRow = ({pegs, feedbackPegs, isActiveRow}: BoardRowProps) => {
     const {onPegClick, gameStatus, showColorPicker, selectedPeg} = useGame();
     const gaveUp = gameStatus === GAME_STATUS_GAVE_UP;
 

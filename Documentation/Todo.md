@@ -181,62 +181,35 @@ state persisted as-is.
 
 ### P1.8 - Complete transition to Typescript across the board - all js, jsx files
 
-Item P1.6 typed the domain (state, actions, machine, reducers). What's left is the React
-layer + infra: `GameContext.js`, `script/sessionStorage.js`, `main.jsx`, `App.jsx`, the 16
-components, and the 5 test files. This is **not** a pure rename — turning on JSX/DOM
-type-checking surfaces real prop/type work. Do it in this order (tooling first, then the
-context boundary, then components bottom-up so parents rely on typed children):
+**Done.** The whole `src/` tree is now TypeScript — no `.js`/`.jsx` files remain.
+`npm run check` (typecheck → test → build) is green; 35 tests pass.
 
-#### P1.8.1 — Tooling
+- [x] **P1.8.1 — Tooling.** Added `@types/react` + `@types/react-dom`;
+      [tsconfig.json](../tsconfig.json) now sets `jsx: "react-jsx"` and `DOM`/`DOM.Iterable`
+      lib. Added `src/declarations.d.ts` (`declare module '*.css'`) for the stylesheet
+      import. `allowJs` was on during the migration, then flipped off at the end.
+- [x] **P1.8.2 — Context boundary.** [GameContext.ts](../src/mastermind/GameContext.ts)
+      defines `GameContextValue` and a `useGame()` that throws outside a provider (so
+      consumers get a non-null type).
+- [x] **P1.8.3 — Leaf components.** `Hole`, `Peg`, `PegIllu`, `PegSideways`,
+      `SmallFeedbackPeg`, `SmallFeedbackHole`, `Checkmark`, `Feedback` → `.tsx` with prop
+      interfaces. Exported `TopViewColor`/`SidewaysColor` from
+      [constants.ts](../src/mastermind/script/constants.ts) for the peg `colors` props.
+- [x] **P1.8.4 — Overlay / picker / intro.** `Won`, `Lost`, `Gaveup`, `HiddenCode`,
+      `ColorPicker`, `Intro` → `.tsx`.
+- [x] **P1.8.5 — Containers + entry + infra.** `BoardRow`, `Gameplay`, `App` → `.tsx`;
+      `main.tsx` (typed `useReducer`, guards the missing root element); `sessionStorage.ts`
+      typed against `GameState`. Updated `index.html` to point at `main.tsx`.
+- [x] **P1.8.6 — Tests.** All six test files converted to `.ts`/`.tsx` and type-checked.
+- [x] **P1.8.7 — Lock it down.** `allowJs: false`; no `.js`/`.jsx` under `src/`; gate green.
 
-- [ ] Add `@types/react` + `@types/react-dom` dev deps.
-- [ ] [tsconfig.json](../tsconfig.json): set `jsx: "react-jsx"`, add `DOM`/`DOM.Iterable`
-      to `lib`, and keep `allowJs: true` **temporarily** so not-yet-migrated files still
-      resolve and the build stays green mid-migration. No code changes in this step.
+**Decisions made:** converted the tests too (full coverage); added the React `@types`;
+kept current strictness — `noUncheckedIndexedAccess` deferred to a separate pass (it would
+flag every `board[i]` access; more correct but more churn).
 
-#### P1.8.2 — The context boundary (unblocks everything else)
-
-- [ ] Convert `GameContext.js` → `.ts`. Define a `GameContextValue` interface (the state
-      fields + handler signatures that [App.jsx](../src/mastermind/App.jsx) provides) and
-      type `useGame()` to return it. Have `useGame()` throw if used outside a provider so
-      consumers get a non-null type rather than `T | null`.
-
-#### P1.8.3 — Leaf components (bottom-up, simple props)
-
-- [ ] `Hole`, `Peg`, `PegIllu`, `PegSideways`, `SmallFeedbackPeg`, `SmallFeedbackHole`,
-      `Checkmark`, `Feedback` → `.tsx`, each with a small prop interface. (Reuse `Color`,
-      `PegValue`, `FeedbackPeg` from [types.ts](../src/mastermind/types.ts).)
-
-#### P1.8.4 — Overlay / picker / intro components
-
-- [ ] `Won`, `Lost`, `Gaveup`, `HiddenCode`, `ColorPicker`, `Intro` → `.tsx` (these read
-      context via `useGame()` or take a couple of explicit props).
-
-#### P1.8.5 — Containers + entry + infra
-
-- [ ] `BoardRow`, `Gameplay`, `App` → `.tsx` (App's provider value typed as
-      `GameContextValue`).
-- [ ] `main.jsx` → `main.tsx`; `script/sessionStorage.js` → `.ts`, typing
-      `loadState`/`saveState` against `GameState`.
-
-#### P1.8.6 — Tests
-
-- [ ] Convert `App.test.jsx`, `gameActions.test.js`, `gameStatus.test.js`,
-      `reducers/reducer.test.js`, `reducers/row.test.js`, `script/sessionStorage.test.js`
-      to `.ts`/`.tsx` so they're type-checked too.
-
-#### P1.8.7 — Lock it down
-
-- [ ] Flip `allowJs: false`, confirm no `.js`/`.jsx` remain under `src/`, and `npm run
-      check` (typecheck → test → build) is green.
-
-**Open decisions:**
-
-- Convert the test files too (P1.8.6)? Recommended — straightforward and gives full
-  coverage. The alternative is leaving them as JS (untyped but still run by Vitest).
-- OK to add `@types/react` / `@types/react-dom`? (Needed for typed components.)
-- Keep the current strictness, or add `noUncheckedIndexedAccess` while we're here? (It
-  would flag `board[i]` accesses; more correct but more churn — suggest a separate pass.)
+**Note on import specifiers:** existing intra-`src` imports use `.js`/`.jsx` extensions (or
+none). Vite, Vitest, and `tsc` (moduleResolution `bundler`) all resolve those to the `.ts`
+/`.tsx` files, so importers didn't need rewriting; new files use extensionless specifiers.
 
 ### P5 - Add a button on the main page that says 'Play against algorithm' -
 

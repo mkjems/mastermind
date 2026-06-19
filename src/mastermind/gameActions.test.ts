@@ -17,7 +17,7 @@ import {
 	SUBMIT_ROW,
 	toggleRules,
 	TOGGLE_RULES
-} from './gameActions.js';
+} from './gameActions';
 
 describe('game action creators', () => {
 	it('creates initialization action', () => {

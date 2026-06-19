@@ -1,9 +1,14 @@
 import React from 'react';
 
-import SmallFeedbackPeg from './SmallFeedbackPeg.jsx';
-import SmallFeedbackHole from './SmallFeedbackHole.jsx';
+import type {FeedbackPeg as FeedbackValue} from '../types';
+import SmallFeedbackPeg from './SmallFeedbackPeg';
+import SmallFeedbackHole from './SmallFeedbackHole';
 
-const FeedbackPeg = ({pegType = 'none'}) => {
+interface FeedbackPegProps {
+    pegType?: FeedbackValue;
+}
+
+const FeedbackPeg = ({pegType = 'none'}: FeedbackPegProps) => {
     return (
         <div className="feedback-item">
             {pegType === 'red' ? <SmallFeedbackPeg type="red" /> : null}
@@ -13,7 +18,11 @@ const FeedbackPeg = ({pegType = 'none'}) => {
     );
 };
 
-const Feedback = ({feedbackPegs}) => {
+interface FeedbackProps {
+    feedbackPegs: FeedbackValue[];
+}
+
+const Feedback = ({feedbackPegs}: FeedbackProps) => {
     return (
         <div className="feedback">
             {feedbackPegs.map((type, index) => {

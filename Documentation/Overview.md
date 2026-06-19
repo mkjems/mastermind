@@ -29,7 +29,7 @@ using feedback after each guess to narrow down the answer.
   of rows (**lost**), or clicks **Give up**.
 
 The in-app rules text is shown on the intro screen via the `Rules` component in
-[Intro.jsx](../src/mastermind/components/Intro.jsx).
+[Intro.tsx](../src/mastermind/components/Intro.tsx).
 
 ## How a game flows
 
@@ -54,11 +54,12 @@ The in-app rules text is shown on the intro screen via the `Rules` component in
 The app uses a **Redux-style reducer pattern** driven by React's `useReducer` — there is
 no Redux dependency; it is hand-rolled with plain functions.
 
-The core domain — state shape, actions, the status machine, and the reducers — is written
-in **TypeScript**; the React components are still `.jsx`. `allowJs` is off in
-[tsconfig.json](../tsconfig.json), so type-checking covers the domain only. Vite and
-Vitest resolve the existing `.js` import specifiers to the `.ts` files, so imports didn't
-need to change.
+The entire `src/` tree is **TypeScript** (`.ts`/`.tsx`) — the domain (state, actions, the
+status machine, reducers) and the React components are all typed, and `npm run check` runs
+`tsc --noEmit` as part of the gate. Domain types live in
+[types.ts](../src/mastermind/types.ts) (`Color`, `PegValue`, `FeedbackPeg`, `Row`, `Board`,
+`GameState`). Vite, Vitest, and `tsc` (moduleResolution `bundler`) all resolve the existing
+`.js`/`.jsx` import specifiers to the `.ts`/`.tsx` files, so imports didn't need rewriting.
 
 ### State shape
 
@@ -81,7 +82,7 @@ selectable hole in the active row), otherwise a color name.
 Two view flags are **not stored** — they are derived from `gameStatus` by selectors in
 [gameStatus.ts](../src/mastermind/gameStatus.ts) so they cannot drift out of sync:
 `isCodeHidden(status)` (the code is hidden until the game is over) and `canGiveUp(status)`
-(true only while `playing`). [App.jsx](../src/mastermind/App.jsx) computes them and passes
+(true only while `playing`). [App.tsx](../src/mastermind/App.tsx) computes them and passes
 them down as props.
 
 ### Actions
@@ -123,18 +124,18 @@ makes illegal states (e.g. "won but still playing") unrepresentable.
 
 ### Components
 
-The view layer is presentational. [App.jsx](../src/mastermind/App.jsx) puts the whole-game
-view state and the action handlers into a [GameContext](../src/mastermind/GameContext.js);
+The view layer is presentational. [App.tsx](../src/mastermind/App.tsx) puts the whole-game
+view state and the action handlers into a [GameContext](../src/mastermind/GameContext.ts);
 gameplay components read what they need with `useGame()`. Genuinely per-instance values (a
 row's pegs/feedback, a peg's id) are passed as explicit props, and the small reusable leaf
 components (`Peg`, `Feedback`, `Hole`, `Checkmark`) stay prop-driven.
 
-- [App.jsx](../src/mastermind/App.jsx) — builds the context value (state-derived fields +
+- [App.tsx](../src/mastermind/App.tsx) — builds the context value (state-derived fields +
   handlers that dispatch actions) and switches between the intro and gameplay screens.
-- [components/Intro.jsx](../src/mastermind/components/Intro.jsx) — title screen + rules.
-- [components/Gameplay.jsx](../src/mastermind/components/Gameplay.jsx) — renders the
+- [components/Intro.tsx](../src/mastermind/components/Intro.tsx) — title screen + rules.
+- [components/Gameplay.tsx](../src/mastermind/components/Gameplay.tsx) — renders the
   hidden code, the 10 board rows, and the give-up button.
-- [components/BoardRow.jsx](../src/mastermind/components/BoardRow.jsx) — one row of pegs
+- [components/BoardRow.tsx](../src/mastermind/components/BoardRow.tsx) — one row of pegs
   plus its feedback, and the per-row overlays (color picker, won/lost/gave-up messages).
 - Supporting view pieces: `Peg`, `Hole`, `ColorPicker`, `Feedback`,
   `SmallFeedbackPeg`/`SmallFeedbackHole`, `HiddenCode`, `Won`, `Lost`, `Gaveup`,
@@ -142,7 +143,7 @@ components (`Peg`, `Feedback`, `Hole`, `Checkmark`) stay prop-driven.
 
 ### State entry point and persistence
 
-[main.jsx](../src/mastermind/main.jsx) mounts the app. It initializes state from
+[main.tsx](../src/mastermind/main.tsx) mounts the app. It initializes state from
 `sessionStorage` (falling back to the reducer's initial state) and saves the full state
 back to `sessionStorage` on every change via a `useEffect`. The storage helpers
 (`loadState`, `saveState`, `clearState`, key `mastermind-state`) live in
@@ -167,11 +168,11 @@ From [package.json](../package.json):
 | `npm run preview`  | Preview the production build.                    |
 | `npm test`         | Run the Vitest test suite once.                  |
 | `npm run test:watch`| Run Vitest in watch mode.                       |
-| `npm run typecheck`| Type-check the TypeScript domain (`tsc --noEmit`).|
+| `npm run typecheck`| Type-check the codebase (`tsc --noEmit`).|
 | `npm run check`    | Typecheck, then test, then build (the CI-style gate).|
 
 Tests live alongside the code (e.g.
 [reducers/reducer.test.js](../src/mastermind/reducers/reducer.test.js),
 [gameActions.test.js](../src/mastermind/gameActions.test.js),
-[App.test.jsx](../src/mastermind/App.test.jsx)) and are run with
+[App.test.tsx](../src/mastermind/App.test.tsx)) and are run with
 [Vitest](https://vitest.dev) + React Testing Library in a jsdom environment.

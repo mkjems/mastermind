@@ -15,7 +15,8 @@ import {
 	isCodeHidden,
 	isGameOver,
 	nextStatus
-} from './gameStatus.js';
+} from './gameStatus';
+import type {GameStatus} from './gameStatus';
 
 describe('nextStatus', () => {
 	it('starts a game from the intro', () => {
@@ -36,12 +37,13 @@ describe('nextStatus', () => {
 	});
 
 	it('returns to the intro on reset from any status', () => {
-		[
+		const statuses: GameStatus[] = [
 			GAME_STATUS_PLAYING,
 			GAME_STATUS_WON,
 			GAME_STATUS_LOST,
 			GAME_STATUS_GAVE_UP
-		].forEach((status) => {
+		];
+		statuses.forEach((status) => {
 			expect(nextStatus(status, EVENT_RESET)).toBe(GAME_STATUS_INTRO);
 		});
 	});

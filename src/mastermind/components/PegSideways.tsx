@@ -1,6 +1,12 @@
 import React from 'react';
 
-const PegSideways = ({colors}) => {
+import type {SidewaysColor} from '../script/constants';
+
+interface PegSidewaysProps {
+	colors: SidewaysColor;
+}
+
+const PegSideways = ({colors}: PegSidewaysProps) => {
 
 	return (
 		<svg viewBox="0 0 99.828297 114.93159" className="sidePeg">

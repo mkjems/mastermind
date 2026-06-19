@@ -1,6 +1,6 @@
 import {describe, expect, it} from 'vitest';
 
-import {calculateFeedback, isSolved} from './row.js';
+import {calculateFeedback, isSolved} from './row';
 
 describe('calculateFeedback', () => {
 	it('gives a red for each color in the right position', () => {
@@ -40,7 +40,7 @@ describe('calculateFeedback', () => {
 	});
 
 	describe('with duplicate colors in the guess', () => {
-		// The secret always has unique colors (see secretCode.js), but the rules
+		// The secret always has unique colors (see secretCode.ts), but the rules
 		// allow repeating a color in a guess, so feedback must handle that.
 		it('does not award more whites than the secret contains of a color', () => {
 			// One red in position; the surplus guessed reds earn nothing extra.
