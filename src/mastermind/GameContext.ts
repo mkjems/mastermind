@@ -1,6 +1,6 @@
 import {createContext, useContext} from 'react';
 import type {GameStatus} from './gameStatus';
-import type {Board, Color, GameMode} from './types';
+import type {Board, Color, FeedbackPeg, GameMode} from './types';
 
 // The whole-game view state and action handlers that App provides once and any
 // gameplay component reads via useGame(). Per-instance values (a row's pegs, a
@@ -21,6 +21,8 @@ export interface GameContextValue {
 	onSubmitRow: () => void;
 	onGiveUp: () => void;
 	onResetAll: () => void;
+	onConfirmSecret: (secret: Color[]) => void;
+	onSubmitFeedback: (feedback: FeedbackPeg[]) => void;
 }
 
 export const GameContext = createContext<GameContextValue | null>(null);

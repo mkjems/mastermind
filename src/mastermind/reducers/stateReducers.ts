@@ -1,4 +1,5 @@
 import {
+	EVENT_CONFIRM_SECRET,
 	EVENT_GIVE_UP,
 	EVENT_RESET,
 	EVENT_START,
@@ -9,11 +10,13 @@ import {
 import type {GameEvent, GameStatus} from '../gameStatus';
 import {
 	CHOOSE_COLOR_AND_ADVANCE,
+	CONFIRM_SECRET,
 	GIVE_UP,
 	RESET_ALL,
 	SHOW_COLOR_PICKER,
 	START_ALGORITHM,
 	START_GAME,
+	SUBMIT_FEEDBACK,
 	SUBMIT_ROW,
 	TOGGLE_RULES
 } from '../gameActions';
@@ -33,7 +36,10 @@ const eventForAction = (action: DecoratedAction): GameEvent | null => {
 			return EVENT_GIVE_UP;
 		case RESET_ALL:
 			return EVENT_RESET;
+		case CONFIRM_SECRET:
+			return EVENT_CONFIRM_SECRET;
 		case SUBMIT_ROW:
+		case SUBMIT_FEEDBACK:
 			return action.event ?? null;
 		default:
 			return null;
@@ -63,7 +69,9 @@ export const selectedPegReducer = (state: number | undefined = undefined, action
 export const activeRowReducer = (state = 0, action: DecoratedAction): number => {
 	switch (action.type) {
 		case SUBMIT_ROW:
+		case SUBMIT_FEEDBACK:
 			return action.activeRow ?? state;
+		case CONFIRM_SECRET:
 		case RESET_ALL:
 			return 0;
 		default:

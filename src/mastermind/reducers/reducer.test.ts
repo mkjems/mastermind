@@ -1,20 +1,26 @@
 import {describe, expect, it} from 'vitest';
 
 import reducer from './index';
+import {calculateFeedback} from './row';
 import {NUM_ROWS, PEG_COLORS} from '../script/constants';
 import {
 	chooseColorAndAdvance,
+	confirmSecret,
 	giveUp,
 	init,
 	resetAll,
 	showColorPicker,
 	startAlgorithm,
 	startGame,
+	submitFeedback,
 	submitRow
 } from '../gameActions';
 import {
 	canGiveUp,
+	GAME_STATUS_ALGO_FAILED,
+	GAME_STATUS_ALGO_GUESSING,
 	GAME_STATUS_ALGO_SETUP,
+	GAME_STATUS_ALGO_SOLVED,
 	GAME_STATUS_GAVE_UP,
 	GAME_STATUS_INTRO,
 	GAME_STATUS_LOST,
@@ -22,7 +28,7 @@ import {
 	GAME_STATUS_WON,
 	isCodeHidden
 } from '../gameStatus';
-import type {Color, GameState, Row} from '../types';
+import type {Color, FeedbackPeg, GameState, Row} from '../types';
 
 const initState = (): GameState => reducer(undefined, init());
 
@@ -72,6 +78,45 @@ describe('mastermind reducer', () => {
 
 		expect(resetState.mode).toBe('human');
 		expect(resetState.gameStatus).toBe(GAME_STATUS_INTRO);
+	});
+
+	it('confirms a secret and places the computer first guess', () => {
+		const secret: Color[] = ['blue', 'orange', 'green', 'white'];
+		const state = reducer(reducer(initState(), startAlgorithm()), confirmSecret(secret));
+
+		expect(state.gameStatus).toBe(GAME_STATUS_ALGO_GUESSING);
+		expect(state.secretCode).toEqual(secret);
+		expect(state.activeRow).toBe(0);
+		// Row 0 holds a real 4-color guess.
+		expect(new Set(state.board[0].pegs).size).toBe(4);
+	});
+
+	it('lets the computer solve a human-set secret from honest feedback', () => {
+		const secret: Color[] = ['blue', 'orange', 'green', 'white'];
+		let state = reducer(reducer(initState(), startAlgorithm()), confirmSecret(secret));
+
+		let guard = 0;
+		while (state.gameStatus === GAME_STATUS_ALGO_GUESSING && guard++ < 20) {
+			const guess = state.board[state.activeRow].pegs as Color[];
+			state = reducer(state, submitFeedback(calculateFeedback(secret, guess)));
+		}
+
+		expect(state.gameStatus).toBe(GAME_STATUS_ALGO_SOLVED);
+		expect(state.activeRow).toBeLessThan(NUM_ROWS);
+		expect(state.board[state.activeRow].pegs).toEqual(secret);
+	});
+
+	it('fails when the human gives impossible feedback', () => {
+		const secret: Color[] = ['blue', 'orange', 'green', 'white'];
+		const none: FeedbackPeg[] = ['none', 'none', 'none', 'none'];
+		let state = reducer(reducer(initState(), startAlgorithm()), confirmSecret(secret));
+
+		// "Nothing matches" is plausible once, but the next guess is built from the
+		// remaining colors, so a second "nothing" is contradictory.
+		state = reducer(state, submitFeedback(none));
+		state = reducer(state, submitFeedback(none));
+
+		expect(state.gameStatus).toBe(GAME_STATUS_ALGO_FAILED);
 	});
 
 	it('chooses a color and advances the selected peg', () => {

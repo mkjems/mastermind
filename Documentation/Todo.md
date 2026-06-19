@@ -62,21 +62,26 @@ with `npm run check` green.
 - [x] `isGameOver` now covers `algo_solved`/`algo_failed`.
 - [x] Tests for the algorithm transitions and ignored illegal events.
 
-#### P2.4 — Secret-setup interface
+#### P2.4 — Secret-setup interface ✅
 
-- [ ] Component for the human to choose a 4-color secret (reuse `ColorPicker` / the
-      peg-selection flow) with a confirm button; validate the secret is complete first.
-- [ ] `CONFIRM_SECRET` reducer: store the secret, go to `algo_guessing`, and place the
-      computer's first guess (`nextGuess`) on row 0.
+- [x] [SecretSetup.tsx](../src/mastermind/components/SecretSetup.tsx): pick 4 colors from a
+      `PegIllu` palette that disables already-used colors (codes never repeat a color);
+      "Let the computer guess" is enabled only once 4 are chosen.
+- [x] `CONFIRM_SECRET` reducer: stores the secret, transitions to `algo_guessing`, and
+      places the computer's opening guess (`nextGuess([])`) on row 0.
 
-#### P2.5 — Guess/feedback loop (reducer ↔ solver)
+#### P2.5 — Guess/feedback loop (reducer ↔ solver) ✅
 
-- [ ] `SUBMIT_FEEDBACK` reducer: record the human's feedback on the active row; if all-red
-      → `algo_solved`; else derive `nextGuess` from board history and place it on the next
-      row; if rows run out or no codes remain → `algo_failed`.
-- [ ] Keep candidate derivation pure (from the board rows) — no stored candidate set.
-- [ ] Tests: drive a full game by feeding feedback and assert the computer solves it;
-      assert the failure paths.
+- [x] `SUBMIT_FEEDBACK` reducer (`decorateAction` in
+      [index.ts](../src/mastermind/reducers/index.ts)): records the human's feedback on the
+      active row; all-red → `algo_solved`; else derives `nextGuess` from board history and
+      places it on the next row; no codes left or out of rows → `algo_failed`.
+- [x] Candidate set is derived from the board rows each turn — nothing stored.
+- [x] Tests: confirm-secret placement, a full honest-feedback solve reaching `algo_solved`,
+      and impossible feedback reaching `algo_failed`.
+- Note: the algorithm-mode screens exist but are minimal — `algo_guessing` shows the board
+  read-only ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)) pending the
+  P2.6 scoring UI, and results use a basic [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx).
 
 #### P2.6 — Feedback input UI
 

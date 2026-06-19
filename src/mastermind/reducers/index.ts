@@ -9,14 +9,18 @@ import {
 	selectedPegReducer,
 	showColorPickerReducer
 } from './stateReducers';
-import {EVENT_LOSE, EVENT_WIN} from '../gameStatus';
+import {nextGuess} from '../solver';
+import type {ScoredGuess} from '../solver';
+import {EVENT_FAILED, EVENT_LOSE, EVENT_SOLVED, EVENT_WIN} from '../gameStatus';
 import {
 	CHOOSE_COLOR_AND_ADVANCE,
+	CONFIRM_SECRET,
 	GIVE_UP,
+	SUBMIT_FEEDBACK,
 	SUBMIT_ROW
 } from '../gameActions';
 import type {Action, DecoratedAction} from '../gameActions';
-import type {GameState} from '../types';
+import type {Color, GameState} from '../types';
 import {NUM_ROWS} from '../script/constants';
 
 // Enrich an action with the context the slice reducers need, all derived from the
@@ -60,6 +64,35 @@ const decorateAction = (state: GameState, action: Action): DecoratedAction => {
 		}
 		case GIVE_UP:
 			return {...action, activeRow: state.activeRow};
+		case CONFIRM_SECRET:
+			// Algorithm mode begins: the computer's opening guess goes on row 0.
+			return {...action, computerGuess: nextGuess([])};
+		case SUBMIT_FEEDBACK: {
+			const submittedRow = state.activeRow;
+			const solved = isSolved(action.feedback);
+			if (solved) {
+				return {...action, submittedRow, event: EVENT_SOLVED, continues: false};
+			}
+			// Replay the scored rows (this row's feedback is the human's new input)
+			// to find the codes still possible, then the computer's next guess.
+			const history: ScoredGuess[] = state.board.slice(0, submittedRow + 1).map((row, index) => ({
+				guess: row.pegs as Color[],
+				feedback: index === submittedRow ? action.feedback : row.feedback
+			}));
+			const guess = nextGuess(history);
+			const outOfRows = submittedRow + 1 >= NUM_ROWS;
+			if (guess === undefined || outOfRows) {
+				return {...action, submittedRow, event: EVENT_FAILED, continues: false};
+			}
+			return {
+				...action,
+				submittedRow,
+				event: null,
+				continues: true,
+				activeRow: submittedRow + 1,
+				computerGuess: guess
+			};
+		}
 		default:
 			return action;
 	}

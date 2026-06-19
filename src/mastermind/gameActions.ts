@@ -8,6 +8,8 @@ export const CHOOSE_COLOR_AND_ADVANCE = 'CHOOSE_COLOR_AND_ADVANCE';
 export const SUBMIT_ROW = 'SUBMIT_ROW';
 export const START_GAME = 'START_GAME';
 export const START_ALGORITHM = 'START_ALGORITHM';
+export const CONFIRM_SECRET = 'CONFIRM_SECRET';
+export const SUBMIT_FEEDBACK = 'SUBMIT_FEEDBACK';
 export const RESET_ALL = 'RESET_ALL';
 export const GIVE_UP = 'GIVE_UP';
 export const TOGGLE_RULES = 'TOGGLE_RULES';
@@ -32,6 +34,14 @@ export interface StartGameAction {
 export interface StartAlgorithmAction {
 	type: typeof START_ALGORITHM;
 }
+export interface ConfirmSecretAction {
+	type: typeof CONFIRM_SECRET;
+	secret: Color[];
+}
+export interface SubmitFeedbackAction {
+	type: typeof SUBMIT_FEEDBACK;
+	feedback: FeedbackPeg[];
+}
 export interface ResetAllAction {
 	type: typeof RESET_ALL;
 }
@@ -49,6 +59,8 @@ export type Action =
 	| SubmitRowAction
 	| StartGameAction
 	| StartAlgorithmAction
+	| ConfirmSecretAction
+	| SubmitFeedbackAction
 	| ResetAllAction
 	| GiveUpAction
 	| ToggleRulesAction;
@@ -65,6 +77,7 @@ export interface ActionDecorations {
 	feedback?: FeedbackPeg[];
 	event?: GameEvent | null;
 	continues?: boolean;
+	computerGuess?: Color[];
 }
 
 export type DecoratedAction = Action & ActionDecorations;
@@ -78,6 +91,11 @@ export const chooseColorAndAdvance = (name: Color): ChooseColorAndAdvanceAction 
 export const submitRow = (): SubmitRowAction => ({type: SUBMIT_ROW});
 export const startGame = (): StartGameAction => ({type: START_GAME});
 export const startAlgorithm = (): StartAlgorithmAction => ({type: START_ALGORITHM});
+export const confirmSecret = (secret: Color[]): ConfirmSecretAction => ({type: CONFIRM_SECRET, secret});
+export const submitFeedback = (feedback: FeedbackPeg[]): SubmitFeedbackAction => ({
+	type: SUBMIT_FEEDBACK,
+	feedback
+});
 export const resetAll = (): ResetAllAction => ({type: RESET_ALL});
 export const giveUp = (): GiveUpAction => ({type: GIVE_UP});
 export const toggleRules = (): ToggleRulesAction => ({type: TOGGLE_RULES});

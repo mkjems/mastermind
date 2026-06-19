@@ -9,11 +9,13 @@ import type {GameContextValue} from './GameContext';
 import {clearState} from './script/sessionStorage';
 import {
     chooseColorAndAdvance,
+    confirmSecret,
     giveUp,
     resetAll,
     showColorPicker as showColorPickerAction,
     startAlgorithm,
     startGame,
+    submitFeedback,
     submitRow,
     toggleRules
 } from './gameActions';
@@ -62,7 +64,9 @@ function App({state, dispatch}: AppProps) {
         onResetAll: () => {
             dispatch(resetAll());
             clearState();
-        }
+        },
+        onConfirmSecret: (secret) => dispatch(confirmSecret(secret)),
+        onSubmitFeedback: (feedback) => dispatch(submitFeedback(feedback))
     };
 
     return (

@@ -1,5 +1,5 @@
 import {PEG_COLORS} from '../script/constants';
-import {RESET_ALL, START_GAME} from '../gameActions';
+import {CONFIRM_SECRET, RESET_ALL, START_GAME} from '../gameActions';
 import type {DecoratedAction} from '../gameActions';
 import type {Color} from '../types';
 
@@ -23,6 +23,8 @@ const secretCodeReducer = (state: Color[] = createSecretCode(), action: Decorate
 		case START_GAME:
 		case RESET_ALL:
 			return createSecretCode();
+		case CONFIRM_SECRET:
+			return action.secret;
 		default:
 			return state;
 	}

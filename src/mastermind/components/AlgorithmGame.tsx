@@ -1,19 +1,29 @@
 import React from 'react';
 
 import {useGame} from '../GameContext';
+import {
+    GAME_STATUS_ALGO_FAILED,
+    GAME_STATUS_ALGO_GUESSING,
+    GAME_STATUS_ALGO_SETUP,
+    GAME_STATUS_ALGO_SOLVED
+} from '../gameStatus';
+import SecretSetup from './SecretSetup';
+import AlgorithmBoard from './AlgorithmBoard';
+import AlgorithmResult from './AlgorithmResult';
 
-// Placeholder for algorithm mode. The real setup / guessing / result screens
-// arrive in P2.4–P2.7; for now this just confirms the mode is wired and offers
-// a way back to the intro.
 const AlgorithmGame = () => {
-    const {gameStatus, onResetAll} = useGame();
-    return (
-        <div className="board">
-            <h2>Play against the algorithm</h2>
-            <p>Coming soon — current phase: <code>{gameStatus}</code>.</p>
-            <button onClick={onResetAll}>Back</button>
-        </div>
-    );
+    const {gameStatus} = useGame();
+    switch (gameStatus) {
+        case GAME_STATUS_ALGO_SETUP:
+            return <SecretSetup />;
+        case GAME_STATUS_ALGO_GUESSING:
+            return <AlgorithmBoard />;
+        case GAME_STATUS_ALGO_SOLVED:
+        case GAME_STATUS_ALGO_FAILED:
+            return <AlgorithmResult />;
+        default:
+            return null;
+    }
 };
 
 export default AlgorithmGame;
