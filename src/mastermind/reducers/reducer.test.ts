@@ -8,11 +8,13 @@ import {
 	init,
 	resetAll,
 	showColorPicker,
+	startAlgorithm,
 	startGame,
 	submitRow
 } from '../gameActions';
 import {
 	canGiveUp,
+	GAME_STATUS_ALGO_SETUP,
 	GAME_STATUS_GAVE_UP,
 	GAME_STATUS_INTRO,
 	GAME_STATUS_LOST,
@@ -34,6 +36,7 @@ describe('mastermind reducer', () => {
 		const state = initState();
 
 		expect(state.gameStatus).toBe(GAME_STATUS_INTRO);
+		expect(state.mode).toBe('human');
 		expect(state.activeRow).toBe(0);
 		expect(isCodeHidden(state.gameStatus)).toBe(true);
 		expect(state.isRulesHidden).toBe(true);
@@ -54,6 +57,21 @@ describe('mastermind reducer', () => {
 		expect(playingState.secretCode).toHaveLength(4);
 		expect(new Set(playingState.secretCode).size).toBe(4);
 		expect(playingState.secretCode.every((color) => PEG_COLORS.includes(color))).toBe(true);
+	});
+
+	it('enters algorithm mode from the intro', () => {
+		const state = reducer(initState(), startAlgorithm());
+
+		expect(state.mode).toBe('algorithm');
+		expect(state.gameStatus).toBe(GAME_STATUS_ALGO_SETUP);
+	});
+
+	it('returns to human mode and the intro on reset', () => {
+		const algoState = reducer(initState(), startAlgorithm());
+		const resetState = reducer(algoState, resetAll());
+
+		expect(resetState.mode).toBe('human');
+		expect(resetState.gameStatus).toBe(GAME_STATUS_INTRO);
 	});
 
 	it('chooses a color and advances the selected peg', () => {

@@ -2,6 +2,7 @@ import React from 'react';
 import type {Dispatch} from 'react';
 import Gameplay from './components/Gameplay';
 import Intro from './components/Intro';
+import AlgorithmGame from './components/AlgorithmGame';
 
 import {GameContext} from './GameContext';
 import type {GameContextValue} from './GameContext';
@@ -11,6 +12,7 @@ import {
     giveUp,
     resetAll,
     showColorPicker as showColorPickerAction,
+    startAlgorithm,
     startGame,
     submitRow,
     toggleRules
@@ -25,11 +27,25 @@ interface AppProps {
 }
 
 function App({state, dispatch}: AppProps) {
-    const {board, showColorPicker, activeRow, selectedPeg, secretCode, gameStatus, isRulesHidden} = state;
+    const {board, showColorPicker, activeRow, selectedPeg, secretCode, gameStatus, isRulesHidden, mode} = state;
+
+    if (gameStatus === GAME_STATUS_INTRO) {
+        return (
+            <div>
+                <Intro
+                    isRulesHidden={isRulesHidden}
+                    onToggleRules={() => dispatch(toggleRules())}
+                    onStartGame={() => dispatch(startGame())}
+                    onStartAlgorithm={() => dispatch(startAlgorithm())}
+                />
+            </div>
+        );
+    }
 
     const isCompleteRow = board[activeRow].pegs.every((peg) => peg !== 'select' && peg !== 'none');
 
     const game: GameContextValue = {
+        mode,
         board,
         activeRow,
         selectedPeg,
@@ -51,18 +67,9 @@ function App({state, dispatch}: AppProps) {
 
     return (
         <div>
-            {gameStatus !== GAME_STATUS_INTRO ? (
-                <GameContext.Provider value={game}>
-                    <Gameplay />
-                </GameContext.Provider>
-            ) : null}
-            {gameStatus === GAME_STATUS_INTRO ? (
-                <Intro
-                    isRulesHidden={isRulesHidden}
-                    onToggleRules={() => dispatch(toggleRules())}
-                    onStartGame={() => dispatch(startGame())}
-                />
-            ) : null}
+            <GameContext.Provider value={game}>
+                {mode === 'algorithm' ? <AlgorithmGame /> : <Gameplay />}
+            </GameContext.Provider>
         </div>
     );
 }

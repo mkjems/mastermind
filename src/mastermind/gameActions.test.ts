@@ -11,6 +11,8 @@ import {
 	RESET_ALL,
 	showColorPicker,
 	SHOW_COLOR_PICKER,
+	startAlgorithm,
+	START_ALGORITHM,
 	startGame,
 	START_GAME,
 	submitRow,
@@ -32,6 +34,7 @@ describe('game action creators', () => {
 		});
 		expect(submitRow()).toEqual({type: SUBMIT_ROW});
 		expect(startGame()).toEqual({type: START_GAME});
+		expect(startAlgorithm()).toEqual({type: START_ALGORITHM});
 		expect(resetAll()).toEqual({type: RESET_ALL});
 		expect(giveUp()).toEqual({type: GIVE_UP});
 		expect(toggleRules()).toEqual({type: TOGGLE_RULES});

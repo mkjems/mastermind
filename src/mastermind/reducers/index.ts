@@ -5,6 +5,7 @@ import {
 	activeRowReducer,
 	gameStatusReducer,
 	isRulesHiddenReducer,
+	modeReducer,
 	selectedPegReducer,
 	showColorPickerReducer
 } from './stateReducers';
@@ -71,7 +72,8 @@ const reduceSlices = (state: Partial<GameState>, action: DecoratedAction): GameS
 	selectedPeg: selectedPegReducer(state.selectedPeg, action),
 	board: boardReducer(state.board, action),
 	showColorPicker: showColorPickerReducer(state.showColorPicker, action),
-	isRulesHidden: isRulesHiddenReducer(state.isRulesHidden, action)
+	isRulesHidden: isRulesHiddenReducer(state.isRulesHidden, action),
+	mode: modeReducer(state.mode, action)
 });
 
 const reducer = (state: GameState | undefined, rawAction: Action): GameState => {

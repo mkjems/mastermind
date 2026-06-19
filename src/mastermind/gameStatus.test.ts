@@ -2,11 +2,19 @@ import {describe, expect, it} from 'vitest';
 
 import {
 	canGiveUp,
+	EVENT_CONFIRM_SECRET,
+	EVENT_FAILED,
 	EVENT_GIVE_UP,
 	EVENT_LOSE,
 	EVENT_RESET,
+	EVENT_SOLVED,
 	EVENT_START,
+	EVENT_START_ALGORITHM,
 	EVENT_WIN,
+	GAME_STATUS_ALGO_FAILED,
+	GAME_STATUS_ALGO_GUESSING,
+	GAME_STATUS_ALGO_SETUP,
+	GAME_STATUS_ALGO_SOLVED,
 	GAME_STATUS_GAVE_UP,
 	GAME_STATUS_INTRO,
 	GAME_STATUS_LOST,
@@ -41,11 +49,28 @@ describe('nextStatus', () => {
 			GAME_STATUS_PLAYING,
 			GAME_STATUS_WON,
 			GAME_STATUS_LOST,
-			GAME_STATUS_GAVE_UP
+			GAME_STATUS_GAVE_UP,
+			GAME_STATUS_ALGO_SETUP,
+			GAME_STATUS_ALGO_GUESSING,
+			GAME_STATUS_ALGO_SOLVED,
+			GAME_STATUS_ALGO_FAILED
 		];
 		statuses.forEach((status) => {
 			expect(nextStatus(status, EVENT_RESET)).toBe(GAME_STATUS_INTRO);
 		});
+	});
+
+	it('runs the algorithm-mode flow', () => {
+		expect(nextStatus(GAME_STATUS_INTRO, EVENT_START_ALGORITHM)).toBe(GAME_STATUS_ALGO_SETUP);
+		expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_CONFIRM_SECRET)).toBe(GAME_STATUS_ALGO_GUESSING);
+		expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_SOLVED)).toBe(GAME_STATUS_ALGO_SOLVED);
+		expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_FAILED)).toBe(GAME_STATUS_ALGO_FAILED);
+	});
+
+	it('ignores algorithm events from the wrong status', () => {
+		expect(nextStatus(GAME_STATUS_INTRO, EVENT_CONFIRM_SECRET)).toBe(GAME_STATUS_INTRO);
+		expect(nextStatus(GAME_STATUS_PLAYING, EVENT_START_ALGORITHM)).toBe(GAME_STATUS_PLAYING);
+		expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_SOLVED)).toBe(GAME_STATUS_ALGO_SETUP);
 	});
 });
 
@@ -56,6 +81,10 @@ describe('derived status flags', () => {
 		expect(isGameOver(GAME_STATUS_WON)).toBe(true);
 		expect(isGameOver(GAME_STATUS_LOST)).toBe(true);
 		expect(isGameOver(GAME_STATUS_GAVE_UP)).toBe(true);
+		expect(isGameOver(GAME_STATUS_ALGO_SETUP)).toBe(false);
+		expect(isGameOver(GAME_STATUS_ALGO_GUESSING)).toBe(false);
+		expect(isGameOver(GAME_STATUS_ALGO_SOLVED)).toBe(true);
+		expect(isGameOver(GAME_STATUS_ALGO_FAILED)).toBe(true);
 	});
 
 	it('hides the code until the game is over', () => {

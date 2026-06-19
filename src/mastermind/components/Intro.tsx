@@ -35,15 +35,17 @@ const Rules = () => {
 
 interface IntroProps {
     onStartGame: () => void;
+    onStartAlgorithm: () => void;
     onToggleRules: () => void;
     isRulesHidden: boolean;
 }
 
-const Intro = ({onStartGame, onToggleRules, isRulesHidden}: IntroProps)=> {
+const Intro = ({onStartGame, onStartAlgorithm, onToggleRules, isRulesHidden}: IntroProps)=> {
     return (
         <div className="board" >
             <h1>Mastermind</h1>
             <button onClick={onStartGame}>Start game</button>&nbsp;
+            <button onClick={onStartAlgorithm}>Play against algorithm</button>&nbsp;
             <button onClick={onToggleRules}>
                 {isRulesHidden ? 'Show' : 'Hide'} Rules
             </button>

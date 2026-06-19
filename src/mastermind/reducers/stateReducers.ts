@@ -2,6 +2,7 @@ import {
 	EVENT_GIVE_UP,
 	EVENT_RESET,
 	EVENT_START,
+	EVENT_START_ALGORITHM,
 	GAME_STATUS_INTRO,
 	nextStatus
 } from '../gameStatus';
@@ -11,11 +12,13 @@ import {
 	GIVE_UP,
 	RESET_ALL,
 	SHOW_COLOR_PICKER,
+	START_ALGORITHM,
 	START_GAME,
 	SUBMIT_ROW,
 	TOGGLE_RULES
 } from '../gameActions';
 import type {DecoratedAction} from '../gameActions';
+import type {GameMode} from '../types';
 
 // Map a dispatched action to the game-machine event it triggers. SUBMIT_ROW's
 // event (win/lose/none) is decided once in the root reducer and carried on the
@@ -24,6 +27,8 @@ const eventForAction = (action: DecoratedAction): GameEvent | null => {
 	switch (action.type) {
 		case START_GAME:
 			return EVENT_START;
+		case START_ALGORITHM:
+			return EVENT_START_ALGORITHM;
 		case GIVE_UP:
 			return EVENT_GIVE_UP;
 		case RESET_ALL:
@@ -84,6 +89,18 @@ export const isRulesHiddenReducer = (state = true, action: DecoratedAction): boo
 	switch (action.type) {
 		case TOGGLE_RULES:
 			return !state;
+		default:
+			return state;
+	}
+};
+
+export const modeReducer = (state: GameMode = 'human', action: DecoratedAction): GameMode => {
+	switch (action.type) {
+		case START_ALGORITHM:
+			return 'algorithm';
+		case START_GAME:
+		case RESET_ALL:
+			return 'human';
 		default:
 			return state;
 	}

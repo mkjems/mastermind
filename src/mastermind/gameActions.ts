@@ -7,6 +7,7 @@ export const SHOW_COLOR_PICKER = 'SHOW_COLOR_PICKER';
 export const CHOOSE_COLOR_AND_ADVANCE = 'CHOOSE_COLOR_AND_ADVANCE';
 export const SUBMIT_ROW = 'SUBMIT_ROW';
 export const START_GAME = 'START_GAME';
+export const START_ALGORITHM = 'START_ALGORITHM';
 export const RESET_ALL = 'RESET_ALL';
 export const GIVE_UP = 'GIVE_UP';
 export const TOGGLE_RULES = 'TOGGLE_RULES';
@@ -28,6 +29,9 @@ export interface SubmitRowAction {
 export interface StartGameAction {
 	type: typeof START_GAME;
 }
+export interface StartAlgorithmAction {
+	type: typeof START_ALGORITHM;
+}
 export interface ResetAllAction {
 	type: typeof RESET_ALL;
 }
@@ -44,6 +48,7 @@ export type Action =
 	| ChooseColorAndAdvanceAction
 	| SubmitRowAction
 	| StartGameAction
+	| StartAlgorithmAction
 	| ResetAllAction
 	| GiveUpAction
 	| ToggleRulesAction;
@@ -72,6 +77,7 @@ export const chooseColorAndAdvance = (name: Color): ChooseColorAndAdvanceAction 
 });
 export const submitRow = (): SubmitRowAction => ({type: SUBMIT_ROW});
 export const startGame = (): StartGameAction => ({type: START_GAME});
+export const startAlgorithm = (): StartAlgorithmAction => ({type: START_ALGORITHM});
 export const resetAll = (): ResetAllAction => ({type: RESET_ALL});
 export const giveUp = (): GiveUpAction => ({type: GIVE_UP});
 export const toggleRules = (): ToggleRulesAction => ({type: TOGGLE_RULES});

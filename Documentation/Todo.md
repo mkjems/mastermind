@@ -42,22 +42,25 @@ with `npm run check` green.
 - Note: a full sweep over all 1680 secrets showed **worst case 7 guesses, avg 4.9** — so
   "first consistent candidate" always solves within the 10-row board; minimax not needed.
 
-#### P2.2 — Mode selection + state shape
+#### P2.2 — Mode selection + state shape ✅
 
-- [ ] Add `mode: 'human' | 'algorithm'` to [types.ts](../src/mastermind/types.ts) and the
-      initial state.
-- [ ] Intro screen: add a second button "Play against algorithm" beside "Start game".
-- [ ] New action (`START_ALGORITHM`) wired to the button; routes into the algorithm setup
-      state (placeholder screen for now).
-- [ ] Tests: the new action sets `mode` and the setup status.
+- [x] Added `mode: 'human' | 'algorithm'` ([types.ts](../src/mastermind/types.ts)) with a
+      `modeReducer` and initial value `'human'`; `START_ALGORITHM` → algorithm, `START_GAME`
+      / `RESET_ALL` → human. `mode` is on `GameContextValue`.
+- [x] Intro screen: added a "Play against algorithm" button beside "Start game".
+- [x] `START_ALGORITHM` action + creator wired to the button; App routes algorithm-mode
+      statuses to a placeholder [AlgorithmGame](../src/mastermind/components/AlgorithmGame.tsx).
+- [x] Tests: the action sets `mode` + `algo_setup`, and reset returns to human/intro.
 
-#### P2.3 — State machine for algorithm mode
+#### P2.3 — State machine for algorithm mode ✅
 
-- [ ] Add statuses `algo_setup`, `algo_guessing`, `algo_solved`, `algo_failed` and events
-      (`START_ALGORITHM`, `CONFIRM_SECRET`, `SUBMIT_FEEDBACK`; reuse `RESET` → intro) to
-      [gameStatus.ts](../src/mastermind/gameStatus.ts).
-- [ ] Extend selectors as needed (e.g. `isGameOver` covers the algo end states).
-- [ ] Tests for the new transitions and ignored illegal events.
+- [x] Added statuses `algo_setup`, `algo_guessing`, `algo_solved`, `algo_failed` and events
+      `START_ALGORITHM`, `CONFIRM_SECRET`, `SOLVED`, `FAILED` to
+      [gameStatus.ts](../src/mastermind/gameStatus.ts); `RESET` → intro still applies. (The
+      `CONFIRM_SECRET`/`SOLVED`/`FAILED` transitions exist now; their driving actions land in
+      P2.4/P2.5.)
+- [x] `isGameOver` now covers `algo_solved`/`algo_failed`.
+- [x] Tests for the algorithm transitions and ignored illegal events.
 
 #### P2.4 — Secret-setup interface
 

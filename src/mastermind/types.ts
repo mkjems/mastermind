@@ -24,6 +24,10 @@ export interface Row {
 
 export type Board = Row[];
 
+// 'human' — the player guesses the computer's code (the classic game).
+// 'algorithm' — the player sets a code and the computer guesses it.
+export type GameMode = 'human' | 'algorithm';
+
 export interface GameState {
 	board: Board;
 	secretCode: Color[];
@@ -32,4 +36,5 @@ export interface GameState {
 	showColorPicker: boolean;
 	gameStatus: GameStatus;
 	isRulesHidden: boolean;
+	mode: GameMode;
 }
