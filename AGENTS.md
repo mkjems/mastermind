@@ -9,3 +9,5 @@ That is also where you will find the TODO.md file where the next tasks to work o
 The agent and the human should work together to turn ideas into concrete plans in the TODO.md file, that can be implemented by the agent.
 
 Please interview me if there are things that are uncertain when I give you tasks.
+
+As we make changes to the project please update the documentation files.
