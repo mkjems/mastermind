@@ -4,7 +4,8 @@ import {
 	EVENT_START,
 	GAME_STATUS_INTRO,
 	nextStatus
-} from '../gameStatus.js';
+} from '../gameStatus';
+import type {GameEvent, GameStatus} from '../gameStatus';
 import {
 	CHOOSE_COLOR_AND_ADVANCE,
 	GIVE_UP,
@@ -13,12 +14,13 @@ import {
 	START_GAME,
 	SUBMIT_ROW,
 	TOGGLE_RULES
-} from '../gameActions.js';
+} from '../gameActions';
+import type {DecoratedAction} from '../gameActions';
 
 // Map a dispatched action to the game-machine event it triggers. SUBMIT_ROW's
 // event (win/lose/none) is decided once in the root reducer and carried on the
 // action; everything else maps to a fixed event.
-const eventForAction = (action) => {
+const eventForAction = (action: DecoratedAction): GameEvent | null => {
 	switch (action.type) {
 		case START_GAME:
 			return EVENT_START;
@@ -33,12 +35,12 @@ const eventForAction = (action) => {
 	}
 };
 
-export const gameStatusReducer = (state = GAME_STATUS_INTRO, action) => {
+export const gameStatusReducer = (state: GameStatus = GAME_STATUS_INTRO, action: DecoratedAction): GameStatus => {
 	const event = eventForAction(action);
 	return event ? nextStatus(state, event) : state;
 };
 
-export const selectedPegReducer = (state = undefined, action) => {
+export const selectedPegReducer = (state: number | undefined = undefined, action: DecoratedAction): number | undefined => {
 	switch (action.type) {
 		case SHOW_COLOR_PICKER:
 			return action.id;
@@ -53,10 +55,10 @@ export const selectedPegReducer = (state = undefined, action) => {
 	}
 };
 
-export const activeRowReducer = (state = 0, action) => {
+export const activeRowReducer = (state = 0, action: DecoratedAction): number => {
 	switch (action.type) {
 		case SUBMIT_ROW:
-			return action.activeRow;
+			return action.activeRow ?? state;
 		case RESET_ALL:
 			return 0;
 		default:
@@ -64,7 +66,7 @@ export const activeRowReducer = (state = 0, action) => {
 	}
 };
 
-export const showColorPickerReducer = (state = false, action) => {
+export const showColorPickerReducer = (state = false, action: DecoratedAction): boolean => {
 	switch (action.type) {
 		case SHOW_COLOR_PICKER:
 			return true;
@@ -78,7 +80,7 @@ export const showColorPickerReducer = (state = false, action) => {
 	}
 };
 
-export const isRulesHiddenReducer = (state = true, action) => {
+export const isRulesHiddenReducer = (state = true, action: DecoratedAction): boolean => {
 	switch (action.type) {
 		case TOGGLE_RULES:
 			return !state;

@@ -6,11 +6,12 @@
   "scripts": {
     "start": "npm run build && npm run preview",
     "build": "vite build",
-    "check": "npm test && npm run build",
+    "check": "npm run typecheck && npm test && npm run build",
     "dev": "vite --host 0.0.0.0",
     "preview": "vite preview --host 0.0.0.0",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@testing-library/react": "^16.3.2",
     "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
   },

@@ -147,12 +147,26 @@ every later edit is type-checked) or do it *last* (type stable code rather than 
 are about to move) — don't sandwich it between the refactors. Listed last here on the
 assumption we'd rather not block the refactors on a big-bang migration.
 
+**Decision:** scoped to the core domain only — state, actions, the machine, and the
+reducers are TypeScript; the React components stay `.jsx` for now (`allowJs` is off, so
+they aren't type-checked). Vite/Vitest resolve the existing `.js` import specifiers to the
+`.ts` files, so no importers had to change.
+
 **Fix.**
 
-- [ ] Represent a hole as a discriminated shape (e.g. `{ filled: false, selectable: bool }`
-      vs `{ filled: true, color }`) instead of a magic string.
-- [ ] Adopt TypeScript (at least for the reducers and action creators); given the reducer
-      indirection it will pay for itself quickly.
+- [x] Added `typescript` + [tsconfig.json](../tsconfig.json) (strict) and a `typecheck`
+      script; `npm run check` now runs `typecheck → test → build`.
+- [x] Typed the domain in [types.ts](../src/mastermind/types.ts): `Color`, `PegValue`,
+      `FeedbackPeg`, `Row`, `Board`, `GameState`. The status machine
+      ([gameStatus.ts](../src/mastermind/gameStatus.ts)) has `GameStatus`/`GameEvent`
+      unions; actions ([gameActions.ts](../src/mastermind/gameActions.ts)) are a typed
+      discriminated `Action` union plus a `DecoratedAction`. All reducers and
+      [constants.ts](../src/mastermind/script/constants.ts) are typed.
+- [~] The overloaded sentinels (`'none'`/`'select'`) are now a type-safe `PegValue` union
+      (`Color | 'none' | 'select'`) rather than the suggested discriminated *object* shape.
+      The union prevents mismatched sentinels with far less churn and keeps the board data
+      flat; the heavier object refactor wasn't needed and would also touch the JS rendering
+      components. Left as-is intentionally.
 
 #### 7. (Minor) Don't persist the secret code in a readable form
 
@@ -161,10 +175,9 @@ answer is trivially readable in devtools — a cheat vector for a guessing game.
 
 **Why last.** Trivial and optional; only matters if cheating is a concern.
 
-**Fix.**
-
-- [ ] Either omit the secret from persisted state (and accept losing it on reload), or
-      obfuscate it. Low priority — only matters if cheating is a concern.
+**Decision: won't do.** Cheating via devtools isn't a real concern for this game, and
+omitting the secret would mean losing an in-progress game on reload. Leaving the full
+state persisted as-is.
 
 ### P5 - Add a button on the main page that says 'Play against algorithm' -
 

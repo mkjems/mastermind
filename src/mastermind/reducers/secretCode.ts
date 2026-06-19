@@ -1,8 +1,10 @@
-import {PEG_COLORS} from '../script/constants.js';
-import {RESET_ALL, START_GAME} from '../gameActions.js';
+import {PEG_COLORS} from '../script/constants';
+import {RESET_ALL, START_GAME} from '../gameActions';
+import type {DecoratedAction} from '../gameActions';
+import type {Color} from '../types';
 
-const createSecretCode = () => {
-	return ['', '', '', ''].reduce((acc) => {
+const createSecretCode = (): Color[] => {
+	return ['', '', '', ''].reduce<{pool: Color[]; drawn: Color[]}>((acc) => {
 		const randomValue = Math.floor(Math.random() * acc.pool.length);
 		const newColor = acc.pool[randomValue];
 		const newPool = acc.pool.filter((color) => {
@@ -16,7 +18,7 @@ const createSecretCode = () => {
 	}, {pool: [...PEG_COLORS], drawn: []}).drawn;
 };
 
-const secretCodeReducer = (state = createSecretCode(), action) => {
+const secretCodeReducer = (state: Color[] = createSecretCode(), action: DecoratedAction): Color[] => {
 	switch (action.type) {
 		case START_GAME:
 		case RESET_ALL:

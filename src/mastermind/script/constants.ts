@@ -1,4 +1,6 @@
-export const PEG_COLORS = [
+import type {Board, Color, Row} from '../types';
+
+export const PEG_COLORS: Color[] = [
 	'yellow',
 	'green',
 	'pink',
@@ -9,12 +11,12 @@ export const PEG_COLORS = [
 	'orange'
 ];
 
-const first_row = [{
+const first_row: Row[] = [{
 	pegs: ['select', 'select', 'select', 'select'],
 	feedback: ['none', 'none', 'none', 'none']
 }];
 
-const empty_row = {
+const empty_row: Row = {
 	pegs: ['none', 'none', 'none', 'none'],
 	feedback: ['none', 'none', 'none', 'none']
 };
@@ -22,11 +24,22 @@ const empty_row = {
 export const NUM_ROWS = 10;
 
 const num_additional_rows = NUM_ROWS - 1;
-const empty_rows = new Array(num_additional_rows).fill(empty_row);
+const empty_rows: Row[] = new Array(num_additional_rows).fill(empty_row);
 
-export const BOARD_START = [...first_row, ...empty_rows];
+export const BOARD_START: Board = [...first_row, ...empty_rows];
 
-export const TOP_VIEW_COLORS = {
+interface TopViewColor {
+	hat: string;
+	self_shadow: string;
+	highlight: string;
+}
+
+interface SidewaysColor extends TopViewColor {
+	stem: string;
+	cast_shadow: string;
+}
+
+export const TOP_VIEW_COLORS: Record<Color, TopViewColor> = {
 	pink: {
 		hat: '#d89dd0',
 		self_shadow: '#cd82c3',
@@ -69,7 +82,7 @@ export const TOP_VIEW_COLORS = {
 	}
 };
 
-export const SIDEWAYS_COLORS = {
+export const SIDEWAYS_COLORS: Record<Color, SidewaysColor> = {
 	pink: {
 		hat: '#d89dd0',
 		stem: '#d89dd0',

@@ -19,7 +19,7 @@ using feedback after each guess to narrow down the answer.
 - The secret code is **4 colors** drawn from a pool of **8** (`yellow`, `green`,
   `pink`, `silver`, `blue`, `white`, `red`, `orange`).
 - The generated secret code uses each color **at most once** (colors are drawn without
-  replacement — see [secretCode.js](../src/mastermind/reducers/secretCode.js)).
+  replacement — see [secretCode.ts](../src/mastermind/reducers/secretCode.ts)).
 - The player has **10 attempts** (`NUM_ROWS`), one per board row.
 - After submitting a row, feedback pegs are shown:
   - a **red** dot = right color in the right position,
@@ -54,10 +54,16 @@ The in-app rules text is shown on the intro screen via the `Rules` component in
 The app uses a **Redux-style reducer pattern** driven by React's `useReducer` — there is
 no Redux dependency; it is hand-rolled with plain functions.
 
+The core domain — state shape, actions, the status machine, and the reducers — is written
+in **TypeScript**; the React components are still `.jsx`. `allowJs` is off in
+[tsconfig.json](../tsconfig.json), so type-checking covers the domain only. Vite and
+Vitest resolve the existing `.js` import specifiers to the `.ts` files, so imports didn't
+need to change.
+
 ### State shape
 
 A single state object holds the whole game (assembled in
-[stateReducers.js](../src/mastermind/reducers/stateReducers.js)):
+[stateReducers.ts](../src/mastermind/reducers/stateReducers.ts)):
 
 | Field            | Meaning                                                        |
 |------------------|----------------------------------------------------------------|
@@ -73,14 +79,14 @@ Peg/feedback values use the sentinels `'none'` (empty) and `'select'` (an empty,
 selectable hole in the active row), otherwise a color name.
 
 Two view flags are **not stored** — they are derived from `gameStatus` by selectors in
-[gameStatus.js](../src/mastermind/gameStatus.js) so they cannot drift out of sync:
+[gameStatus.ts](../src/mastermind/gameStatus.ts) so they cannot drift out of sync:
 `isCodeHidden(status)` (the code is hidden until the game is over) and `canGiveUp(status)`
 (true only while `playing`). [App.jsx](../src/mastermind/App.jsx) computes them and passes
 them down as props.
 
 ### Actions
 
-Action types and creators live in [gameActions.js](../src/mastermind/gameActions.js).
+Action types and creators live in [gameActions.ts](../src/mastermind/gameActions.ts).
 There is a single layer of **user-facing actions** dispatched from the UI: `START_GAME`,
 `SHOW_COLOR_PICKER`, `CHOOSE_COLOR_AND_ADVANCE`, `SUBMIT_ROW`, `GIVE_UP`, `RESET_ALL`,
 `TOGGLE_RULES` (plus `INIT`). Every slice reducer responds to these directly; there is no
@@ -89,7 +95,7 @@ internal/low-level action layer.
 ### The game state machine
 
 Game status is an explicit finite state machine in
-[gameStatus.js](../src/mastermind/gameStatus.js): a `TRANSITIONS` table keyed by
+[gameStatus.ts](../src/mastermind/gameStatus.ts): a `TRANSITIONS` table keyed by
 `status → event → nextStatus`, applied by `nextStatus(status, event)`. The events are
 `START`, `WIN`, `LOSE`, `GIVE_UP`, `RESET`. Events that aren't valid for the current
 status are ignored (status unchanged); `RESET` returns to `intro` from anywhere. This
@@ -97,31 +103,34 @@ makes illegal states (e.g. "won but still playing") unrepresentable.
 
 ### Reducers
 
-- [reducers/index.js](../src/mastermind/reducers/index.js) — the **root reducer**, a
+- [reducers/index.ts](../src/mastermind/reducers/index.ts) — the **root reducer**, a
   single-pass composition of the slice reducers. A `decorateAction` step first enriches the
   action with context derived from the *previous* state (so no slice reducer reads
   another's freshly-computed output) and decides the submit outcome **once**: it computes
   the row's feedback and resolves it to a `WIN` / `LOSE` / continue event carried on the
   action. No action sequencing, no reducer calling another reducer.
-- [reducers/stateReducers.js](../src/mastermind/reducers/stateReducers.js) — the small
+- [reducers/stateReducers.ts](../src/mastermind/reducers/stateReducers.ts) — the small
   per-field reducers (`gameStatus`, `selectedPeg`, `activeRow`, `showColorPicker`,
   `isRulesHidden`). The status reducer maps the action to a machine event and runs it
   through `nextStatus`.
-- [reducers/board.js](../src/mastermind/reducers/board.js) — updates the board rows in
+- [reducers/board.ts](../src/mastermind/reducers/board.ts) — updates the board rows in
   response to the high-level actions (place a color, write feedback and activate the next
   row on submit, reveal on give-up, reset).
-- [reducers/row.js](../src/mastermind/reducers/row.js) — pure helpers only:
+- [reducers/row.ts](../src/mastermind/reducers/row.ts) — pure helpers only:
   `calculateFeedback` (the two-pass red/white dot count) and `isSolved`.
-- [reducers/secretCode.js](../src/mastermind/reducers/secretCode.js) — generates a random
+- [reducers/secretCode.ts](../src/mastermind/reducers/secretCode.ts) — generates a random
   4-color code by drawing without replacement.
 
 ### Components
 
-The view layer is presentational and driven entirely by props passed down from
-[App.jsx](../src/mastermind/App.jsx):
+The view layer is presentational. [App.jsx](../src/mastermind/App.jsx) puts the whole-game
+view state and the action handlers into a [GameContext](../src/mastermind/GameContext.js);
+gameplay components read what they need with `useGame()`. Genuinely per-instance values (a
+row's pegs/feedback, a peg's id) are passed as explicit props, and the small reusable leaf
+components (`Peg`, `Feedback`, `Hole`, `Checkmark`) stay prop-driven.
 
-- [App.jsx](../src/mastermind/App.jsx) — wires state to handlers (each handler dispatches
-  an action) and switches between the intro and gameplay screens.
+- [App.jsx](../src/mastermind/App.jsx) — builds the context value (state-derived fields +
+  handlers that dispatch actions) and switches between the intro and gameplay screens.
 - [components/Intro.jsx](../src/mastermind/components/Intro.jsx) — title screen + rules.
 - [components/Gameplay.jsx](../src/mastermind/components/Gameplay.jsx) — renders the
   hidden code, the 10 board rows, and the give-up button.
@@ -142,7 +151,7 @@ session storage, a game survives a page reload but not closing the tab.
 
 ### Constants and styling
 
-- [script/constants.js](../src/mastermind/script/constants.js) — the color pool, board
+- [script/constants.ts](../src/mastermind/script/constants.ts) — the color pool, board
   dimensions (`NUM_ROWS`), starting board/row shapes, and the color palettes used to
   render the 3D-looking pegs (`TOP_VIEW_COLORS`, `SIDEWAYS_COLORS`).
 - [style/](../src/mastermind/style/) — `mastermind.css` and `colors.css`.
@@ -158,7 +167,8 @@ From [package.json](../package.json):
 | `npm run preview`  | Preview the production build.                    |
 | `npm test`         | Run the Vitest test suite once.                  |
 | `npm run test:watch`| Run Vitest in watch mode.                       |
-| `npm run check`    | Run tests and then build (the CI-style gate).    |
+| `npm run typecheck`| Type-check the TypeScript domain (`tsc --noEmit`).|
+| `npm run check`    | Typecheck, then test, then build (the CI-style gate).|
 
 Tests live alongside the code (e.g.
 [reducers/reducer.test.js](../src/mastermind/reducers/reducer.test.js),

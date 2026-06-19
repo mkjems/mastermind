@@ -1,26 +1,28 @@
-import boardReducer from './board.js';
-import secretCodeReducer from './secretCode.js';
-import {calculateFeedback, isSolved} from './row.js';
+import boardReducer from './board';
+import secretCodeReducer from './secretCode';
+import {calculateFeedback, isSolved} from './row';
 import {
 	activeRowReducer,
 	gameStatusReducer,
 	isRulesHiddenReducer,
 	selectedPegReducer,
 	showColorPickerReducer
-} from './stateReducers.js';
-import {EVENT_LOSE, EVENT_WIN} from '../gameStatus.js';
+} from './stateReducers';
+import {EVENT_LOSE, EVENT_WIN} from '../gameStatus';
 import {
 	CHOOSE_COLOR_AND_ADVANCE,
 	GIVE_UP,
 	SUBMIT_ROW
-} from '../gameActions.js';
-import {NUM_ROWS} from '../script/constants.js';
+} from '../gameActions';
+import type {Action, DecoratedAction} from '../gameActions';
+import type {GameState} from '../types';
+import {NUM_ROWS} from '../script/constants';
 
 // Enrich an action with the context the slice reducers need, all derived from the
 // *previous* state, so each reducer reads only its own slice plus the action (no
 // reducer depends on another's freshly-computed output). This is also the single
 // place where the win/lose/continue outcome of a submitted row is decided.
-const decorateAction = (state, action) => {
+const decorateAction = (state: GameState, action: Action): DecoratedAction => {
 	switch (action.type) {
 		case CHOOSE_COLOR_AND_ADVANCE: {
 			const {activeRow, selectedPeg, board} = state;
@@ -62,18 +64,22 @@ const decorateAction = (state, action) => {
 	}
 };
 
-const reducer = (state = {}, rawAction) => {
-	const action = decorateAction(state, rawAction);
+const reduceSlices = (state: Partial<GameState>, action: DecoratedAction): GameState => ({
+	gameStatus: gameStatusReducer(state.gameStatus, action),
+	secretCode: secretCodeReducer(state.secretCode, action),
+	activeRow: activeRowReducer(state.activeRow, action),
+	selectedPeg: selectedPegReducer(state.selectedPeg, action),
+	board: boardReducer(state.board, action),
+	showColorPicker: showColorPickerReducer(state.showColorPicker, action),
+	isRulesHidden: isRulesHiddenReducer(state.isRulesHidden, action)
+});
 
-	return {
-		gameStatus: gameStatusReducer(state.gameStatus, action),
-		secretCode: secretCodeReducer(state.secretCode, action),
-		activeRow: activeRowReducer(state.activeRow, action),
-		selectedPeg: selectedPegReducer(state.selectedPeg, action),
-		board: boardReducer(state.board, action),
-		showColorPicker: showColorPickerReducer(state.showColorPicker, action),
-		isRulesHidden: isRulesHiddenReducer(state.isRulesHidden, action)
-	};
+const reducer = (state: GameState | undefined, rawAction: Action): GameState => {
+	if (state === undefined) {
+		return reduceSlices({}, rawAction);
+	}
+	const action = decorateAction(state, rawAction);
+	return reduceSlices(state, action);
 };
 
 export default reducer;
