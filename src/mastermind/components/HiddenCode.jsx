@@ -1,8 +1,10 @@
 import React from 'react';
 
+import {useGame} from '../GameContext.js';
 import Peg from './Peg';
 
-const HiddenCode = ({secretCode, isCodeHidden}) => {
+const HiddenCode = () => {
+	const {secretCode, isCodeHidden} = useGame();
 
 	return (
         <div className="board board__secret">

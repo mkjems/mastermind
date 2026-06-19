@@ -1,7 +1,9 @@
 import React from 'react';
 
+import {useGame} from '../GameContext.js';
 
-const Won = ({onResetAll, activeRow}) => {
+const Won = () => {
+	const {onResetAll, activeRow} = useGame();
 	return (
 		<div className="board statusMessages">
 			<p>

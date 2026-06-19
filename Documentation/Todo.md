@@ -128,9 +128,13 @@ which adds new components to wire in.
 
 **Fix.**
 
-- [ ] Provide `state` / `dispatch` via a small React context, or
-- [ ] Pass explicit, named props to each component (no blanket spreads).
-- [ ] Either approach makes the upcoming algorithm mode much easier to wire in.
+- [x] Added a small [GameContext.js](../src/mastermind/GameContext.js) (`GameContext` +
+      `useGame()`). [App.jsx](../src/mastermind/App.jsx) provides the whole-game view state
+      and handlers once; gameplay components read what they need via `useGame()`.
+- [x] Removed every blanket `{...props}` spread. Genuinely per-instance values (a row's
+      `pegs`/`feedbackPegs`/`isActiveRow`, a peg's `id`) stay explicit props; reusable leaf
+      components (`Peg`, `Feedback`, `Hole`, `Checkmark`) remain prop-driven on purpose.
+- [x] This is the seam the algorithm mode can hang its own handlers/state off of.
 
 #### 6. Replace overloaded sentinel strings and add type safety
 

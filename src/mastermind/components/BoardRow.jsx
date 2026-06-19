@@ -1,5 +1,6 @@
 import React from 'react';
 
+import {useGame} from '../GameContext.js';
 import Peg from './Peg';
 import Feedback from './Feedback';
 import Gaveup from './Gaveup';
@@ -12,8 +13,8 @@ import {
     GAME_STATUS_WON
 } from '../gameStatus.js';
 
-const BoardRow = (props) => {
-    const {isActiveRow, onPegClick, rowindex, gameStatus, showColorPicker, pegs, selectedPeg} = props;
+const BoardRow = ({pegs, feedbackPegs, isActiveRow}) => {
+    const {onPegClick, gameStatus, showColorPicker, selectedPeg} = useGame();
     const gaveUp = gameStatus === GAME_STATUS_GAVE_UP;
 
     return (
@@ -25,7 +26,6 @@ const BoardRow = (props) => {
                     return (
                         <Peg
                             isActiveRow={isActiveRow}
-                            gaveUp={gaveUp}
                             isSelected={isSelected}
                             key={index}
                             id={index}
@@ -34,13 +34,13 @@ const BoardRow = (props) => {
                         />
                     );
                 })}
-                <Feedback {...props} />
+                <Feedback feedbackPegs={feedbackPegs} />
             </div>
         </div>
-        {isActiveRow && gameStatus === GAME_STATUS_GAVE_UP ? <Gaveup {...props} /> : null}
-        {isActiveRow && showColorPicker ? <ColorPicker {...props} /> : null}
-        {isActiveRow && gameStatus === GAME_STATUS_WON ? <Won {...props} /> : null}
-        {isActiveRow && gameStatus === GAME_STATUS_LOST ? <Lost {...props} /> : null}
+        {isActiveRow && gameStatus === GAME_STATUS_GAVE_UP ? <Gaveup /> : null}
+        {isActiveRow && showColorPicker ? <ColorPicker /> : null}
+        {isActiveRow && gameStatus === GAME_STATUS_WON ? <Won /> : null}
+        {isActiveRow && gameStatus === GAME_STATUS_LOST ? <Lost /> : null}
     </div>
     );
 };

@@ -1,22 +1,21 @@
 import React from 'react';
 
+import {useGame} from '../GameContext.js';
 import HiddenCode from './HiddenCode';
 import BoardRow from './BoardRow';
 
-const Gameplay = (props) => {
-    const {board, activeRow, secretCode, isCodeHidden, onGiveUp, canGiveUp} = props;
+const Gameplay = () => {
+    const {board, activeRow, canGiveUp, onGiveUp} = useGame();
     return (
         <div>
-            <HiddenCode {...props}/>
+            <HiddenCode />
             {board.map((row, index) => {
                 return (
                     <BoardRow
                         key={index}
-                        rowindex={index}
                         pegs={row.pegs}
-                        isActiveRow={activeRow === index}
                         feedbackPegs={row.feedback}
-                        {...props}
+                        isActiveRow={activeRow === index}
                     />
                 );
             })}

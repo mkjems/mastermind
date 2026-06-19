@@ -1,6 +1,9 @@
 import React from 'react';
 
-const Lost = ({onResetAll}) => {
+import {useGame} from '../GameContext.js';
+
+const Lost = () => {
+	const {onResetAll} = useGame();
 	return (
 		<div className="board statusMessages">
 			<p>You ran out of rows, you lost!</p>

@@ -1,10 +1,12 @@
 import React from 'react';
 
 import {SIDEWAYS_COLORS} from '../script/constants';
+import {useGame} from '../GameContext.js';
 import PegSideways from './PegSideways';
 import Checkmark from './Checkmark';
 
-const ColorPicker = ({onChooseColor, onSubmitRow, isCompleteRow}) => {
+const ColorPicker = () => {
+    const {onChooseColor, onSubmitRow, isCompleteRow} = useGame();
     return (
         <div className="picker-box">
             {Object.keys(SIDEWAYS_COLORS).map((name) => {
