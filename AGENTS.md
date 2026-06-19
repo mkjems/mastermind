@@ -11,3 +11,4 @@ The agent and the human should work together to turn ideas into concrete plans i
 Please interview me if there are things that are uncertain when I give you tasks.
 
 As we make changes to the project please update the documentation files.
+As you make progress on the TODOs please update the TODO file and mark done tasks done.
