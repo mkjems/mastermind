@@ -20,6 +20,7 @@ import {
 	SUBMIT_ROW
 } from '../gameActions.js';
 import {reduceSingleAction} from './stateReducers.js';
+import {isSolved} from './row.js';
 
 const reducer = (state = {}, action) => {
 	switch (action.type) {
@@ -33,9 +34,7 @@ const reducer = (state = {}, action) => {
 		case SUBMIT_ROW: {
 			const feedbackState = reduceSingleAction(state, {type: GIVE_FEEDBACK});
 			const hiddenPickerState = reduceSingleAction(feedbackState, {type: HIDE_COLOR_PICKER});
-			const didSolveCode = feedbackState.board[feedbackState.activeRow].feedback.every((peg) => {
-				return peg === 'red';
-			});
+			const didSolveCode = isSolved(feedbackState.board[feedbackState.activeRow].feedback);
 
 			if (didSolveCode) {
 				const wonState = reduceSingleAction(hiddenPickerState, {type: GAME_WIN});
