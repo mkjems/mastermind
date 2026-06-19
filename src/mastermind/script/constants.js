@@ -26,11 +26,6 @@ const empty_rows = new Array(num_additional_rows).fill(empty_row);
 
 export const BOARD_START = [...first_row, ...empty_rows];
 
-export const ROW_START = {
-	pegs: ['none', 'none', 'none', 'none'],
-	feedback: ['none', 'none', 'none', 'none']
-};
-
 export const TOP_VIEW_COLORS = {
 	pink: {
 		hat: '#d89dd0',

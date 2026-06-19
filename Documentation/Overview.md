@@ -67,40 +67,51 @@ A single state object holds the whole game (assembled in
 | `selectedPeg`    | Index of the hole the color picker is targeting.               |
 | `showColorPicker`| Whether the color picker is open.                              |
 | `gameStatus`     | `intro` / `playing` / `won` / `lost` / `gave_up`.              |
-| `isCodeHidden`   | Whether the secret code is hidden from the player.             |
-| `isRevealHidden` | Whether the reveal/give-up UI is hidden.                       |
 | `isRulesHidden`  | Whether the intro rules text is collapsed.                     |
 
 Peg/feedback values use the sentinels `'none'` (empty) and `'select'` (an empty,
 selectable hole in the active row), otherwise a color name.
 
+Two view flags are **not stored** — they are derived from `gameStatus` by selectors in
+[gameStatus.js](../src/mastermind/gameStatus.js) so they cannot drift out of sync:
+`isCodeHidden(status)` (the code is hidden until the game is over) and `canGiveUp(status)`
+(true only while `playing`). [App.jsx](../src/mastermind/App.jsx) computes them and passes
+them down as props.
+
 ### Actions
 
-Action types and action creators live in
-[gameActions.js](../src/mastermind/gameActions.js). There are two layers:
+Action types and creators live in [gameActions.js](../src/mastermind/gameActions.js).
+There is a single layer of **user-facing actions** dispatched from the UI: `START_GAME`,
+`SHOW_COLOR_PICKER`, `CHOOSE_COLOR_AND_ADVANCE`, `SUBMIT_ROW`, `GIVE_UP`, `RESET_ALL`,
+`TOGGLE_RULES` (plus `INIT`). Every slice reducer responds to these directly; there is no
+internal/low-level action layer.
 
-- **High-level / user-facing actions** dispatched from the UI — e.g.
-  `START_GAME`, `CHOOSE_COLOR_AND_ADVANCE`, `SUBMIT_ROW`, `GIVE_UP`, `RESET_ALL`,
-  `TOGGLE_RULES`, `SHOW_COLOR_PICKER`.
-- **Low-level / internal actions** that the root reducer expands the high-level ones
-  into — e.g. `RANDOMIZE_SECRET_CODE`, `GAME_BEGIN`, `GIVE_FEEDBACK`,
-  `BEGIN_NEW_ROW`, `REVEAL_SECRET_CODE`, `GAME_WIN`/`GAME_LOSE`, `CHOSE_THIS_COLOR`,
-  `ADVANCE_SELECTOR`.
+### The game state machine
+
+Game status is an explicit finite state machine in
+[gameStatus.js](../src/mastermind/gameStatus.js): a `TRANSITIONS` table keyed by
+`status → event → nextStatus`, applied by `nextStatus(status, event)`. The events are
+`START`, `WIN`, `LOSE`, `GIVE_UP`, `RESET`. Events that aren't valid for the current
+status are ignored (status unchanged); `RESET` returns to `intro` from anywhere. This
+makes illegal states (e.g. "won but still playing") unrepresentable.
 
 ### Reducers
 
-- [reducers/index.js](../src/mastermind/reducers/index.js) — the **root reducer**. It
-  translates each high-level action into an ordered sequence of low-level actions and
-  threads state through them. For example, `SUBMIT_ROW` runs `GIVE_FEEDBACK`, then
-  `HIDE_COLOR_PICKER`, then decides between win / new-row / lose. This is where the core
-  game logic lives.
-- [reducers/stateReducers.js](../src/mastermind/reducers/stateReducers.js) — a set of
-  small per-field reducers combined by `reduceSingleAction`, which applies one low-level
-  action to the full state.
-- [reducers/board.js](../src/mastermind/reducers/board.js) — maps actions over the rows,
-  tagging the active row.
-- [reducers/row.js](../src/mastermind/reducers/row.js) — updates a single row's pegs and
-  feedback; contains `calculateFeedback`, which computes the red/white dots.
+- [reducers/index.js](../src/mastermind/reducers/index.js) — the **root reducer**, a
+  single-pass composition of the slice reducers. A `decorateAction` step first enriches the
+  action with context derived from the *previous* state (so no slice reducer reads
+  another's freshly-computed output) and decides the submit outcome **once**: it computes
+  the row's feedback and resolves it to a `WIN` / `LOSE` / continue event carried on the
+  action. No action sequencing, no reducer calling another reducer.
+- [reducers/stateReducers.js](../src/mastermind/reducers/stateReducers.js) — the small
+  per-field reducers (`gameStatus`, `selectedPeg`, `activeRow`, `showColorPicker`,
+  `isRulesHidden`). The status reducer maps the action to a machine event and runs it
+  through `nextStatus`.
+- [reducers/board.js](../src/mastermind/reducers/board.js) — updates the board rows in
+  response to the high-level actions (place a color, write feedback and activate the next
+  row on submit, reveal on give-up, reset).
+- [reducers/row.js](../src/mastermind/reducers/row.js) — pure helpers only:
+  `calculateFeedback` (the two-pass red/white dot count) and `isSolved`.
 - [reducers/secretCode.js](../src/mastermind/reducers/secretCode.js) — generates a random
   4-color code by drawing without replacement.
 

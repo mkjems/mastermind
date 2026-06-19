@@ -1,35 +1,36 @@
 import {BOARD_START} from '../script/constants.js';
 import {
-	BEGIN_NEW_ROW,
-	CHOSE_THIS_COLOR,
-	GAME_GIVE_UP,
-	GIVE_FEEDBACK,
-	RESET_GAME
+	CHOOSE_COLOR_AND_ADVANCE,
+	GIVE_UP,
+	RESET_ALL,
+	SUBMIT_ROW
 } from '../gameActions.js';
 
-import rowReducer from './row.js';
+const SELECTABLE_ROW_PEGS = ['select', 'select', 'select', 'select'];
 
-const updateRows = (rows, action) => {
-	return rows.map((row, index) => {
-		return rowReducer(row, {
-			...action,
-			isActiveRow: index === action.activeRow
-		});
-	});
+const replaceRow = (board, index, changes) => {
+	return board.map((row, i) => (i === index ? {...row, ...changes} : row));
 };
 
 const boardReducer = (state = BOARD_START, action) => {
 	switch (action.type) {
-		case GAME_GIVE_UP:
-		case BEGIN_NEW_ROW:
-		case GIVE_FEEDBACK:
-			return updateRows(state, action);
-		case CHOSE_THIS_COLOR:
+		case CHOOSE_COLOR_AND_ADVANCE:
 			if (action.selectedPeg === undefined) {
 				return state;
 			}
-			return updateRows(state, action);
-		case RESET_GAME:
+			return replaceRow(state, action.activeRow, {pegs: action.pegs});
+		case SUBMIT_ROW: {
+			const scored = replaceRow(state, action.submittedRow, {feedback: action.feedback});
+			if (!action.continues) {
+				return scored;
+			}
+			return replaceRow(scored, action.activeRow, {pegs: [...SELECTABLE_ROW_PEGS]});
+		}
+		case GIVE_UP:
+			return replaceRow(state, action.activeRow, {
+				pegs: state[action.activeRow].pegs.map((peg) => (peg === 'select' ? 'none' : peg))
+			});
+		case RESET_ALL:
 			return BOARD_START;
 		default:
 			return state;

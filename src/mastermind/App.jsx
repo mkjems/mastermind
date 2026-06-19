@@ -12,10 +12,10 @@ import {
     submitRow,
     toggleRules
 } from './gameActions.js';
-import {GAME_STATUS_INTRO} from './gameStatus.js';
+import {canGiveUp, GAME_STATUS_INTRO, isCodeHidden} from './gameStatus.js';
 
 function App({state, dispatch}) {
-    const {board, showColorPicker, activeRow, selectedPeg, secretCode, isCodeHidden, gameStatus, isRulesHidden, isRevealHidden} = state;
+    const {board, showColorPicker, activeRow, selectedPeg, secretCode, gameStatus, isRulesHidden} = state;
 
     const remaining = board[activeRow].pegs.filter((peg) => {
         return peg === 'select' || peg === 'none';
@@ -37,7 +37,7 @@ function App({state, dispatch}) {
             dispatch(submitRow());
         },
         secretCode,
-        isCodeHidden,
+        isCodeHidden: isCodeHidden(gameStatus),
         gameStatus,
         onResetAll: ()=>{
             dispatch(resetAll());
@@ -46,7 +46,7 @@ function App({state, dispatch}) {
         onGiveUp: () => {
             dispatch(giveUp());
         },
-        isRevealHidden
+        canGiveUp: canGiveUp(gameStatus)
     };
 
     const onStartGame = () => {

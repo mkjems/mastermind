@@ -69,10 +69,23 @@ piece of work.
 
 **Fix.**
 
-- [ ] Introduce a single explicit machine — either a hand-rolled `{ state: { on: { EVENT:
-    nextState } } }` transition map or a small library (e.g. XState).
-- [ ] Derive the booleans (`isCodeHidden`, `isRevealHidden`, etc.) _from_ the current state
-      instead of storing them, so illegal states become unrepresentable.
+- [x] Introduced a hand-rolled transition table + `nextStatus(status, event)` in
+      [gameStatus.js](../src/mastermind/gameStatus.js). Illegal transitions are ignored
+      (status unchanged); `EVENT_RESET` returns to intro from anywhere. The status reducer
+      now just maps an action to an event and runs it through the table.
+- [x] Stopped storing `isCodeHidden`/`isRevealHidden`. They're derived from the status via
+      selectors (`isCodeHidden`, `canGiveUp`, `isGameOver`) computed in
+      [App.jsx](../src/mastermind/App.jsx), so they can't drift. (`isRevealHidden` was also
+      renamed to the clearer `canGiveUp`.) `showColorPicker` stays stored — it's genuine
+      in-play interaction state, not a function of the status — but is forced false on any
+      status-changing action.
+- [x] Added [gameStatus.test.js](../src/mastermind/gameStatus.test.js) covering the
+      transitions, ignored illegal events, reset-from-anywhere, and the selectors.
+
+**Behavior change (latent bug fixed):** previously `isRevealHidden` had no `lose` case, so
+the "Give up" button stayed visible after losing and clicking it overwrote the `lost`
+status with `gave_up`. Deriving `canGiveUp` from the status (true only while `playing`)
+removes that. Captured by a new assertion in the lose test.
 
 #### 4. Stop orchestrating sequences of actions inside the root reducer
 
@@ -86,15 +99,21 @@ row?") lives in an action-expansion layer, which is the least obvious place to l
 **Why fourth.** This cannot be finished cleanly without the state machine from item 3; do
 it immediately after, as part of the same effort.
 
-**Fix.**
+**Fix (done together with item 3).**
 
-- [ ] Decide each game outcome _before_ dispatching, in the action layer, and dispatch a
-      single descriptive action (e.g. `ROW_SUBMITTED` carrying the computed feedback and
-      resulting status), or
-- [ ] Replace the hand-rolled expansion with the explicit state machine from item 3, so
-      transitions are declared in one place rather than sequenced imperatively.
-- [ ] Keep reducers to a single action → single state-update; no calling a reducer from
-      inside another reducer.
+- [x] The low-level action layer (`GIVE_FEEDBACK`, `BEGIN_NEW_ROW`, `REVEAL_SECRET_CODE`,
+      `GAME_BEGIN/WIN/LOSE/...`, etc.) is gone. Every slice reducer now responds directly to
+      the real high-level action, and [index.js](../src/mastermind/reducers/index.js) is a
+      single-pass composition — no more `reduceSingleAction` chains and no reducer calling
+      another reducer.
+- [x] The submit outcome (win / lose / continue) is decided once in `decorateAction`
+      ([index.js](../src/mastermind/reducers/index.js)) and carried on the action; the
+      status reducer turns it into a machine event. Transitions live only in the item-3
+      table.
+- [x] `row.js` is now just the pure `calculateFeedback`/`isSolved` helpers; the per-row peg
+      and feedback writes moved into [board.js](../src/mastermind/reducers/board.js), which
+      also handles high-level actions directly. Removed the now-dead `beginNewRow` action
+      and `ROW_START` constant.
 
 #### 5. Replace blanket prop-drilling with context (or explicit props)
 

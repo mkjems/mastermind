@@ -1,8 +1,6 @@
 import {describe, expect, it} from 'vitest';
 
 import {
-	beginNewRow,
-	BEGIN_NEW_ROW,
 	chooseColorAndAdvance,
 	CHOOSE_COLOR_AND_ADVANCE,
 	giveUp,
@@ -37,9 +35,5 @@ describe('game action creators', () => {
 		expect(resetAll()).toEqual({type: RESET_ALL});
 		expect(giveUp()).toEqual({type: GIVE_UP});
 		expect(toggleRules()).toEqual({type: TOGGLE_RULES});
-	});
-
-	it('creates internal helper actions used by tests', () => {
-		expect(beginNewRow()).toEqual({type: BEGIN_NEW_ROW});
 	});
 });
