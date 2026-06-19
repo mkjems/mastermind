@@ -45,11 +45,14 @@ the next two steps much easier.
 
 **Fix.**
 
-- [ ] Remove the cross-reducer arguments. Each slice reducer should depend only on its own
-      previous state and the action.
-- [ ] If the board genuinely needs `activeRow`/`selectedPeg`/`secretCode`, carry those
-      values _on the action payload_ (set by the action creator) rather than reading another
-      slice's just-computed result.
+- [x] Removed the cross-reducer arguments — `boardReducer` is now `(state, action)` and
+      every slice reducer in `reduceSingleAction` depends only on its own previous state
+      and the action, so their order no longer matters.
+- [x] Added a `decorateAction` step in [stateReducers.js](../src/mastermind/reducers/stateReducers.js)
+      that attaches the context the board needs (`activeRow`, `selectedPeg`, `secretCode`)
+      to the action, all derived from the _previous_ state (`BEGIN_NEW_ROW` carries the
+      incremented row index). Added a regression test that the next row becomes active and
+      selectable after a non-winning submit.
 
 #### 3. Model the game as an explicit finite state machine
 

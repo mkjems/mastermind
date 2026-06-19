@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "npm run build && npm run preview",
     "build": "vite build",
     "check": "npm test && npm run build",
     "dev": "vite --host 0.0.0.0",

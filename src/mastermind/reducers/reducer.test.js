@@ -83,6 +83,28 @@ describe('mastermind reducer', () => {
 		expect(feedbackState.showColorPicker).toBe(false);
 	});
 
+	it('makes the next row active and selectable after a non-winning submit', () => {
+		const initialState = initState();
+		const state = {
+			...initialState,
+			gameStatus: GAME_STATUS_PLAYING,
+			secretCode: ['yellow', 'green', 'blue', 'pink'],
+			board: [
+				{
+					pegs: ['yellow', 'blue', 'silver', 'pink'],
+					feedback: ['none', 'none', 'none', 'none']
+				},
+				...initialState.board.slice(1)
+			]
+		};
+
+		const nextState = reducer(state, submitRow());
+
+		expect(nextState.activeRow).toBe(1);
+		expect(nextState.board[1].pegs).toEqual(['select', 'select', 'select', 'select']);
+		expect(nextState.board[0].pegs).toEqual(['yellow', 'blue', 'silver', 'pink']);
+	});
+
 	it('wins when the active row matches the secret code', () => {
 		const initialState = initState();
 		const state = {

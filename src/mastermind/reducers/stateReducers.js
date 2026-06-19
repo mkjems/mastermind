@@ -93,7 +93,7 @@ const selectedPegReducer = (state = undefined, action) => {
 const activeRowReducer = (state = 0, action) => {
 	switch (action.type) {
 		case BEGIN_NEW_ROW:
-			return state + 1;
+			return action.activeRow;
 		case RESET_GAME:
 			return 0;
 		default:
@@ -114,7 +114,24 @@ const showColorsReducer = (state = false, action) => {
 	}
 };
 
-export const reduceSingleAction = (state = {}, action) => {
+// The board reducer needs to know which row is active, which peg is selected, and
+// the secret code. Rather than read those from sibling reducers' freshly-computed
+// output (a hidden ordering dependency), we attach them to the action up front,
+// all derived from the *previous* state. BEGIN_NEW_ROW activates the next row, so
+// its context carries the incremented index. With this, every slice reducer below
+// depends only on its own previous state and the action — order no longer matters.
+const decorateAction = (state, action) => {
+	const context = {
+		selectedPeg: state.selectedPeg,
+		secretCode: state.secretCode,
+		activeRow: action.type === BEGIN_NEW_ROW ? (state.activeRow ?? 0) + 1 : state.activeRow
+	};
+	return {...context, ...action};
+};
+
+export const reduceSingleAction = (state = {}, rawAction) => {
+	const action = decorateAction(state, rawAction);
+
 	const isRevealHidden = isRevealHiddenReducer(state.isRevealHidden, action);
 	const isRulesHidden = isRulesHiddenReducer(state.isRulesHidden, action);
 	const gameStatus = gameStatusReducer(state.gameStatus, action);
@@ -122,7 +139,7 @@ export const reduceSingleAction = (state = {}, action) => {
 	const selectedPeg = selectedPegReducer(state.selectedPeg, action);
 	const activeRow = activeRowReducer(state.activeRow, action);
 	const secretCode = secretCodeReducer(state.secretCode, action);
-	const board = boardReducer(state.board, action, activeRow, selectedPeg, secretCode);
+	const board = boardReducer(state.board, action);
 	const showColorPicker = showColorsReducer(state.showColorPicker, action);
 
 	return {
