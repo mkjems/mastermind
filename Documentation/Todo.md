@@ -30,15 +30,17 @@ with `npm run check` green.
    (guess, feedback) pairs already on the board. Keeps state small and matches our
    "derive, don't store" approach.
 
-#### P2.1 — Solver core (pure + tested)
+#### P2.1 — Solver core (pure + tested) ✅
 
-- [ ] New `solver.ts`: `allCodes()` (the 1680 unique-color permutations);
-      `consistentCodes(history)` keeping codes where `calculateFeedback(candidate, guess)`
-      equals the recorded feedback for every past (guess, feedback); `nextGuess(history)`
-      returning the first consistent code (or a fixed strong opener for guess #1).
-- [ ] Signal the "no consistent codes left" case (human gave contradictory feedback).
-- [ ] Tests: filtering correctness; solves a known secret within the row limit;
-      contradictory feedback → empty set.
+- [x] [solver.ts](../src/mastermind/solver.ts): `allCodes()` (the 1680 unique-color
+      permutations); `consistentCodes(history)` keeping codes where
+      `calculateFeedback(candidate, guess)` matches the recorded reds/whites for every past
+      (guess, feedback); `nextGuess(history)` returning the first consistent code.
+- [x] `nextGuess` returns `undefined` when no code is consistent (contradictory feedback).
+- [x] Tests in [solver.test.ts](../src/mastermind/solver.test.ts): `allCodes` shape,
+      filtering correctness, contradictory feedback → empty, and a solve loop.
+- Note: a full sweep over all 1680 secrets showed **worst case 7 guesses, avg 4.9** — so
+  "first consistent candidate" always solves within the 10-row board; minimax not needed.
 
 #### P2.2 — Mode selection + state shape
 
@@ -75,10 +77,21 @@ with `npm run check` green.
 
 #### P2.6 — Feedback input UI
 
-- [ ] Component to set red/white feedback for the current guess (click pegs to cycle
-      none → white → red, or +/- counters) with a submit → `SUBMIT_FEEDBACK`.
-- [ ] (Per decision 1) validate entered feedback against the set secret; warn on mismatch
-      instead of corrupting the solve.
+Interaction (mirrors the color picker's fill-and-advance flow): the human scores the
+computer's guess one feedback slot at a time, left to right, with an active-slot indicator.
+The active slot offers three choices — **red**, **white**, or **✗ (done)**:
+
+- Red or white fills the slot and advances to the next slot.
+- ✗ finalizes scoring: the remaining slots stay empty (`none`) and the solver continues.
+- Filling all four slots finalizes automatically (no ✗ needed).
+- Reds/whites may be entered in any order — only the counts matter. So "all wrong" is just
+  ✗ on the first slot; "2 red, 1 white" is red → red → white → ✗.
+
+- [ ] Feedback-picker component reusing `SmallFeedbackPeg` (red/white) plus an ✗/none
+      option, with the active-slot selector styled like the color picker.
+- [ ] On finalize, dispatch `SUBMIT_FEEDBACK` with the scored row.
+- [ ] (Per decision 1) validate the finalized feedback against the set secret; on mismatch,
+      warn and let the human re-score rather than feeding the solver a wrong score.
 
 #### P2.7 — Result + reset
 
