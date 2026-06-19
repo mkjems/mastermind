@@ -5,7 +5,7 @@ import {afterEach, describe, expect, it, vi} from 'vitest';
 
 import App from './App.jsx';
 import reducer from './reducers/index.js';
-import {init, startGame} from './gameActions.js';
+import {init, showColorPicker, startGame} from './gameActions.js';
 
 const initialState = () => reducer(undefined, init());
 
@@ -28,5 +28,15 @@ describe('App', () => {
 		fireEvent.click(screen.getByRole('button', {name: 'Start game'}));
 
 		expect(dispatch).toHaveBeenCalledWith(startGame());
+	});
+
+	it('dispatches show color picker when an active peg is clicked', () => {
+		const dispatch = vi.fn();
+		const playingState = reducer(initialState(), startGame());
+		const {container} = render(<App state={playingState} dispatch={dispatch} />);
+
+		fireEvent.click(container.querySelector('.board-row .peg'));
+
+		expect(dispatch).toHaveBeenCalledWith(showColorPicker(0));
 	});
 });

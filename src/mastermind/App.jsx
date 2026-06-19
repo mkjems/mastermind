@@ -7,7 +7,7 @@ import {
     chooseColorAndAdvance,
     giveUp,
     resetAll,
-    showColorPicker,
+    showColorPicker as showColorPickerAction,
     startGame,
     submitRow,
     toggleRules
@@ -28,7 +28,7 @@ function App({state, dispatch}) {
         activeRow,
         selectedPeg,
         onPegClick: (id) => {
-            dispatch(showColorPicker(id));
+            dispatch(showColorPickerAction(id));
         },
         onChooseColor: (name) => {
             dispatch(chooseColorAndAdvance(name));
