@@ -1,6 +1,6 @@
 # TODO - this is where we decide and describe the next steps we will make.
 
-### P2 - Add a button on the main page that says 'Play against algorithm' -
+## P2 - Add a button on the main page that says 'Play against algorithm' -
 
 Goal: The idea is to reverse the roles, so that it will be the computer (algorithm) that does the guessing and the human that scores the guess.
 
@@ -30,7 +30,7 @@ with `npm run check` green.
    (guess, feedback) pairs already on the board. Keeps state small and matches our
    "derive, don't store" approach.
 
-#### P2.1 — Solver core (pure + tested) ✅
+### P2.1 — Solver core (pure + tested) ✅
 
 - [x] [solver.ts](../src/mastermind/solver.ts): `allCodes()` (the 1680 unique-color
       permutations); `consistentCodes(history)` keeping codes where
@@ -42,7 +42,7 @@ with `npm run check` green.
 - Note: a full sweep over all 1680 secrets showed **worst case 7 guesses, avg 4.9** — so
   "first consistent candidate" always solves within the 10-row board; minimax not needed.
 
-#### P2.2 — Mode selection + state shape ✅
+### P2.2 — Mode selection + state shape ✅
 
 - [x] Added `mode: 'human' | 'algorithm'` ([types.ts](../src/mastermind/types.ts)) with a
       `modeReducer` and initial value `'human'`; `START_ALGORITHM` → algorithm, `START_GAME`
@@ -52,7 +52,7 @@ with `npm run check` green.
       statuses to a placeholder [AlgorithmGame](../src/mastermind/components/AlgorithmGame.tsx).
 - [x] Tests: the action sets `mode` + `algo_setup`, and reset returns to human/intro.
 
-#### P2.3 — State machine for algorithm mode ✅
+### P2.3 — State machine for algorithm mode ✅
 
 - [x] Added statuses `algo_setup`, `algo_guessing`, `algo_solved`, `algo_failed` and events
       `START_ALGORITHM`, `CONFIRM_SECRET`, `SOLVED`, `FAILED` to
@@ -62,7 +62,7 @@ with `npm run check` green.
 - [x] `isGameOver` now covers `algo_solved`/`algo_failed`.
 - [x] Tests for the algorithm transitions and ignored illegal events.
 
-#### P2.4 — Secret-setup interface ✅
+### P2.4 — Secret-setup interface ✅
 
 - [x] [SecretSetup.tsx](../src/mastermind/components/SecretSetup.tsx): pick 4 colors from a
       `PegIllu` palette that disables already-used colors (codes never repeat a color);
@@ -70,7 +70,7 @@ with `npm run check` green.
 - [x] `CONFIRM_SECRET` reducer: stores the secret, transitions to `algo_guessing`, and
       places the computer's opening guess (`nextGuess([])`) on row 0.
 
-#### P2.5 — Guess/feedback loop (reducer ↔ solver) ✅
+### P2.5 — Guess/feedback loop (reducer ↔ solver) ✅
 
 - [x] `SUBMIT_FEEDBACK` reducer (`decorateAction` in
       [index.ts](../src/mastermind/reducers/index.ts)): records the human's feedback on the
@@ -83,7 +83,7 @@ with `npm run check` green.
   read-only ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)) pending the
   P2.6 scoring UI, and results use a basic [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx).
 
-#### P2.6 — Feedback input UI
+### P2.6 — Feedback input UI
 
 Interaction (mirrors the color picker's fill-and-advance flow): the human scores the
 computer's guess one feedback slot at a time, left to right, with an active-slot indicator.
@@ -106,7 +106,7 @@ The active slot offers three choices — **red**, **white**, or **✗ (done)**:
 - [x] Tests (in [App.test.tsx](../src/mastermind/App.test.tsx)): a correct score dispatches
       `SUBMIT_FEEDBACK`; an incorrect score dispatches nothing and shows the warning.
 
-#### P2.7 — Result + reset ✅
+### P2.7 — Result + reset ✅
 
 - [x] [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx) shows the secret
       bar + the full guess history + a "cracked it in N guesses" or
@@ -119,15 +119,39 @@ on top, then the computer's guessed rows with their colors, then the
 the board. (Previously the picker was nested inside the 62px `.board-row`, which squashed
 the guess pegs and floated the 400px picker box.)
 
-#### P2.8 — Polish
+### P2.8 — Polish
 
 - [x] Brief "thinking" delay before each computer guess is revealed; scoring is withheld
       until it appears ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)).
 - [ ] **Styling pass** for the setup / guessing / feedback interfaces — deferred; the
       screens are functional but need a couple of visual passes to land where we want.
 
-#### P2.9 — Docs ✅
+### P2.9 — Docs ✅
 
 - [x] Updated [Overview.md](Overview.md): both modes, the algorithm-mode flow + `solver.ts`,
       the extended state machine, the `mode` field, the new actions, and the new components.
       (Removed the stale "reverse mode not yet implemented" note.)
+
+## P3 - Improve design
+
+Goal: To have a beautiful master mind game that works well on mobile as well as desktop
+
+P3.1 - General things
+
+- [ ] Body Background-color should be slightly lighter
+- [ ] Components should have transparent background
+- [ ] Board should scale to fit screen but clamped.
+- [ ] The whole design should scale
+
+P3.2 - human-guess screen
+
+P3.3 - algo-guess screen
+
+- [ ] I want the secret code to be at the bottom of the screen to give impression that
+
+P3.4 - Rules page
+
+P3.5 - Home screen
+
+- [ ] I still want the dimensions of the board to be present
+- [ ] Main menu buttons should be stacked vertically
