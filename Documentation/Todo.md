@@ -119,12 +119,15 @@ on top, then the computer's guessed rows with their colors, then the
 the board. (Previously the picker was nested inside the 62px `.board-row`, which squashed
 the guess pegs and floated the 400px picker box.)
 
-#### P2.8 — Polish (optional)
+#### P2.8 — Polish
 
-- [ ] Brief delay/animation when the computer places a guess; disable inputs while it
-      "thinks"; styling pass for the setup and feedback interfaces.
+- [x] Brief "thinking" delay before each computer guess is revealed; scoring is withheld
+      until it appears ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)).
+- [ ] **Styling pass** for the setup / guessing / feedback interfaces — deferred; the
+      screens are functional but need a couple of visual passes to land where we want.
 
-#### P2.9 — Docs
+#### P2.9 — Docs ✅
 
-- [ ] Update [Overview.md](Overview.md): the two modes, the `solver.ts` module, the
-      extended state machine, and the new components.
+- [x] Updated [Overview.md](Overview.md): both modes, the algorithm-mode flow + `solver.ts`,
+      the extended state machine, the `mode` field, the new actions, and the new components.
+      (Removed the stale "reverse mode not yet implemented" note.)

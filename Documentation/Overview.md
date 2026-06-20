@@ -6,13 +6,15 @@ as an orientation for anyone (human or agent) coming to the codebase for the fir
 ## What the app is
 
 Mastermind is a single-page React app, built with [Vite](https://vitejs.dev), of the
-classic code-breaking board game. The player takes the role of the **code breaker**:
-the app secretly generates a 4-color code and the player has 10 attempts to guess it,
-using feedback after each guess to narrow down the answer.
+classic code-breaking board game. It has two modes, chosen on the intro screen:
 
-> Note: a planned reverse mode — where the computer guesses a code the user sets — is
-> described in [Todo.md](Todo.md) but is **not yet implemented**. This document covers
-> the current behavior only.
+- **Human mode** ("Start game") — the player is the **code breaker**: the app secretly
+  generates a 4-color code and the player has 10 attempts to guess it, scoring feedback
+  after each guess.
+- **Algorithm mode** ("Play against algorithm") — the roles reverse. The **player sets a
+  secret code** and the **computer guesses it**, one row at a time; the player scores each
+  guess with red/white feedback until the computer cracks it. See
+  [Algorithm mode](#algorithm-mode) below.
 
 ## Rules as implemented
 
@@ -33,8 +35,11 @@ The in-app rules text is shown on the intro screen via the `Rules` component in
 
 ## How a game flows
 
+This is the **human-mode** flow (algorithm mode is described [below](#algorithm-mode)).
+
 1. **Intro screen.** The app starts in the `intro` game status, showing the title, a
-   "Start game" button, and a toggle to show/hide the rules.
+   "Start game" button, a "Play against algorithm" button, and a toggle to show/hide the
+   rules.
 2. **Start.** Clicking "Start game" randomizes a fresh secret code and moves the status
    to `playing`. The board shows 10 rows; the first row is active with 4 selectable holes.
 3. **Filling a row.** The player clicks a hole to open the **ColorPicker**, picks a
@@ -73,8 +78,13 @@ A single state object holds the whole game (assembled in
 | `activeRow`      | Index of the row currently being filled.                       |
 | `selectedPeg`    | Index of the hole the color picker is targeting.               |
 | `showColorPicker`| Whether the color picker is open.                              |
-| `gameStatus`     | `intro` / `playing` / `won` / `lost` / `gave_up`.              |
+| `gameStatus`     | The machine state (human: `intro`/`playing`/`won`/`lost`/`gave_up`; algorithm: `algo_setup`/`algo_guessing`/`algo_solved`/`algo_failed`). |
 | `isRulesHidden`  | Whether the intro rules text is collapsed.                     |
+| `mode`           | `'human'` or `'algorithm'` — which game is being played.        |
+
+In algorithm mode the fields are reused: `secretCode` holds the code the **player** set,
+and each board row holds one of the **computer's** guesses (`pegs`) plus the feedback the
+player scored for it (`feedback`).
 
 Peg/feedback values use the sentinels `'none'` (empty) and `'select'` (an empty,
 selectable hole in the active row), otherwise a color name.
@@ -88,19 +98,26 @@ them down as props.
 ### Actions
 
 Action types and creators live in [gameActions.ts](../src/mastermind/gameActions.ts).
-There is a single layer of **user-facing actions** dispatched from the UI: `START_GAME`,
-`SHOW_COLOR_PICKER`, `CHOOSE_COLOR_AND_ADVANCE`, `SUBMIT_ROW`, `GIVE_UP`, `RESET_ALL`,
-`TOGGLE_RULES` (plus `INIT`). Every slice reducer responds to these directly; there is no
-internal/low-level action layer.
+There is a single layer of **user-facing actions** dispatched from the UI. Human mode:
+`START_GAME`, `SHOW_COLOR_PICKER`, `CHOOSE_COLOR_AND_ADVANCE`, `SUBMIT_ROW`, `GIVE_UP`.
+Algorithm mode: `START_ALGORITHM`, `CONFIRM_SECRET`, `SUBMIT_FEEDBACK`. Shared:
+`RESET_ALL`, `TOGGLE_RULES` (plus `INIT`). Every slice reducer responds to these directly;
+there is no internal/low-level action layer.
 
 ### The game state machine
 
 Game status is an explicit finite state machine in
 [gameStatus.ts](../src/mastermind/gameStatus.ts): a `TRANSITIONS` table keyed by
-`status → event → nextStatus`, applied by `nextStatus(status, event)`. The events are
-`START`, `WIN`, `LOSE`, `GIVE_UP`, `RESET`. Events that aren't valid for the current
-status are ignored (status unchanged); `RESET` returns to `intro` from anywhere. This
-makes illegal states (e.g. "won but still playing") unrepresentable.
+`status → event → nextStatus`, applied by `nextStatus(status, event)`. From `intro` the
+two flows branch:
+
+- Human: `START` → `playing`, then `WIN`/`LOSE`/`GIVE_UP` to the resolved states.
+- Algorithm: `START_ALGORITHM` → `algo_setup`, `CONFIRM_SECRET` → `algo_guessing`, then
+  `SOLVED`/`FAILED` to the resolved states.
+
+Events that aren't valid for the current status are ignored (status unchanged); `RESET`
+returns to `intro` from anywhere. This makes illegal states (e.g. "won but still playing")
+unrepresentable.
 
 ### Reducers
 
@@ -140,6 +157,47 @@ components (`Peg`, `Feedback`, `Hole`, `Checkmark`) stay prop-driven.
 - Supporting view pieces: `Peg`, `Hole`, `ColorPicker`, `Feedback`,
   `SmallFeedbackPeg`/`SmallFeedbackHole`, `HiddenCode`, `Won`, `Lost`, `Gaveup`,
   `Checkmark`, and the illustration pegs `PegIllu` / `PegSideways`.
+
+[App.tsx](../src/mastermind/App.tsx) renders `Intro` at the intro, otherwise switches on
+`mode`: human mode → `Gameplay`, algorithm mode →
+[AlgorithmGame](../src/mastermind/components/AlgorithmGame.tsx), which in turn routes by
+status to [SecretSetup](../src/mastermind/components/SecretSetup.tsx),
+[AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx) (with
+[SecretBar](../src/mastermind/components/SecretBar.tsx) and
+[FeedbackPicker](../src/mastermind/components/FeedbackPicker.tsx)), or
+[AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx).
+
+### Algorithm mode
+
+The reverse game: the player sets the code and the computer breaks it.
+
+1. **Setup.** [SecretSetup](../src/mastermind/components/SecretSetup.tsx) lets the player
+   pick 4 distinct colors (the palette disables already-used colors). `CONFIRM_SECRET`
+   stores them in `secretCode`, moves to `algo_guessing`, and places the computer's opening
+   guess on row 0.
+2. **Loop.** [AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx) shows the
+   secret and the guesses so far; the player scores the active guess with
+   [FeedbackPicker](../src/mastermind/components/FeedbackPicker.tsx) (red / white / ✗,
+   fill-and-advance). `SUBMIT_FEEDBACK` records the score; in `decorateAction`
+   ([reducers/index.ts](../src/mastermind/reducers/index.ts)) the outcome is decided once —
+   all-red → `algo_solved`; otherwise the next guess is computed and placed on the next row,
+   or `algo_failed` if no code is consistent or rows run out.
+
+The brain is [solver.ts](../src/mastermind/solver.ts) — pure functions:
+
+- `allCodes()` — the 1680 unique-color codes (8·7·6·5).
+- `consistentCodes(history)` — the codes still possible, by keeping those that, treated as
+  the secret, reproduce the recorded feedback for every past guess (reuses
+  `calculateFeedback`, comparing red/white counts).
+- `nextGuess(history)` — the first consistent code, or `undefined` (contradictory feedback).
+
+The candidate set is **not stored** — it's derived from the board's (guess, feedback) rows
+each turn. The "first consistent candidate" strategy solves every secret in **≤ 7 guesses**
+(measured), well within the 10-row board, so no minimax is needed.
+
+Two supporting touches: `FeedbackPicker` **validates** the player's score against the set
+secret and warns on a mismatch (so the solver never gets a wrong number), and
+`AlgorithmBoard` adds a short "thinking" delay before revealing each new guess.
 
 ### State entry point and persistence
 

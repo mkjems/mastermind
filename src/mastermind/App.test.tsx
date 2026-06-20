@@ -54,23 +54,24 @@ describe('App', () => {
 		expect(dispatch).toHaveBeenCalledWith(showColorPicker(0));
 	});
 
-	it('submits feedback the player scores for a computer guess', () => {
+	it('submits feedback the player scores for a computer guess', async () => {
 		const dispatch = vi.fn();
 		render(<App state={guessingState()} dispatch={dispatch} />);
 
+		// The scoring picker appears after the computer's "thinking" beat.
 		// Correct score for the opener vs SECRET: one white, then done.
-		fireEvent.click(screen.getByRole('button', {name: 'white'}));
+		fireEvent.click(await screen.findByRole('button', {name: 'white'}));
 		fireEvent.click(screen.getByRole('button', {name: 'no more pegs'}));
 
 		expect(dispatch).toHaveBeenCalledWith(submitFeedback(['white', 'none', 'none', 'none']));
 	});
 
-	it('rejects feedback that does not match the secret', () => {
+	it('rejects feedback that does not match the secret', async () => {
 		const dispatch = vi.fn();
 		render(<App state={guessingState()} dispatch={dispatch} />);
 
 		// A red is wrong here (the true score has no reds), so nothing is dispatched.
-		fireEvent.click(screen.getByRole('button', {name: 'red'}));
+		fireEvent.click(await screen.findByRole('button', {name: 'red'}));
 		fireEvent.click(screen.getByRole('button', {name: 'no more pegs'}));
 
 		expect(dispatch).not.toHaveBeenCalled();
