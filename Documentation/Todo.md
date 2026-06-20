@@ -95,16 +95,29 @@ The active slot offers three choices — **red**, **white**, or **✗ (done)**:
 - Reds/whites may be entered in any order — only the counts matter. So "all wrong" is just
   ✗ on the first slot; "2 red, 1 white" is red → red → white → ✗.
 
-- [ ] Feedback-picker component reusing `SmallFeedbackPeg` (red/white) plus an ✗/none
-      option, with the active-slot selector styled like the color picker.
-- [ ] On finalize, dispatch `SUBMIT_FEEDBACK` with the scored row.
-- [ ] (Per decision 1) validate the finalized feedback against the set secret; on mismatch,
-      warn and let the human re-score rather than feeding the solver a wrong score.
+- [x] [FeedbackPicker.tsx](../src/mastermind/components/FeedbackPicker.tsx): red/white
+      `SmallFeedbackPeg` options plus an ✗ "no more pegs" option, an active-slot indicator,
+      and fill-and-advance / ✗-finalizes / auto-finalize-at-four behavior. Wired into the
+      active row of [AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)
+      (keyed by `activeRow` so it resets per guess).
+- [x] On finalize it dispatches `SUBMIT_FEEDBACK` (`onSubmitFeedback`).
+- [x] Validates the finalized score against the set secret; on mismatch it warns and clears
+      so the human re-scores, rather than feeding the solver a wrong number.
+- [x] Tests (in [App.test.tsx](../src/mastermind/App.test.tsx)): a correct score dispatches
+      `SUBMIT_FEEDBACK`; an incorrect score dispatches nothing and shows the warning.
 
-#### P2.7 — Result + reset
+#### P2.7 — Result + reset ✅
 
-- [ ] "The computer cracked it in N guesses" screen and a failure / contradictory-feedback
-      screen (reuse the `Won`/`Lost` message pattern); reset → intro.
+- [x] [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx) shows the secret
+      bar + the full guess history + a "cracked it in N guesses" or
+      contradictory-feedback message, with an Ok button that resets to intro.
+
+**Layout fix (from testing):** the guessing screen now renders a
+[SecretBar](../src/mastermind/components/SecretBar.tsx) (the human's secret, shown openly)
+on top, then the computer's guessed rows with their colors, then the
+[FeedbackPicker](../src/mastermind/components/FeedbackPicker.tsx) as its own block **below**
+the board. (Previously the picker was nested inside the 62px `.board-row`, which squashed
+the guess pegs and floated the 400px picker box.)
 
 #### P2.8 — Polish (optional)
 
