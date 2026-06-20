@@ -1,24 +1,26 @@
-import type {Board, Color, Row} from '../types';
+import type { Board, Color, Row } from "../types";
 
 export const PEG_COLORS: Color[] = [
-	'yellow',
-	'green',
-	'pink',
-	'silver',
-	'blue',
-	'white',
-	'red',
-	'orange'
+  "yellow",
+  "green",
+  "pink",
+  "silver",
+  "blue",
+  "white",
+  "red",
+  "orange",
 ];
 
-const first_row: Row[] = [{
-	pegs: ['select', 'select', 'select', 'select'],
-	feedback: ['none', 'none', 'none', 'none']
-}];
+const first_row: Row[] = [
+  {
+    pegs: ["select", "select", "select", "select"],
+    feedback: ["none", "none", "none", "none"],
+  },
+];
 
 const empty_row: Row = {
-	pegs: ['none', 'none', 'none', 'none'],
-	feedback: ['none', 'none', 'none', 'none']
+  pegs: ["none", "none", "none", "none"],
+  feedback: ["none", "none", "none", "none"],
 };
 
 export const NUM_ROWS = 10;
@@ -29,114 +31,114 @@ const empty_rows: Row[] = new Array(num_additional_rows).fill(empty_row);
 export const BOARD_START: Board = [...first_row, ...empty_rows];
 
 export interface TopViewColor {
-	hat: string;
-	self_shadow: string;
-	highlight: string;
+  hat: string;
+  self_shadow: string;
+  highlight: string;
 }
 
 export interface SidewaysColor extends TopViewColor {
-	stem: string;
-	cast_shadow: string;
+  stem: string;
+  cast_shadow: string;
 }
 
 export const TOP_VIEW_COLORS: Record<Color, TopViewColor> = {
-	pink: {
-		hat: '#d89dd0',
-		self_shadow: '#cd82c3',
-		highlight: '#FFF'
-	},
-	blue: {
-		hat: 'rgb(140,179,233)',
-		self_shadow: '#709bd8',
-		highlight: '#FFF'
-	},
-	orange: {
-		hat: '#f0a210',
-		self_shadow: '#e2970b',
-		highlight: '#FFF'
-	},
-	red: {
-		hat: '#c85825',
-		self_shadow: '#bc4b17',
-		highlight: '#FFF'
-	},
-	silver: {
-		hat: '#848484',
-		self_shadow: '#787878',
-		highlight: '#FFF'
-	},
-	white: {
-		hat: '#f3f2de',
-		self_shadow: '#dcdaca',
-		highlight: '#FFF'
-	},
-	green: {
-		hat: '#6cbb49',
-		self_shadow: '#5fa83f',
-		highlight: '#FFF'
-	},
-	yellow: {
-		hat: '#e7eb6a',
-		self_shadow: '#dada4f',
-		highlight: '#FFF'
-	}
+  pink: {
+    hat: "#d89dd0",
+    self_shadow: "#cd82c3",
+    highlight: "#FFF",
+  },
+  blue: {
+    hat: "rgb(140,179,233)",
+    self_shadow: "#709bd8",
+    highlight: "#FFF",
+  },
+  orange: {
+    hat: "#f0a210",
+    self_shadow: "#e2970b",
+    highlight: "#FFF",
+  },
+  red: {
+    hat: "#c85825",
+    self_shadow: "#bc4b17",
+    highlight: "#FFF",
+  },
+  silver: {
+    hat: "#848484",
+    self_shadow: "#787878",
+    highlight: "#FFF",
+  },
+  white: {
+    hat: "#f3f2de",
+    self_shadow: "#dcdaca",
+    highlight: "#FFF",
+  },
+  green: {
+    hat: "#6cbb49",
+    self_shadow: "#5fa83f",
+    highlight: "#FFF",
+  },
+  yellow: {
+    hat: "#e7eb6a",
+    self_shadow: "#dada4f",
+    highlight: "#FFF",
+  },
 };
 
 export const SIDEWAYS_COLORS: Record<Color, SidewaysColor> = {
-	pink: {
-		hat: '#d89dd0',
-		stem: '#d89dd0',
-		self_shadow: '#cd82c3',
-		cast_shadow: '#c33db8',
-		highlight: '#FFF'
-	},
-	blue: {
-		hat: 'rgb(140,179,233)',
-		stem: '#8ab4eb',
-		self_shadow: '#709bd8',
-		cast_shadow: '#3d74c3',
-		highlight: '#FFF'
-	},
-	orange: {
-		hat: '#f0a210',
-		stem: '#f0a210',
-		self_shadow: '#e2970b',
-		cast_shadow: '#b94b47',
-		highlight: '#FFF'
-	},
-	red: {
-		hat: '#c85825',
-		stem: '#c85825',
-		self_shadow: '#bc4b17',
-		cast_shadow: '#7b3504',
-		highlight: '#FFF'
-	},
-	silver: {
-		hat: '#848484',
-		stem: '#848484',
-		self_shadow: '#787878',
-		cast_shadow: '#5f5c84',
-		highlight: '#FFF'
-	},
-	white: {
-		hat: '#f3f2de',
-		stem: '#f3f2de',
-		self_shadow: '#dcdaca',
-		cast_shadow: '#aeb7c1',
-		highlight: '#FFF'
-	},
-	green: {
-		hat: '#6cbb49',
-		stem: '#6cbb49',
-		self_shadow: '#5fa83f',
-		cast_shadow: '#315c1c',
-		highlight: '#FFF'
-	},
-	yellow: {
-		hat: '#e7eb6a',
-		stem: '#e7eb6a',
-		self_shadow: '#dada4f',
-		cast_shadow: '#abb617',
-		highlight: '#FFF'
-	}
+  pink: {
+    hat: "#d89dd0",
+    stem: "#d89dd0",
+    self_shadow: "#cd82c3",
+    cast_shadow: "#c33db8",
+    highlight: "#FFF",
+  },
+  blue: {
+    hat: "rgb(140,179,233)",
+    stem: "#8ab4eb",
+    self_shadow: "#709bd8",
+    cast_shadow: "#3d74c3",
+    highlight: "#FFF",
+  },
+  orange: {
+    hat: "#f0a210",
+    stem: "#f0a210",
+    self_shadow: "#e2970b",
+    cast_shadow: "#b94b47",
+    highlight: "#FFF",
+  },
+  red: {
+    hat: "#c85825",
+    stem: "#c85825",
+    self_shadow: "#bc4b17",
+    cast_shadow: "#7b3504",
+    highlight: "#FFF",
+  },
+  silver: {
+    hat: "#848484",
+    stem: "#848484",
+    self_shadow: "#787878",
+    cast_shadow: "#5f5c84",
+    highlight: "#FFF",
+  },
+  white: {
+    hat: "#f3f2de",
+    stem: "#f3f2de",
+    self_shadow: "#dcdaca",
+    cast_shadow: "#aeb7c1",
+    highlight: "#FFF",
+  },
+  green: {
+    hat: "#6cbb49",
+    stem: "#6cbb49",
+    self_shadow: "#5fa83f",
+    cast_shadow: "#315c1c",
+    highlight: "#FFF",
+  },
+  yellow: {
+    hat: "#e7eb6a",
+    stem: "#e7eb6a",
+    self_shadow: "#dada4f",
+    cast_shadow: "#abb617",
+    highlight: "#FFF",
+  },
 };

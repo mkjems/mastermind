@@ -1,100 +1,118 @@
-import {describe, expect, it} from 'vitest';
+import { describe, expect, it } from "vitest";
 
 import {
-	canGiveUp,
-	EVENT_CONFIRM_SECRET,
-	EVENT_FAILED,
-	EVENT_GIVE_UP,
-	EVENT_LOSE,
-	EVENT_RESET,
-	EVENT_SOLVED,
-	EVENT_START,
-	EVENT_START_ALGORITHM,
-	EVENT_WIN,
-	GAME_STATUS_ALGO_FAILED,
-	GAME_STATUS_ALGO_GUESSING,
-	GAME_STATUS_ALGO_SETUP,
-	GAME_STATUS_ALGO_SOLVED,
-	GAME_STATUS_GAVE_UP,
-	GAME_STATUS_INTRO,
-	GAME_STATUS_LOST,
-	GAME_STATUS_PLAYING,
-	GAME_STATUS_WON,
-	isCodeHidden,
-	isGameOver,
-	nextStatus
-} from './gameStatus';
-import type {GameStatus} from './gameStatus';
+  canGiveUp,
+  EVENT_CONFIRM_SECRET,
+  EVENT_FAILED,
+  EVENT_GIVE_UP,
+  EVENT_LOSE,
+  EVENT_RESET,
+  EVENT_SOLVED,
+  EVENT_START,
+  EVENT_START_ALGORITHM,
+  EVENT_WIN,
+  GAME_STATUS_ALGO_FAILED,
+  GAME_STATUS_ALGO_GUESSING,
+  GAME_STATUS_ALGO_SETUP,
+  GAME_STATUS_ALGO_SOLVED,
+  GAME_STATUS_GAVE_UP,
+  GAME_STATUS_INTRO,
+  GAME_STATUS_LOST,
+  GAME_STATUS_PLAYING,
+  GAME_STATUS_WON,
+  isCodeHidden,
+  isGameOver,
+  nextStatus,
+} from "./gameStatus";
+import type { GameStatus } from "./gameStatus";
 
-describe('nextStatus', () => {
-	it('starts a game from the intro', () => {
-		expect(nextStatus(GAME_STATUS_INTRO, EVENT_START)).toBe(GAME_STATUS_PLAYING);
-	});
+describe("nextStatus", () => {
+  it("starts a game from the intro", () => {
+    expect(nextStatus(GAME_STATUS_INTRO, EVENT_START)).toBe(
+      GAME_STATUS_PLAYING,
+    );
+  });
 
-	it('resolves a game from playing', () => {
-		expect(nextStatus(GAME_STATUS_PLAYING, EVENT_WIN)).toBe(GAME_STATUS_WON);
-		expect(nextStatus(GAME_STATUS_PLAYING, EVENT_LOSE)).toBe(GAME_STATUS_LOST);
-		expect(nextStatus(GAME_STATUS_PLAYING, EVENT_GIVE_UP)).toBe(GAME_STATUS_GAVE_UP);
-	});
+  it("resolves a game from playing", () => {
+    expect(nextStatus(GAME_STATUS_PLAYING, EVENT_WIN)).toBe(GAME_STATUS_WON);
+    expect(nextStatus(GAME_STATUS_PLAYING, EVENT_LOSE)).toBe(GAME_STATUS_LOST);
+    expect(nextStatus(GAME_STATUS_PLAYING, EVENT_GIVE_UP)).toBe(
+      GAME_STATUS_GAVE_UP,
+    );
+  });
 
-	it('ignores events that are not valid for the current status', () => {
-		// Can't win before starting, can't start again once won, can't give up after losing.
-		expect(nextStatus(GAME_STATUS_INTRO, EVENT_WIN)).toBe(GAME_STATUS_INTRO);
-		expect(nextStatus(GAME_STATUS_WON, EVENT_START)).toBe(GAME_STATUS_WON);
-		expect(nextStatus(GAME_STATUS_LOST, EVENT_GIVE_UP)).toBe(GAME_STATUS_LOST);
-	});
+  it("ignores events that are not valid for the current status", () => {
+    // Can't win before starting, can't start again once won, can't give up after losing.
+    expect(nextStatus(GAME_STATUS_INTRO, EVENT_WIN)).toBe(GAME_STATUS_INTRO);
+    expect(nextStatus(GAME_STATUS_WON, EVENT_START)).toBe(GAME_STATUS_WON);
+    expect(nextStatus(GAME_STATUS_LOST, EVENT_GIVE_UP)).toBe(GAME_STATUS_LOST);
+  });
 
-	it('returns to the intro on reset from any status', () => {
-		const statuses: GameStatus[] = [
-			GAME_STATUS_PLAYING,
-			GAME_STATUS_WON,
-			GAME_STATUS_LOST,
-			GAME_STATUS_GAVE_UP,
-			GAME_STATUS_ALGO_SETUP,
-			GAME_STATUS_ALGO_GUESSING,
-			GAME_STATUS_ALGO_SOLVED,
-			GAME_STATUS_ALGO_FAILED
-		];
-		statuses.forEach((status) => {
-			expect(nextStatus(status, EVENT_RESET)).toBe(GAME_STATUS_INTRO);
-		});
-	});
+  it("returns to the intro on reset from any status", () => {
+    const statuses: GameStatus[] = [
+      GAME_STATUS_PLAYING,
+      GAME_STATUS_WON,
+      GAME_STATUS_LOST,
+      GAME_STATUS_GAVE_UP,
+      GAME_STATUS_ALGO_SETUP,
+      GAME_STATUS_ALGO_GUESSING,
+      GAME_STATUS_ALGO_SOLVED,
+      GAME_STATUS_ALGO_FAILED,
+    ];
+    statuses.forEach((status) => {
+      expect(nextStatus(status, EVENT_RESET)).toBe(GAME_STATUS_INTRO);
+    });
+  });
 
-	it('runs the algorithm-mode flow', () => {
-		expect(nextStatus(GAME_STATUS_INTRO, EVENT_START_ALGORITHM)).toBe(GAME_STATUS_ALGO_SETUP);
-		expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_CONFIRM_SECRET)).toBe(GAME_STATUS_ALGO_GUESSING);
-		expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_SOLVED)).toBe(GAME_STATUS_ALGO_SOLVED);
-		expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_FAILED)).toBe(GAME_STATUS_ALGO_FAILED);
-	});
+  it("runs the algorithm-mode flow", () => {
+    expect(nextStatus(GAME_STATUS_INTRO, EVENT_START_ALGORITHM)).toBe(
+      GAME_STATUS_ALGO_SETUP,
+    );
+    expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_CONFIRM_SECRET)).toBe(
+      GAME_STATUS_ALGO_GUESSING,
+    );
+    expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_SOLVED)).toBe(
+      GAME_STATUS_ALGO_SOLVED,
+    );
+    expect(nextStatus(GAME_STATUS_ALGO_GUESSING, EVENT_FAILED)).toBe(
+      GAME_STATUS_ALGO_FAILED,
+    );
+  });
 
-	it('ignores algorithm events from the wrong status', () => {
-		expect(nextStatus(GAME_STATUS_INTRO, EVENT_CONFIRM_SECRET)).toBe(GAME_STATUS_INTRO);
-		expect(nextStatus(GAME_STATUS_PLAYING, EVENT_START_ALGORITHM)).toBe(GAME_STATUS_PLAYING);
-		expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_SOLVED)).toBe(GAME_STATUS_ALGO_SETUP);
-	});
+  it("ignores algorithm events from the wrong status", () => {
+    expect(nextStatus(GAME_STATUS_INTRO, EVENT_CONFIRM_SECRET)).toBe(
+      GAME_STATUS_INTRO,
+    );
+    expect(nextStatus(GAME_STATUS_PLAYING, EVENT_START_ALGORITHM)).toBe(
+      GAME_STATUS_PLAYING,
+    );
+    expect(nextStatus(GAME_STATUS_ALGO_SETUP, EVENT_SOLVED)).toBe(
+      GAME_STATUS_ALGO_SETUP,
+    );
+  });
 });
 
-describe('derived status flags', () => {
-	it('treats only the resolved statuses as game over', () => {
-		expect(isGameOver(GAME_STATUS_INTRO)).toBe(false);
-		expect(isGameOver(GAME_STATUS_PLAYING)).toBe(false);
-		expect(isGameOver(GAME_STATUS_WON)).toBe(true);
-		expect(isGameOver(GAME_STATUS_LOST)).toBe(true);
-		expect(isGameOver(GAME_STATUS_GAVE_UP)).toBe(true);
-		expect(isGameOver(GAME_STATUS_ALGO_SETUP)).toBe(false);
-		expect(isGameOver(GAME_STATUS_ALGO_GUESSING)).toBe(false);
-		expect(isGameOver(GAME_STATUS_ALGO_SOLVED)).toBe(true);
-		expect(isGameOver(GAME_STATUS_ALGO_FAILED)).toBe(true);
-	});
+describe("derived status flags", () => {
+  it("treats only the resolved statuses as game over", () => {
+    expect(isGameOver(GAME_STATUS_INTRO)).toBe(false);
+    expect(isGameOver(GAME_STATUS_PLAYING)).toBe(false);
+    expect(isGameOver(GAME_STATUS_WON)).toBe(true);
+    expect(isGameOver(GAME_STATUS_LOST)).toBe(true);
+    expect(isGameOver(GAME_STATUS_GAVE_UP)).toBe(true);
+    expect(isGameOver(GAME_STATUS_ALGO_SETUP)).toBe(false);
+    expect(isGameOver(GAME_STATUS_ALGO_GUESSING)).toBe(false);
+    expect(isGameOver(GAME_STATUS_ALGO_SOLVED)).toBe(true);
+    expect(isGameOver(GAME_STATUS_ALGO_FAILED)).toBe(true);
+  });
 
-	it('hides the code until the game is over', () => {
-		expect(isCodeHidden(GAME_STATUS_PLAYING)).toBe(true);
-		expect(isCodeHidden(GAME_STATUS_WON)).toBe(false);
-	});
+  it("hides the code until the game is over", () => {
+    expect(isCodeHidden(GAME_STATUS_PLAYING)).toBe(true);
+    expect(isCodeHidden(GAME_STATUS_WON)).toBe(false);
+  });
 
-	it('allows giving up only while playing', () => {
-		expect(canGiveUp(GAME_STATUS_PLAYING)).toBe(true);
-		expect(canGiveUp(GAME_STATUS_INTRO)).toBe(false);
-		expect(canGiveUp(GAME_STATUS_LOST)).toBe(false);
-	});
+  it("allows giving up only while playing", () => {
+    expect(canGiveUp(GAME_STATUS_PLAYING)).toBe(true);
+    expect(canGiveUp(GAME_STATUS_INTRO)).toBe(false);
+    expect(canGiveUp(GAME_STATUS_LOST)).toBe(false);
+  });
 });
