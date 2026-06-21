@@ -82,15 +82,15 @@ else is built on top of this one board.
 
 **Steps:**
 
-- [ ] Render the empty `Board` (real holes, no game) as the backdrop — drop any
-      image-based background.
-- [ ] New [components/Menu.tsx]: `Overlay` panel with the `Mastermind` title and three
+- [x] Render the empty `Board` (real holes, no game) as the backdrop via new
+      [components/Home.tsx] — no image background. `.frame` takes the board's grid slot.
+- [x] New [components/Menu.tsx]: `Overlay` panel with the `Mastermind` title and three
       **vertically stacked** buttons — `Play a game`, `Play algorithm`, `See rules`.
-- [ ] Wire buttons to existing actions: `startGame`, `startAlgorithm`, and a rules toggle
-      (reuse `toggleRules`) that opens the P3.4 rules overlay.
-- [ ] Style the buttons as the blue pills from the mockup (extend `button` rules or a
-      Menu module css).
-- [ ] Replace the early `<Intro>` return in [App.tsx] with the board + `Menu` overlay.
+- [x] Wire buttons via `GameContext` (`onStartGame`, `onStartAlgorithm`, `onToggleRules`).
+      "See rules" toggles a Rules overlay (extracted to [components/Rules.tsx] — also
+      covers the first two P3.4 steps).
+- [x] Style the buttons as the blue pills from the mockup (Menu module css).
+- [x] Replaced the intro branch in [App.tsx] with `<Home />`; deleted the old `Intro.tsx`.
 
 ### P3.2 - Human-guessing screen
 
@@ -150,8 +150,9 @@ else is built on top of this one board.
 
 **Steps:**
 
-- [ ] Extract the inline `Rules` from [Intro.tsx] into [components/Rules.tsx].
-- [ ] Show it in an `Overlay` over the empty `Board`, opened from the menu's `See rules`.
+- [x] Extract the inline `Rules` into [components/Rules.tsx] (done during P3.5).
+- [x] Show it in an `Overlay` over the empty `Board`, opened from the menu's `See rules`.
+- [ ] Polish the rules overlay layout/styling (basic version is functional).
 - [ ] (Mockup still missing — follows the main-menu layout unless we design a dedicated one.)
 
 ### P3.1 - General polish (last)

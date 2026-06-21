@@ -16,6 +16,10 @@ export interface GameContextValue {
   isCodeHidden: boolean;
   canGiveUp: boolean;
   isCompleteRow: boolean;
+  isRulesHidden: boolean;
+  onStartGame: () => void;
+  onStartAlgorithm: () => void;
+  onToggleRules: () => void;
   onPegClick: (id: number) => void;
   onChooseColor: (name: Color) => void;
   onSubmitRow: () => void;

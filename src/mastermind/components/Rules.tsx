@@ -8,6 +8,7 @@ const RULES_CODE: Color[] = ["yellow", "green", "blue", "pink"];
 const WHITE_EXAMPLE: FeedbackPeg[] = ["white", "none", "none", "none"];
 const RED_EXAMPLE: FeedbackPeg[] = ["red", "none", "none", "none"];
 
+// The game rules, shown in an Overlay over the board (from the menu's "See rules").
 const Rules = () => {
   return (
     <div>
@@ -45,30 +46,4 @@ const Rules = () => {
   );
 };
 
-interface IntroProps {
-  onStartGame: () => void;
-  onStartAlgorithm: () => void;
-  onToggleRules: () => void;
-  isRulesHidden: boolean;
-}
-
-const Intro = ({
-  onStartGame,
-  onStartAlgorithm,
-  onToggleRules,
-  isRulesHidden,
-}: IntroProps) => {
-  return (
-    <div>
-      <h1>Mastermind</h1>
-      <button onClick={onStartGame}>Start game</button>&nbsp;
-      <button onClick={onStartAlgorithm}>Play against algorithm</button>&nbsp;
-      <button onClick={onToggleRules}>
-        {isRulesHidden ? "Show" : "Hide"} Rules
-      </button>
-      {isRulesHidden ? null : <Rules />}
-    </div>
-  );
-};
-
-export default Intro;
+export default Rules;

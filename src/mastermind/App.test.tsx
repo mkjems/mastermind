@@ -32,14 +32,14 @@ describe("App", () => {
     render(<App state={initialState()} dispatch={vi.fn()} />);
 
     expect(screen.getByRole("heading", { name: "Mastermind" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Start game" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Play a game" })).toBeTruthy();
   });
 
   it("dispatches start game from the intro screen", () => {
     const dispatch = vi.fn();
 
     render(<App state={initialState()} dispatch={dispatch} />);
-    fireEvent.click(screen.getByRole("button", { name: "Start game" }));
+    fireEvent.click(screen.getByRole("button", { name: "Play a game" }));
 
     expect(dispatch).toHaveBeenCalledWith(startGame());
   });

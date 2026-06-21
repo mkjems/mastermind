@@ -1,7 +1,7 @@
 import React from "react";
 import type { Dispatch } from "react";
 import Gameplay from "./components/Gameplay";
-import Intro from "./components/Intro";
+import Home from "./components/Home";
 import AlgorithmGame from "./components/AlgorithmGame";
 
 import { GameContext } from "./GameContext";
@@ -55,6 +55,10 @@ function App({ state, dispatch }: AppProps) {
     isCodeHidden: isCodeHidden(gameStatus),
     canGiveUp: canGiveUp(gameStatus),
     isCompleteRow,
+    isRulesHidden,
+    onStartGame: () => dispatch(startGame()),
+    onStartAlgorithm: () => dispatch(startAlgorithm()),
+    onToggleRules: () => dispatch(toggleRules()),
     onPegClick: (id) => dispatch(showColorPickerAction(id)),
     onChooseColor: (name) => dispatch(chooseColorAndAdvance(name)),
     onSubmitRow: () => dispatch(submitRow()),
@@ -69,14 +73,7 @@ function App({ state, dispatch }: AppProps) {
 
   let screen: React.ReactNode;
   if (gameStatus === GAME_STATUS_INTRO) {
-    screen = (
-      <Intro
-        isRulesHidden={isRulesHidden}
-        onToggleRules={() => dispatch(toggleRules())}
-        onStartGame={() => dispatch(startGame())}
-        onStartAlgorithm={() => dispatch(startAlgorithm())}
-      />
-    );
+    screen = <Home />;
   } else if (mode === "algorithm") {
     screen = <AlgorithmGame />;
   } else {

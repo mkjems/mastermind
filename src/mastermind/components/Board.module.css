@@ -1,6 +1,10 @@
-/* Positioned frame so an Overlay (position: absolute) fills the board area. */
+/* Positioned frame so an Overlay (position: absolute) fills the board area. It
+   takes the board's place in the #app grid (the inner .board is no longer the
+   direct grid child); ignored harmlessly when .frame isn't a grid item. */
 .frame {
   position: relative;
+  grid-column: 2;
+  grid-row: 2;
 }
 
 /* The cover + rows stack. In algorithm mode it's reversed, so the cover (the

@@ -1,0 +1,24 @@
+.title {
+  color: #fff;
+  font-weight: 400;
+  font-size: 2.6rem;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+/* Blue pill buttons, stacked vertically by the Overlay panel's flex column. */
+.button {
+  background-color: #2f7bf6;
+  color: #fff;
+  border: 0;
+  border-radius: 22px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  min-width: 170px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #1f6ae8;
+  color: #fff;
+}
