@@ -131,17 +131,22 @@ else is built on top of this one board.
 
 **Steps:**
 
-- [ ] Render algorithm mode through the **same `Board`**, orientation reversed, cover at
-      the **bottom**.
-- [ ] Setup: fold `SecretSetup` into the board flow — picking the secret targets the
-      **bottom** row and feels like guessing (reuse the picker pattern).
-- [ ] Play: the computer's guesses (domes) appear bottom→up; score the active guess with
-      `FeedbackPicker` (red / white / ✗) in the footer.
-- [ ] **Peek button** in the footer: toggles a transient flag → `coverState='peek'` so
-      the bottom cover lifts partially; release/toggle returns to `closed`.
-- [ ] Once the merged board handles all of this, **delete** `AlgorithmGame`,
-      `AlgorithmBoard`, `SecretBar`, `AlgorithmResult`, and `SecretSetup` (and their
-      tests/imports). Keep the solver and reducers untouched.
+- [x] Render algorithm mode through the **same `Board`** (orientation `bottom-up`, cover
+      at the bottom). [AlgorithmGame.tsx] now composes `Board` for play + result.
+- [x] Setup: [SecretSetup.tsx] rewritten to render through `Board` — the target row +
+      mushroom palette + ✓ live in the footer at the bottom, picked like guessing.
+- [x] Play: computer guesses (domes) build bottom→up; the active guess is scored with
+      `FeedbackPicker` in the footer. The "thinking" beat is preserved via Board's new
+      `revealedRows` prop (the fresh guess is withheld until revealed).
+- [x] **Peek button** in the footer toggles `coverState='peek'` to lift the bottom cover;
+      toggling again (or game over → `open`) returns it. Board gained `coverState`,
+      `revealedRows`, and `interactive` props to support all this.
+- [x] Deleted `AlgorithmBoard`, `AlgorithmResult`, `SecretBar`. Solver + reducers
+      untouched. **Deviations:** kept `SecretSetup` (rewritten through `Board`) and
+      `AlgorithmGame` (now the single algorithm entry) rather than deleting them — both
+      hold genuinely distinct logic and folding them in would bloat one file.
+- [ ] **P3.1 polish:** in the mockup the feedback controls sit just above the active
+      guess; currently they're in the bottom footer. Reposition during the polish pass.
 
 ### P3.4 - Rules page
 
