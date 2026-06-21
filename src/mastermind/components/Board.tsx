@@ -97,9 +97,10 @@ const Board = ({
             );
           })}
         </div>
+
+        {footer ? <div className={styles.footer}>{footer}</div> : null}
       </BoardRidge>
 
-      {footer ? <div className="bottom-part">{footer}</div> : null}
       {overlay}
     </div>
   );
