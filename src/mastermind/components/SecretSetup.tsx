@@ -1,76 +1,70 @@
 import React, { useState } from "react";
 
 import { useGame } from "../GameContext";
-import { PEG_COLORS, SIDEWAYS_COLORS } from "../script/constants";
-import type { Color } from "../types";
+import type { Color, PegValue } from "../types";
 import Board from "./Board";
 import BoardRidge from "./BoardRidge";
 import Peg from "./Peg";
-import PegSideways from "./PegSideways";
-import Checkmark from "./Checkmark";
+import ColorPicker from "./ColorPicker";
 
 const SECRET_LENGTH = 4;
+const EMPTY: (Color | null)[] = [null, null, null, null];
 
-// P2.4 / P3.3: the human sets the secret the computer will try to crack. It plays
-// almost like guessing — colors are picked from the mushroom palette into the framed
-// target row at the bottom (the end the computer will face). Colors must be distinct
-// (the game's codes never repeat a color), so already-picked colors are disabled.
+// P2.4 / P3.3: the human sets the secret the computer will try to crack. It works
+// exactly like picking a guess row in the human game — click a hole to select it
+// (ring highlight), pick a color from the mushroom palette to drop it in, and come
+// back to change any hole. Only the green checkmark finishes. Colors must be distinct
+// (the solver only considers codes with no repeats), so used colors are disabled.
 const SecretSetup = () => {
   const { onConfirmSecret } = useGame();
-  const [secret, setSecret] = useState<Color[]>([]);
+  const [secret, setSecret] = useState<(Color | null)[]>(EMPTY);
+  const [selected, setSelected] = useState(0);
 
-  const addColor = (color: Color) => {
-    if (secret.length >= SECRET_LENGTH || secret.includes(color)) {
+  const chooseColor = (color: Color) => {
+    if (secret.includes(color)) {
       return;
     }
-    setSecret([...secret, color]);
+    const next = [...secret];
+    next[selected] = color;
+    setSecret(next);
+    // Advance to the next empty hole, like the human picker does.
+    const nextEmpty = next.findIndex((value) => value === null);
+    if (nextEmpty !== -1) {
+      setSelected(nextEmpty);
+    }
   };
 
-  const isComplete = secret.length === SECRET_LENGTH;
+  const isComplete = secret.every((value) => value !== null);
+  const usedColors = secret.filter((value): value is Color => value !== null);
+  const confirm = () => onConfirmSecret(secret as Color[]);
 
   const footer = (
     <div>
-      <p>Set a secret code for the computer to crack.</p>
-
-      <div className="picker-box">
-        {PEG_COLORS.map((color) => {
-          const used = secret.includes(color);
-          return (
-            <div
-              key={color}
-              className="picker-color"
-              style={{
-                opacity: used ? 0.25 : 1,
-                cursor: used ? "default" : "pointer",
-              }}
-              onClick={() => addColor(color)}
-            >
-              <PegSideways colors={SIDEWAYS_COLORS[color]} />
-            </div>
-          );
-        })}
-        <Checkmark
-          onSubmitRow={() => onConfirmSecret(secret)}
-          isActive={isComplete}
-        />
-      </div>
+      <ColorPicker
+        onChooseColor={chooseColor}
+        onSubmitRow={confirm}
+        isCompleteRow={isComplete}
+        disabledColors={usedColors}
+      />
 
       <BoardRidge>
         <div className="board-row" style={{ justifyContent: "space-evenly" }}>
-          {Array.from({ length: SECRET_LENGTH }, (_, index) => (
-            <Peg
-              key={index}
-              id={index}
-              peg={secret[index] ?? "select"}
-              isSelected={index === secret.length}
-            />
-          ))}
+          {Array.from({ length: SECRET_LENGTH }, (_, index) => {
+            const value = secret[index];
+            const peg: PegValue =
+              value ?? (index === selected ? "select" : "none");
+            return (
+              <Peg
+                key={index}
+                id={index}
+                peg={peg}
+                isSelected={index === selected}
+                onPegClick={() => setSelected(index)}
+              />
+            );
+          })}
         </div>
       </BoardRidge>
-
-      <button onClick={() => setSecret([])} disabled={secret.length === 0}>
-        Clear
-      </button>
     </div>
   );
 

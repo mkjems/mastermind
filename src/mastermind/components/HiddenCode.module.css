@@ -1,25 +1,27 @@
+/* The whole secret area is the framed box, so the Peek action (in the fifth
+   column) sits inside the frame alongside the covered pegs. */
 .secret {
-  margin-bottom: 14px;
-  border: solid 0 var(--clr-board-shadow);
-}
-
-.cover {
-  border: solid 1px var(--clr-board-shadow);
   position: relative;
   overflow: hidden;
+  border: solid 1px var(--clr-board-shadow);
+  margin-bottom: 14px;
 }
 
-.hidden-row {
+/* Same shape as .board-row so the secret pegs align with the holes above. */
+.row {
   display: flex;
-  margin: 5px;
-  height: 52px;
+  height: 62px;
 }
 
-/* The cover panel sits over the whole row and animates via transform so it can
-   slide aside (open) or lift a little (peek) rather than just changing height. */
+/* The cover panel sits over the four peg columns (the first 80%) and animates via
+   transform so it can slide aside (open) or lift a little (peek). The fifth column
+   (the action) is never covered. */
 .slider {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 80%;
   background-color: var(--clr-board-bg);
   transition: transform 1.5s ease;
 }
@@ -33,5 +35,5 @@
 }
 
 .open {
-  transform: translateX(105%);
+  transform: translateX(130%);
 }

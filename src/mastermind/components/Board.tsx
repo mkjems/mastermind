@@ -70,10 +70,7 @@ const Board = ({
       <BoardRidge>
         <div className={stackClass}>
           {showCover ? (
-            <div className={styles["secret-box"]}>
-              <HiddenCode coverState={coverState} />
-              {coverAction}
-            </div>
+            <HiddenCode coverState={coverState} action={coverAction} />
           ) : null}
 
           {board.map((row, index) => {

@@ -53,8 +53,19 @@ const AlgorithmGame = () => {
     return () => clearTimeout(timer);
   }, [activeRow]);
 
+  const exitBar = (
+    <div className="exit-bar">
+      <button onClick={onResetAll}>Exit game</button>
+    </div>
+  );
+
   if (gameStatus === GAME_STATUS_ALGO_SETUP) {
-    return <SecretSetup />;
+    return (
+      <>
+        {exitBar}
+        <SecretSetup />
+      </>
+    );
   }
 
   const over =
@@ -101,7 +112,7 @@ const AlgorithmGame = () => {
   ) : null;
 
   const coverAction = over ? null : (
-    <button onClick={() => setPeeking((p) => !p)}>
+    <button className="secret-peek" onClick={() => setPeeking((p) => !p)}>
       {peeking ? "Hide" : "Peek"}
     </button>
   );
@@ -126,18 +137,21 @@ const AlgorithmGame = () => {
   }
 
   return (
-    <Board
-      orientation="bottom-up"
-      showCover
-      coverState={coverState}
-      revealedRows={revealedRows}
-      interactive={false}
-      liveFeedback={scoring ? padFeedback(entered) : undefined}
-      activeRowExtra={activeRowExtra}
-      coverAction={coverAction}
-      footer={footer}
-      overlay={overlay}
-    />
+    <>
+      {!over && exitBar}
+      <Board
+        orientation="bottom-up"
+        showCover
+        coverState={coverState}
+        revealedRows={revealedRows}
+        interactive={false}
+        liveFeedback={scoring ? padFeedback(entered) : undefined}
+        activeRowExtra={activeRowExtra}
+        coverAction={coverAction}
+        footer={footer}
+        overlay={overlay}
+      />
+    </>
   );
 };
 

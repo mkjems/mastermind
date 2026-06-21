@@ -323,3 +323,18 @@ button:hover {
   text-align: center;
   grid-column: 2;
 }
+
+/* Compact Peek/Hide button so it fits the secret's feedback-column slot. */
+.secret-peek {
+  padding: 5px 12px;
+  font-size: 0.85rem;
+}
+
+/* A control above the board (e.g. Exit game), in the grid's top row. */
+.exit-bar {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
