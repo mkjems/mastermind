@@ -11,7 +11,7 @@
 }
 
 .panel {
-  background-color: rgba(20, 20, 20, 0.92);
+  background-color: rgb(20 20 20 / 92%);
   border-radius: 16px;
   padding: 28px 24px;
   max-width: 86%;

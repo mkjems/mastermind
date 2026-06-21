@@ -4,6 +4,7 @@
   --color-green-light: #46bb33;
   --color-grey-800: #434343;
   --color-grey-900: #2c2c2c;
+
   /* Semantically named colors */
   --clr-board-bg: #333336;
   --clr-board-highlight: #564c4c;
@@ -16,15 +17,15 @@ html {
 }
 
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: inherit;
 }
 
 body {
   margin: 0;
   background-color: var(--clr-board-bg);
-  color: #ffffff;
+  color: #fff;
   font-family: sans-serif;
 }
 
@@ -50,8 +51,8 @@ a:visited {
 }
 
 div {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
 .yellow {
@@ -68,10 +69,7 @@ div {
   grid-row: 2;
   border-style: solid;
   border: #766464 solid 2px;
-  border-top-color: var(--clr-board-shadow);
-  border-left-color: var(--clr-board-shadow);
-  border-right-color: var(--clr-board-highlight);
-  border-bottom-color: var(--clr-board-highlight);
+  border-color: var(--clr-board-shadow) var(--clr-board-highlight) var(--clr-board-highlight) var(--clr-board-shadow);
 }
 
 .board-row {
@@ -100,8 +98,7 @@ div {
 
 .feedback {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   width: 20%;
   justify-content: flex-start;
   padding: 8px;
@@ -113,6 +110,7 @@ div {
   justify-content: center;
   align-items: center;
 }
+
 .feedback-hole-svg {
   fill: var(--clr-board-shadow);
 }
@@ -166,6 +164,7 @@ div {
   0% {
     stroke: #222;
   }
+
   100% {
     stroke: #999;
   }
@@ -175,6 +174,7 @@ div {
   0% {
     stroke: #111;
   }
+
   100% {
     stroke: #777;
   }
@@ -186,6 +186,7 @@ div {
 .overlay-title {
   text-align: center;
 }
+
 .sidePeg {
   width: 100%;
 }
@@ -211,13 +212,14 @@ div {
 }
 
 .picker-box {
-  -webkit-user-select: none;
+  user-select: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   margin: 0 auto;
   cursor: pointer;
 }
+
 .picker-color {
   width: 48px;
   display: flex;
@@ -230,7 +232,6 @@ div {
 .picker-checkmark {
   color: var(--color-grey-800);
   font-size: 30px;
-  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -239,6 +240,7 @@ div {
   background-color: #333;
   border-radius: 50%;
 }
+
 .picker-checkmark-active {
   color: var(--color-white);
   background-color: var(--color-green);
@@ -287,15 +289,18 @@ button:hover {
   color: #fff;
 }
 
-@media screen and (max-width: 550px) {
+@media screen and (width <= 550px) {
   .board {
   }
+
   .board-row {
     height: 60px;
   }
+
   .picker-box {
     margin: 0 auto;
   }
+
   .picker-color {
     width: 40px;
     margin: 10px;

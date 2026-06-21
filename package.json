@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json,css}\"",
     "format:check": "prettier --check \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json,css}\"",
-    "stylelint": "stylelint \"./**/*.{css,scss}\""
+    "stylelint": "stylelint --fix \"./**/*.{css,scss}\""
   },
   "keywords": [],
   "author": "",

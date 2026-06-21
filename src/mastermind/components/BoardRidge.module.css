@@ -5,9 +5,6 @@
 .inset {
   border-style: solid;
   border-width: 2px;
-  border-top-color: var(--clr-board-highlight);
-  border-left-color: var(--clr-board-highlight);
-  border-right-color: var(--clr-board-shadow);
-  border-bottom-color: var(--clr-board-shadow);
+  border-color: var(--clr-board-highlight) var(--clr-board-shadow) var(--clr-board-shadow) var(--clr-board-highlight);
   padding: 10px;
 }
