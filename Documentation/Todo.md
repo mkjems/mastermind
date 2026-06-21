@@ -185,50 +185,50 @@ else is built on top of this one board.
 
 ## P3.7 Finish 'Give feed back in algo game' from a look and feel perspective
 
-- [ ] Should look like the design
-- [ ] We are missing the green checkmark to submit. (The red x is submitting at the moment)
-- [ ] We need a new button ('<' ) to 'undo' the last score peg selection.
-- [ ] The feedback buttons themselves are the main look-and-feel problem: they
+- [x] Should look like the design
+- [x] We are missing the green checkmark to submit. (The red x is submitting at the moment)
+- [x] We need a new button ('<' ) to 'undo' the last score peg selection.
+- [x] The feedback buttons themselves are the main look-and-feel problem: they
       currently look like generic gray UI buttons with tiny symbols inside, not like
       tactile Mastermind scoring pieces.
 
 **Concrete work outline:**
 
-- [ ] Use `ALGO_GAME2_GIVE_FEEDBACK_PEEK.png` as the visual target for the active
+- [x] Use `ALGO_GAME2_GIVE_FEEDBACK_PEEK.png` as the visual target for the active
       feedback state: bottom-up board, current computer guess visible near the bottom,
       score preview shown in the row's feedback holes, scoring controls above the
       current guess, and the Peek control staying beside the covered secret.
-- [ ] Rework [FeedbackPicker.tsx](../src/mastermind/components/FeedbackPicker.tsx)
+- [x] Rework [FeedbackPicker.tsx](../src/mastermind/components/FeedbackPicker.tsx)
       from the temporary three gray capsule buttons into the intended physical
       controls: red feedback peg button, white feedback peg button, green circular
       submit/checkmark button, and a `<` undo button. Remove the red `x` as the
       submit action.
-- [ ] Make the red/white controls read as the same small feedback pegs used in the
+- [x] Make the red/white controls read as the same small feedback pegs used in the
       board's score holes, just presented as clickable pieces. The click target can
       be larger than the visible peg, but the visible control should not be a big
       gray rounded rectangle with a tiny dot in it.
-- [ ] Make the submit action match the design: a prominent green round button with
+- [x] Make the submit action match the design: a prominent green round button with
       a white checkmark, positioned with the feedback controls above the active
       guess, not as a generic form submit button.
-- [ ] Add the undo control as a subdued secondary piece so it is discoverable but
+- [x] Add the undo control as a subdued secondary piece so it is discoverable but
       does not compete visually with red/white scoring or the green submit action.
-- [ ] Update the feedback-entry flow in
+- [x] Update the feedback-entry flow in
       [AlgorithmGame.tsx](../src/mastermind/components/AlgorithmGame.tsx):
       red/white append to the current score, undo removes the latest score peg, the
       green check submits the score padded with `none`, validation errors clear on
       the next edit, and the score does not auto-submit just because four pegs were
       selected.
-- [ ] Keep using `Board`'s `liveFeedback` and `activeRowExtra` hooks, but tune the
+- [x] Keep using `Board`'s `liveFeedback` and `activeRowExtra` hooks, but tune the
       active-row layout so the controls sit visually like board pieces, not as a
       generic form block.
-- [ ] Add styling in [style/mastermind.css](../src/mastermind/style/mastermind.css)
+- [x] Add styling in [style/mastermind.css](../src/mastermind/style/mastermind.css)
       for the feedback controls: consistent peg sizing, green circular checkmark,
       compact undo button, no inline styles, and responsive spacing that still fits
       the narrow board.
-- [ ] Make interaction states explicit: undo disabled/visually muted when no score
+- [x] Make interaction states explicit: undo disabled/visually muted when no score
       has been entered, submit available for zero-to-four feedback pegs, clear
       accessible labels, and no layout shift when an error message appears.
-- [ ] Add or update tests covering red/white entry, undo, submit via the green
+- [x] Add or update tests covering red/white entry, undo, submit via the green
       checkmark, padding with `none`, and mismatch validation reset.
-- [ ] Manual QA after implementation: algorithm setup, feedback scoring, Peek/Hide,
+- [x] Manual QA after implementation: algorithm setup, feedback scoring, Peek/Hide,
       solved state, inconsistent-feedback state, desktop width, and mobile width.

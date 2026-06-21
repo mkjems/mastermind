@@ -20,8 +20,8 @@ const initialState = () => reducer(undefined, init());
 const SECRET: Color[] = ["blue", "orange", "green", "white"];
 // The computer's opening guess is deterministic; against SECRET it scores exactly
 // one white (the shared 'green', out of position) and nothing else.
-const guessingState = () =>
-  reducer(reducer(initialState(), startAlgorithm()), confirmSecret(SECRET));
+const guessingState = (secret: Color[] = SECRET) =>
+  reducer(reducer(initialState(), startAlgorithm()), confirmSecret(secret));
 
 describe("App", () => {
   afterEach(() => {
@@ -62,11 +62,51 @@ describe("App", () => {
 
     // The scoring picker appears after the computer's "thinking" beat.
     // Correct score for the opener vs SECRET: one white, then done.
-    fireEvent.click(await screen.findByRole("button", { name: "white" }));
-    fireEvent.click(screen.getByRole("button", { name: "no more pegs" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "white feedback peg" }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "submit feedback" }));
 
     expect(dispatch).toHaveBeenCalledWith(
       submitFeedback(["white", "none", "none", "none"]),
+    );
+  });
+
+  it("undoes the latest feedback peg before submitting", async () => {
+    const dispatch = vi.fn();
+    render(<App state={guessingState()} dispatch={dispatch} />);
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: "red feedback peg" }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "undo feedback peg" }));
+    fireEvent.click(screen.getByRole("button", { name: "white feedback peg" }));
+    fireEvent.click(screen.getByRole("button", { name: "submit feedback" }));
+
+    expect(dispatch).toHaveBeenCalledWith(
+      submitFeedback(["white", "none", "none", "none"]),
+    );
+  });
+
+  it("waits for the green checkmark before submitting four feedback pegs", async () => {
+    const dispatch = vi.fn();
+    const allRedSecret: Color[] = ["yellow", "green", "pink", "silver"];
+    render(<App state={guessingState(allRedSecret)} dispatch={dispatch} />);
+
+    const redPeg = await screen.findByRole("button", {
+      name: "red feedback peg",
+    });
+    fireEvent.click(redPeg);
+    fireEvent.click(redPeg);
+    fireEvent.click(redPeg);
+    fireEvent.click(redPeg);
+
+    expect(dispatch).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "submit feedback" }));
+
+    expect(dispatch).toHaveBeenCalledWith(
+      submitFeedback(["red", "red", "red", "red"]),
     );
   });
 
@@ -75,8 +115,10 @@ describe("App", () => {
     render(<App state={guessingState()} dispatch={dispatch} />);
 
     // A red is wrong here (the true score has no reds), so nothing is dispatched.
-    fireEvent.click(await screen.findByRole("button", { name: "red" }));
-    fireEvent.click(screen.getByRole("button", { name: "no more pegs" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "red feedback peg" }),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "submit feedback" }));
 
     expect(dispatch).not.toHaveBeenCalled();
     expect(screen.getByText(/doesn't match your secret/i)).toBeTruthy();

@@ -92,13 +92,18 @@ const AlgorithmGame = () => {
   };
 
   const place = (peg: FeedbackPeg) => {
-    setError(false);
-    const next = [...entered, peg];
-    if (next.length === FEEDBACK_LENGTH) {
-      finalize(next);
-    } else {
-      setEntered(next);
+    if (entered.length >= FEEDBACK_LENGTH) {
+      return;
     }
+    setError(false);
+    setEntered((current) =>
+      current.length >= FEEDBACK_LENGTH ? current : [...current, peg],
+    );
+  };
+
+  const undo = () => {
+    setError(false);
+    setEntered((current) => current.slice(0, -1));
   };
 
   const scoring = !over && ready;
@@ -107,6 +112,9 @@ const AlgorithmGame = () => {
     <FeedbackPicker
       onPlace={place}
       onFinalize={() => finalize(entered)}
+      onUndo={undo}
+      canPlace={entered.length < FEEDBACK_LENGTH}
+      canUndo={entered.length > 0}
       error={error}
     />
   ) : null;
