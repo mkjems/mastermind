@@ -3,15 +3,8 @@ import React from "react";
 import { useGame } from "../GameContext";
 import Peg from "./Peg";
 import Feedback from "./Feedback";
-import GaveUp from "./Gaveup";
-import Won from "./Won";
-import Lost from "./Lost";
 import ColorPicker from "./ColorPicker";
-import {
-  GAME_STATUS_GAVE_UP,
-  GAME_STATUS_LOST,
-  GAME_STATUS_WON,
-} from "../gameStatus";
+import { GAME_STATUS_GAVE_UP } from "../gameStatus";
 import type { FeedbackPeg, PegValue } from "../types";
 
 interface BoardRowProps {
@@ -44,10 +37,7 @@ const BoardRow = ({ pegs, feedbackPegs, isActiveRow }: BoardRowProps) => {
           <Feedback feedbackPegs={feedbackPegs} />
         </div>
       </div>
-      {isActiveRow && gameStatus === GAME_STATUS_GAVE_UP ? <GaveUp /> : null}
       {isActiveRow && showColorPicker ? <ColorPicker /> : null}
-      {isActiveRow && gameStatus === GAME_STATUS_WON ? <Won /> : null}
-      {isActiveRow && gameStatus === GAME_STATUS_LOST ? <Lost /> : null}
     </>
   );
 };

@@ -104,14 +104,16 @@ else is built on top of this one board.
 
 **Steps:**
 
-- [ ] Render human mode through `Board` (cover at **top**, rows top-down). Replace the
-      current `Gameplay` body; keep `BoardRow` for the rows.
-- [ ] **Give up → reveal:** set `coverState='open'` so the cover slides aside
-      (`translateX`). Move the give-up message into an `Overlay` panel.
-- [ ] **Win → reveal:** same slide-aside reveal on `won`; move the win message into an
-      `Overlay` panel.
-- [ ] Confirm the active hole shows the ring highlight (selected `Peg`) as in the mockup.
-- [ ] Palette stays mushroom pegs via `ColorPicker` (already `PegSideways`) + `Checkmark`.
+- [x] Render human mode through `Board` ([Gameplay.tsx] now just composes `Board` with a
+      top-down cover, a give-up footer, and the result overlay); `BoardRow` still draws rows.
+- [x] **Give up → reveal:** cover slides aside (HiddenCode derives `open` once the code is
+      revealed). Give-up message now floats in an `Overlay` panel.
+- [x] **Win → reveal:** same slide-aside reveal on `won`; win message in an `Overlay`
+      (centred, so the revealed code stays visible above it). Lost message too.
+- [x] Active hole already shows the ring highlight (selected ellipse in [Hole.tsx]).
+- [x] Palette stays mushroom pegs via `ColorPicker` (`PegSideways`) + `Checkmark` — unchanged.
+- [x] Stripped the inline Won/Lost/GaveUp out of [BoardRow.tsx] (kept the ColorPicker);
+      simplified those three to plain content for the overlay panel.
 
 ### P3.3 - Algorithm-guessing screen (uses the merged `Board`)
 
