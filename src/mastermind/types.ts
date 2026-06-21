@@ -26,7 +26,12 @@ export type Board = Row[];
 
 // 'human' — the player guesses the computer's code (the classic game).
 // 'algorithm' — the player sets a code and the computer guesses it.
-export type GameMode = "human" | "algorithm";
+export const GameMode = {
+  HUMAN: "human",
+  ALGORITHM: "algorithm",
+} as const;
+
+export type GameMode = (typeof GameMode)[keyof typeof GameMode];
 
 export interface GameState {
   board: Board;

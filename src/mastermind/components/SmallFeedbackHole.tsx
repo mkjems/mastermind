@@ -7,7 +7,7 @@ const SmallFeedbackHole = () => {
         cx="607.185"
         cy="458.336"
         r="56.058"
-        fill="#828282"
+        className="feedback-hole-svg"
         transform="translate(-551.127 -402.278)"
       />
     </svg>

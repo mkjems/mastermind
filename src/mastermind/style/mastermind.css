@@ -113,6 +113,9 @@ div {
   justify-content: center;
   align-items: center;
 }
+.feedback-hole-svg {
+  fill: var(--clr-board-shadow);
+}
 
 .svg-hole {
   width: 70%;

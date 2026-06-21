@@ -4,12 +4,13 @@ import { useGame } from "../GameContext";
 import HiddenCode from "./HiddenCode";
 import BoardRow from "./BoardRow";
 import BoardRidge from "./BoardRidge";
+import { GameMode } from "../types";
 
 const Gameplay = () => {
-  const { board, activeRow, canGiveUp, onGiveUp } = useGame();
+  const { board, activeRow, canGiveUp, onGiveUp, mode } = useGame();
   return (
     <BoardRidge>
-      <HiddenCode />
+      {mode === GameMode.HUMAN ? <HiddenCode /> : null}
 
       {board.map((row, index) => {
         return (
@@ -21,6 +22,8 @@ const Gameplay = () => {
           />
         );
       })}
+
+      {mode === GameMode.ALGORITHM ? <HiddenCode /> : null}
 
       <div className="bottom-part">
         {canGiveUp ? <button onClick={onGiveUp}>Give up</button> : null}

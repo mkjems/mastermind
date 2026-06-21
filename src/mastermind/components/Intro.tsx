@@ -59,7 +59,7 @@ const Intro = ({
   isRulesHidden,
 }: IntroProps) => {
   return (
-    <div className="board">
+    <div>
       <h1>Mastermind</h1>
       <button onClick={onStartGame}>Start game</button>&nbsp;
       <button onClick={onStartAlgorithm}>Play against algorithm</button>&nbsp;
