@@ -12,8 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\"",
-    "format:check": "prettier --check \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json}\""
+    "format": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json,css}\"",
+    "format:check": "prettier --check \"./**/*.{js,jsx,mjs,cjs,ts,tsx,json,css}\"",
+    "stylelint": "stylelint \"./**/*.{css,scss}\""
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,8 @@
     "@types/react-dom": "^19.2.3",
     "jsdom": "^29.1.1",
     "prettier": "^3.8.4",
+    "stylelint": "^17.13.0",
+    "stylelint-config-standard": "^40.0.0",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.8"
