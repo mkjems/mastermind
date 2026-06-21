@@ -30,7 +30,7 @@ body {
 
 #app {
   display: grid;
-  grid-template-columns: 1fr clamp(100px, 96%, 400px) 1fr;
+  grid-template-columns: 1fr clamp(100px, 96%, 422px) 1fr;
   grid-template-rows: 50px auto;
 }
 
@@ -215,7 +215,6 @@ div {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  width: 400px;
   margin: 0 auto;
   cursor: pointer;
 }
@@ -295,7 +294,6 @@ button:hover {
     height: 60px;
   }
   .picker-box {
-    width: 310px;
     margin: 0 auto;
   }
   .picker-color {
@@ -317,4 +315,5 @@ button:hover {
 .bottom-part {
   margin: 10px auto;
   text-align: center;
+  grid-column: 2;
 }

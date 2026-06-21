@@ -9,26 +9,30 @@ import { GameMode } from "../types";
 const Gameplay = () => {
   const { board, activeRow, canGiveUp, onGiveUp, mode } = useGame();
   return (
-    <BoardRidge>
-      {mode === GameMode.HUMAN ? <HiddenCode /> : null}
+    <>
+      <BoardRidge>
+        {mode === GameMode.HUMAN ? <HiddenCode /> : null}
 
-      {board.map((row, index) => {
-        return (
-          <BoardRow
-            key={index}
-            pegs={row.pegs}
-            feedbackPegs={row.feedback}
-            isActiveRow={activeRow === index}
-          />
-        );
-      })}
+        {board.map((row, index) => {
+          return (
+            <BoardRow
+              key={index}
+              pegs={row.pegs}
+              feedbackPegs={row.feedback}
+              isActiveRow={activeRow === index}
+            />
+          );
+        })}
 
-      {mode === GameMode.ALGORITHM ? <HiddenCode /> : null}
+        {mode === GameMode.ALGORITHM ? <HiddenCode /> : null}
+      </BoardRidge>
 
-      <div className="bottom-part">
-        {canGiveUp ? <button onClick={onGiveUp}>Give up</button> : null}
-      </div>
-    </BoardRidge>
+      {mode === GameMode.HUMAN ? (
+        <div className="bottom-part">
+          {canGiveUp ? <button onClick={onGiveUp}>Give up</button> : null}
+        </div>
+      ) : null}
+    </>
   );
 };
 
