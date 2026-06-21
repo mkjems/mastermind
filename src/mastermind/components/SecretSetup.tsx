@@ -47,24 +47,35 @@ const SecretSetup = () => {
         disabledColors={usedColors}
       />
 
-      <BoardRidge>
-        <div className="board-row" style={{ justifyContent: "space-evenly" }}>
-          {Array.from({ length: SECRET_LENGTH }, (_, index) => {
-            const value = secret[index];
-            const peg: PegValue =
-              value ?? (index === selected ? "select" : "none");
-            return (
-              <Peg
-                key={index}
-                id={index}
-                peg={peg}
-                isSelected={index === selected}
-                onPegClick={() => setSelected(index)}
-              />
-            );
-          })}
-        </div>
-      </BoardRidge>
+      {/* The secret sits in its own box below the palette. `.secret-box` pulls it out
+          to the full board width (canceling the board's inset) so its holes line up
+          with the columns above — the same alignment the play-mode cover gets for
+          free by living inside the board. The row mirrors that cover: 4 peg columns
+          plus a 5th (the feedback position), here left empty. Empty holes render as
+          "select" with isActiveRow so they pulse like the human game's guess
+          selector; the active hole also gets the ring. */}
+      <div className="secret-box">
+        <BoardRidge>
+          <div className="board-row">
+            {Array.from({ length: SECRET_LENGTH }, (_, index) => {
+              const value = secret[index];
+              const empty = value === null;
+              const peg: PegValue = value ?? "select";
+              return (
+                <Peg
+                  key={index}
+                  id={index}
+                  peg={peg}
+                  isActiveRow={empty}
+                  isSelected={index === selected}
+                  onPegClick={() => setSelected(index)}
+                />
+              );
+            })}
+            <div className="peg" />
+          </div>
+        </BoardRidge>
+      </div>
     </div>
   );
 

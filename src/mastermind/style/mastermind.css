@@ -324,6 +324,14 @@ button:hover {
   grid-column: 2;
 }
 
+/* The secret-setup box lives inside the board footer (so it's inset by the board's
+   frame). Pulling it out by that inset (16px = .board 2 + ridge 2 + inset border 2 +
+   padding 10) makes it span the full board width, so its holes line up with the
+   columns above instead of drifting inward. */
+.secret-box {
+  margin: 16px -16px 0;
+}
+
 /* Compact Peek/Hide button so it fits the secret's feedback-column slot. */
 .secret-peek {
   padding: 5px 12px;

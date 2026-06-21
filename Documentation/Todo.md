@@ -25,10 +25,10 @@ physical board in front of you — that works well on mobile and desktop.
 - Layout grid + all classes: [style/mastermind.css](../src/mastermind/style/mastermind.css)
   (`#app` grid, `.board`, `.board-row`, `.picker-box`, `.bottom-part`).
 - Board frame: [components/BoardRidge.tsx](../src/mastermind/components/BoardRidge.tsx)
-  + [BoardRidge.module.css](../src/mastermind/components/BoardRidge.module.css).
+  - [BoardRidge.module.css](../src/mastermind/components/BoardRidge.module.css).
 - Cover: [components/HiddenCode.tsx](../src/mastermind/components/HiddenCode.tsx)
-  + [HiddenCode.module.css](../src/mastermind/components/HiddenCode.module.css)
-  (currently animates `height`; needs to animate `transform`).
+  - [HiddenCode.module.css](../src/mastermind/components/HiddenCode.module.css)
+    (currently animates `height`; needs to animate `transform`).
 - Human screen: [Gameplay.tsx](../src/mastermind/components/Gameplay.tsx),
   [BoardRow.tsx](../src/mastermind/components/BoardRow.tsx),
   [ColorPicker.tsx](../src/mastermind/components/ColorPicker.tsx).
@@ -155,8 +155,7 @@ else is built on top of this one board.
 
 **Aim:**
 
-- Show the rules overlaying the empty board — much like the main menu.
-- Make a design mockup (still missing).
+-[ ] Show the rules overlaying the empty board — much like the main menu. -[ ] Make a design mockup (still missing).
 
 **Steps:**
 
@@ -177,3 +176,15 @@ else is built on top of this one board.
 - [ ] Audit: domes in holes, mushrooms in palette — confirm everywhere; remove dead
       CSS/components left over from the merge.
 - [ ] Final `npm run check` + manual pass on both modes, all reveal animations, and Peek.
+
+## P3.6 Get Select code in algo game finished from a look and feel perspective
+
+- [ ] Should look like the design
+- [x] The holes should be using the pulsating animation like the 'guess selector' in the human game.
+- [x] The secret holes should align with the other holes on the board.
+
+## P3.7 Finish 'Give feed back in algo game' from a look and feel perspective
+
+- [ ] Should look like the design
+- [ ] We are missing the green checkmark to submit. (The red x is submitting at the moment)
+- [ ] We need a new button ('<' ) to 'undo' the last score peg selection.
