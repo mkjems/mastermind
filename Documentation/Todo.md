@@ -50,27 +50,27 @@ else is built on top of this one board.
 
 **Steps:**
 
-- [ ] **Board component** — new [components/Board.tsx]. Wraps `BoardRidge` and renders
+- [x] **Board component** — new [components/Board.tsx]. Wraps `BoardRidge` and renders
       the rows from context. A single inner flex column holds `[cover, ...rows]`;
       `flex-direction: column` for human, `column-reverse` for algorithm. Because the
       cover is the first child, reversing alone moves it from top to bottom and makes
       rows build upward — covering both P3.3 orientation requirements at once.
-- [ ] Board accepts a `footer` slot (palette / feedback picker / Peek / Give-up) and an
+- [x] Board accepts a `footer` slot (palette / feedback picker / Peek / Give-up) and an
       `overlay` slot (menu / rules / win-lost-gaveup messages) so all screens compose
       through it.
-- [ ] **Cover refactor** — [HiddenCode.tsx] takes a `coverState: 'closed' | 'peek' | 'open'`
+- [x] **Cover refactor** — [HiddenCode.tsx] takes a `coverState: 'closed' | 'peek' | 'open'`
       prop instead of the boolean. Rewrite [HiddenCode.module.css]: `.slider` gets
       `transition: transform .5s ease`; `closed` = covering, `peek` =
       `translateY(-35%)` (partial lift), `open` = `translateX(105%)` (slide aside).
       Derive `coverState` from `gameStatus` (+ a transient Peek flag) in `App`/context.
-- [ ] **Overlay primitive** — new [components/Overlay.tsx] + module css: a dark, rounded,
+- [x] **Overlay primitive** — new [components/Overlay.tsx] + module css: a dark, rounded,
       centered panel rendered above the board (matches the menu mockup). Reused by P3.5
       menu and P3.4 rules.
-- [ ] Make the empty `board` data available at the intro so the menu/rules can render a
-      real board backdrop (today `App` returns `<Intro>` before building `GameContext` —
-      either build the context earlier, or pass the initial `board` to `Board` directly).
-- [ ] Keep `npm run check` green after the refactor (update `App.test.tsx` selectors as
-      components move).
+- [x] Make the empty `board` data available at the intro: `App` now builds `GameContext`
+      unconditionally and renders `Intro` inside the provider, so a `Board` backdrop can
+      mount at intro in P3.5.
+- [x] Keep `npm run check` green after the refactor (typecheck + 51 tests + build all
+      pass; the only `format:check` warning is pre-existing `package.json` drift on master).
 
 ### P3.5 - Home / Main screen (build first after foundation)
 

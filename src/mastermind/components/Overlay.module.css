@@ -1,0 +1,22 @@
+/* A dark rounded panel floating over the board, used by the main menu and the
+   rules page. It covers the board area and centres its content. */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.panel {
+  background-color: rgba(20, 20, 20, 0.92);
+  border-radius: 16px;
+  padding: 28px 24px;
+  max-width: 86%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}

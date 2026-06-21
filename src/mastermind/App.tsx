@@ -40,19 +40,6 @@ function App({ state, dispatch }: AppProps) {
     mode,
   } = state;
 
-  if (gameStatus === GAME_STATUS_INTRO) {
-    return (
-      <div>
-        <Intro
-          isRulesHidden={isRulesHidden}
-          onToggleRules={() => dispatch(toggleRules())}
-          onStartGame={() => dispatch(startGame())}
-          onStartAlgorithm={() => dispatch(startAlgorithm())}
-        />
-      </div>
-    );
-  }
-
   const isCompleteRow = board[activeRow].pegs.every(
     (peg) => peg !== "select" && peg !== "none",
   );
@@ -80,11 +67,23 @@ function App({ state, dispatch }: AppProps) {
     onSubmitFeedback: (feedback) => dispatch(submitFeedback(feedback)),
   };
 
-  return (
-    <GameContext.Provider value={game}>
-      {mode === "algorithm" ? <AlgorithmGame /> : <Gameplay />}
-    </GameContext.Provider>
-  );
+  let screen: React.ReactNode;
+  if (gameStatus === GAME_STATUS_INTRO) {
+    screen = (
+      <Intro
+        isRulesHidden={isRulesHidden}
+        onToggleRules={() => dispatch(toggleRules())}
+        onStartGame={() => dispatch(startGame())}
+        onStartAlgorithm={() => dispatch(startAlgorithm())}
+      />
+    );
+  } else if (mode === "algorithm") {
+    screen = <AlgorithmGame />;
+  } else {
+    screen = <Gameplay />;
+  }
+
+  return <GameContext.Provider value={game}>{screen}</GameContext.Provider>;
 }
 
 export default App;

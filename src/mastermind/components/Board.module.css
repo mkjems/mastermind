@@ -1,0 +1,16 @@
+/* Positioned frame so an Overlay (position: absolute) fills the board area. */
+.frame {
+  position: relative;
+}
+
+/* The cover + rows stack. In algorithm mode it's reversed, so the cover (the
+   first child) ends up at the bottom and the rows build upward — one flip handles
+   both the secret-at-the-bottom and rows-go-up requirements. */
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+.reversed {
+  flex-direction: column-reverse;
+}

@@ -15,15 +15,23 @@
   height: 52px;
 }
 
+/* The cover panel sits over the whole row and animates via transform so it can
+   slide aside (open) or lift a little (peek) rather than just changing height. */
 .slider {
   position: absolute;
-  bottom: 0;
-  height: 0;
-  left: 0;
-  width: 100%;
+  inset: 0;
   background-color: var(--clr-board-bg);
+  transition: transform 0.5s ease;
 }
 
-.sliderClosed {
-  height: 100%;
+.closed {
+  transform: translateX(0);
+}
+
+.peek {
+  transform: translateY(-38%);
+}
+
+.open {
+  transform: translateX(105%);
 }
