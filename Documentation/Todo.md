@@ -2,24 +2,167 @@
 
 ## P3 - Improve design
 
-Goal: To have a beautiful master mind game that works well on mobile as well as desktop
+Goal: A beautiful skeuomorphic Mastermind game — it should look and feel like a
+physical board in front of you — that works well on mobile and desktop.
 
-P3.1 - General things
+### Locked design decisions
 
-- [x] Body Background-color should be slightly lighter
-- [x] Components should have transparent background
-- [x] Board should scale to fit screen but clamped.
-- [ ] The whole design should scale
+- **Full merge:** one shared `Board` component renders both modes. Orientation is
+  flipped with CSS (`flex-direction: column-reverse`) so the data/row order stays the
+  same and only the visuals flip. This retires the separate
+  `AlgorithmGame` / `AlgorithmBoard` tree; both modes (and the menu/rules backdrop)
+  render through the same board.
+- **Peg styling:** placed pegs in holes render as round glossy **domes** (`Peg`,
+  top-down view); the color **palette / picker** uses the illustrated **mushroom**
+  pegs (`PegIllu` top-view, `PegSideways` side-view).
+- **Animated cover:** one `HiddenCode` cover with three states — `closed`, `peek`
+  (partial lift, `translateY`), `open` (slid aside, `translateX`). Reused for
+  reveal-on-win, reveal-on-give-up, and the Peek button.
+- Build order: **P3.0 foundation → P3.5 → P3.2 → P3.3 → P3.4 → P3.1 polish.**
 
-P3.2 - human-guess screen
+### Key files (current state)
 
-P3.3 - algo-guess screen
+- Layout grid + all classes: [style/mastermind.css](../src/mastermind/style/mastermind.css)
+  (`#app` grid, `.board`, `.board-row`, `.picker-box`, `.bottom-part`).
+- Board frame: [components/BoardRidge.tsx](../src/mastermind/components/BoardRidge.tsx)
+  + [BoardRidge.module.css](../src/mastermind/components/BoardRidge.module.css).
+- Cover: [components/HiddenCode.tsx](../src/mastermind/components/HiddenCode.tsx)
+  + [HiddenCode.module.css](../src/mastermind/components/HiddenCode.module.css)
+  (currently animates `height`; needs to animate `transform`).
+- Human screen: [Gameplay.tsx](../src/mastermind/components/Gameplay.tsx),
+  [BoardRow.tsx](../src/mastermind/components/BoardRow.tsx),
+  [ColorPicker.tsx](../src/mastermind/components/ColorPicker.tsx).
+- Algorithm screen (to retire): [AlgorithmGame.tsx](../src/mastermind/components/AlgorithmGame.tsx),
+  [AlgorithmBoard.tsx](../src/mastermind/components/AlgorithmBoard.tsx),
+  [SecretBar.tsx](../src/mastermind/components/SecretBar.tsx),
+  [SecretSetup.tsx](../src/mastermind/components/SecretSetup.tsx),
+  [AlgorithmResult.tsx](../src/mastermind/components/AlgorithmResult.tsx).
+- Intro: [Intro.tsx](../src/mastermind/components/Intro.tsx) (title, buttons, inline `Rules`).
+- Wiring: [App.tsx](../src/mastermind/App.tsx), [GameContext.ts](../src/mastermind/GameContext.ts).
 
-- [ ] I want the secret code to be at the bottom of the screen to give impression that
+---
 
-P3.4 - Rules page
+### P3.0 - Shared foundation (do first — unblocks everything)
 
-P3.5 - Home screen
+**Aim:** Maybe we should unite the `<Gameplay>` and `<AlgorithmGame>` components and
+have one that can handle both (and maybe also the main screen background). Everything
+else is built on top of this one board.
 
-- [ ] I still want the dimensions of the board to be present
-- [ ] Main menu buttons should be stacked vertically
+**Steps:**
+
+- [ ] **Board component** — new [components/Board.tsx]. Wraps `BoardRidge` and renders
+      the rows from context. A single inner flex column holds `[cover, ...rows]`;
+      `flex-direction: column` for human, `column-reverse` for algorithm. Because the
+      cover is the first child, reversing alone moves it from top to bottom and makes
+      rows build upward — covering both P3.3 orientation requirements at once.
+- [ ] Board accepts a `footer` slot (palette / feedback picker / Peek / Give-up) and an
+      `overlay` slot (menu / rules / win-lost-gaveup messages) so all screens compose
+      through it.
+- [ ] **Cover refactor** — [HiddenCode.tsx] takes a `coverState: 'closed' | 'peek' | 'open'`
+      prop instead of the boolean. Rewrite [HiddenCode.module.css]: `.slider` gets
+      `transition: transform .5s ease`; `closed` = covering, `peek` =
+      `translateY(-35%)` (partial lift), `open` = `translateX(105%)` (slide aside).
+      Derive `coverState` from `gameStatus` (+ a transient Peek flag) in `App`/context.
+- [ ] **Overlay primitive** — new [components/Overlay.tsx] + module css: a dark, rounded,
+      centered panel rendered above the board (matches the menu mockup). Reused by P3.5
+      menu and P3.4 rules.
+- [ ] Make the empty `board` data available at the intro so the menu/rules can render a
+      real board backdrop (today `App` returns `<Intro>` before building `GameContext` —
+      either build the context earlier, or pass the initial `board` to `Board` directly).
+- [ ] Keep `npm run check` green after the refactor (update `App.test.tsx` selectors as
+      components move).
+
+### P3.5 - Home / Main screen (build first after foundation)
+
+**Aim:**
+
+- Home screen should show the main menu overlaying an 'empty' board.
+- The background board should be a real rendered board, not an image.
+- Main menu buttons should be stacked vertically.
+
+**Steps:**
+
+- [ ] Render the empty `Board` (real holes, no game) as the backdrop — drop any
+      image-based background.
+- [ ] New [components/Menu.tsx]: `Overlay` panel with the `Mastermind` title and three
+      **vertically stacked** buttons — `Play a game`, `Play algorithm`, `See rules`.
+- [ ] Wire buttons to existing actions: `startGame`, `startAlgorithm`, and a rules toggle
+      (reuse `toggleRules`) that opens the P3.4 rules overlay.
+- [ ] Style the buttons as the blue pills from the mockup (extend `button` rules or a
+      Menu module css).
+- [ ] Replace the early `<Intro>` return in [App.tsx] with the board + `Menu` overlay.
+
+### P3.2 - Human-guessing screen
+
+**Aim:**
+
+- The secret code should be at the **top** of the screen and guessing should look like
+  it does now.
+- If the user gives up there should be an animation revealing the code by sliding the
+  cover to the side (CSS transform).
+- If the user guesses the code there should be a reveal of the code using an animation.
+
+**Steps:**
+
+- [ ] Render human mode through `Board` (cover at **top**, rows top-down). Replace the
+      current `Gameplay` body; keep `BoardRow` for the rows.
+- [ ] **Give up → reveal:** set `coverState='open'` so the cover slides aside
+      (`translateX`). Move the give-up message into an `Overlay` panel.
+- [ ] **Win → reveal:** same slide-aside reveal on `won`; move the win message into an
+      `Overlay` panel.
+- [ ] Confirm the active hole shows the ring highlight (selected `Peg`) as in the mockup.
+- [ ] Palette stays mushroom pegs via `ColorPicker` (already `PegSideways`) + `Checkmark`.
+
+### P3.3 - Algorithm-guessing screen (uses the merged `Board`)
+
+**Aim:**
+
+- The secret code should be at the **bottom** of the screen, to give the impression
+  that you are playing at the opposite end from the computer.
+- The guessing rows should start from the bottom and progress upwards.
+- Human feedback is given in much the same way as guessing — only using the other
+  (red/white) pegs.
+- When the human sets the code it should be done almost like guessing the code, but the
+  'target' is visually the bottom row.
+- When the user gives feedback there should be a 'Peek' button that lifts the cover of
+  the secret code a little bit (humans forget such things easily).
+
+**Steps:**
+
+- [ ] Render algorithm mode through the **same `Board`**, orientation reversed, cover at
+      the **bottom**.
+- [ ] Setup: fold `SecretSetup` into the board flow — picking the secret targets the
+      **bottom** row and feels like guessing (reuse the picker pattern).
+- [ ] Play: the computer's guesses (domes) appear bottom→up; score the active guess with
+      `FeedbackPicker` (red / white / ✗) in the footer.
+- [ ] **Peek button** in the footer: toggles a transient flag → `coverState='peek'` so
+      the bottom cover lifts partially; release/toggle returns to `closed`.
+- [ ] Once the merged board handles all of this, **delete** `AlgorithmGame`,
+      `AlgorithmBoard`, `SecretBar`, `AlgorithmResult`, and `SecretSetup` (and their
+      tests/imports). Keep the solver and reducers untouched.
+
+### P3.4 - Rules page
+
+**Aim:**
+
+- Show the rules overlaying the empty board — much like the main menu.
+- Make a design mockup (still missing).
+
+**Steps:**
+
+- [ ] Extract the inline `Rules` from [Intro.tsx] into [components/Rules.tsx].
+- [ ] Show it in an `Overlay` over the empty `Board`, opened from the menu's `See rules`.
+- [ ] (Mockup still missing — follows the main-menu layout unless we design a dedicated one.)
+
+### P3.1 - General polish (last)
+
+**Aim:** Tie it all together — consistent, responsive, and clean.
+
+**Steps:**
+
+- [ ] Responsive sizing pass for mobile and desktop (review `#app` grid + the
+      `max-width: 550px` block in [mastermind.css]).
+- [ ] Consistent skeuomorphic board/ridge/hole/peg styling across all screens.
+- [ ] Audit: domes in holes, mushrooms in palette — confirm everywhere; remove dead
+      CSS/components left over from the merge.
+- [ ] Final `npm run check` + manual pass on both modes, all reveal animations, and Peek.
