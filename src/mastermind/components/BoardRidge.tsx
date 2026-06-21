@@ -9,7 +9,7 @@ interface Props {
 const BoardRidge = ({ children }: Props) => {
   return (
     <div className="board">
-      <div className={styles.ridgeBottom}>
+      <div className={styles["ridge-bottom"]}>
         <div className={styles.inset}>{children}</div>
       </div>
     </div>

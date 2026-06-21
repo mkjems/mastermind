@@ -5,7 +5,7 @@ import { useGame } from "../GameContext";
 const Won = () => {
   const { onResetAll, activeRow } = useGame();
   return (
-    <div className="board statusMessages">
+    <div className="board status-messages">
       <p>You solved the secret code in {activeRow + 1} attempts!</p>
       <button onClick={onResetAll}>Ok</button>
     </div>

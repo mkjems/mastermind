@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 
-.hiddenRow {
+.hidden-row {
   display: flex;
   margin: 5px;
   height: 52px;

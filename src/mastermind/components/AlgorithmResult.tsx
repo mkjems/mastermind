@@ -25,7 +25,7 @@ const AlgorithmResult = () => {
         </div>
       ))}
 
-      <div className="board statusMessages">
+      <div className="board status-messages">
         {solved ? (
           <p>The computer cracked your code in {activeRow + 1} guesses!</p>
         ) : (

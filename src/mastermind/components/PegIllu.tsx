@@ -9,7 +9,7 @@ interface PegIlluProps {
 
 const PegIllu = ({ isSelected = false, colors }: PegIlluProps) => {
   return (
-    <svg viewBox="0 0 269.15568 267.25497" className="pegIllu">
+    <svg viewBox="0 0 269.15568 267.25497" className="peg-illu">
       {isSelected ? (
         <ellipse
           cx="134.578"

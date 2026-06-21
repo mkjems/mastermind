@@ -69,7 +69,8 @@ div {
   grid-row: 2;
   border-style: solid;
   border: #766464 solid 2px;
-  border-color: var(--clr-board-shadow) var(--clr-board-highlight) var(--clr-board-highlight) var(--clr-board-shadow);
+  border-color: var(--clr-board-shadow) var(--clr-board-highlight)
+    var(--clr-board-highlight) var(--clr-board-shadow);
 }
 
 .board-row {
@@ -84,7 +85,7 @@ div {
   width: 20%;
 }
 
-.peg__secret {
+.peg-secret {
   width: 25%;
 }
 
@@ -187,15 +188,15 @@ div {
   text-align: center;
 }
 
-.sidePeg {
+.side-peg {
   width: 100%;
 }
 
-.pegIllu {
+.peg-illu {
   width: 70%;
 }
 
-.pegIllu-halo {
+.peg-illu-halo {
   animation: pulse 1.8s infinite;
   animation-direction: alternate-reverse;
   animation-timing-function: linear;
@@ -254,7 +255,7 @@ div {
 .picker-checkmark-span {
 }
 
-.showPointer {
+.show-pointer {
   cursor: pointer;
 }
 
@@ -264,7 +265,7 @@ div {
   cursor: pointer;
 }
 
-.statusMessages {
+.status-messages {
   text-align: center;
 }
 

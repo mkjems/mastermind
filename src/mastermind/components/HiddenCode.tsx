@@ -22,7 +22,7 @@ const HiddenCode = ({ coverState }: Props) => {
   return (
     <div className={styles.secret}>
       <div className={styles.cover}>
-        <div className={styles.hiddenRow}>
+        <div className={styles["hidden-row"]}>
           {secretCode.map((peg, index) => {
             return <Peg key={index} id={index} peg={peg} />;
           })}

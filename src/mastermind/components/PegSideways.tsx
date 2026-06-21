@@ -8,7 +8,7 @@ interface PegSidewaysProps {
 
 const PegSideways = ({ colors }: PegSidewaysProps) => {
   return (
-    <svg viewBox="0 0 99.828297 114.93159" className="sidePeg">
+    <svg viewBox="0 0 99.828297 114.93159" className="side-peg">
       <g transform="translate(-37.84 -859.206)">
         <path d="M71.116 900.59h33.276v73.547H71.116z" fill={colors.stem} />
         <path
