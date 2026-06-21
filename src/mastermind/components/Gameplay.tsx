@@ -3,12 +3,14 @@ import React from "react";
 import { useGame } from "../GameContext";
 import HiddenCode from "./HiddenCode";
 import BoardRow from "./BoardRow";
+import BoardRidge from "./BoardRidge";
 
 const Gameplay = () => {
   const { board, activeRow, canGiveUp, onGiveUp } = useGame();
   return (
-    <div className="board">
+    <BoardRidge>
       <HiddenCode />
+
       {board.map((row, index) => {
         return (
           <BoardRow
@@ -19,10 +21,11 @@ const Gameplay = () => {
           />
         );
       })}
-      <div className="board bottom-part">
+
+      <div className="bottom-part">
         {canGiveUp ? <button onClick={onGiveUp}>Give up</button> : null}
       </div>
-    </div>
+    </BoardRidge>
   );
 };
 

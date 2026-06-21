@@ -26,13 +26,13 @@ const AlgorithmBoard = () => {
     <div>
       <SecretBar />
 
-      <p className="board" style={{ textAlign: "center" }}>
+      <p style={{ textAlign: "center" }}>
         Score each guess: red = right color &amp; place, white = right color
         only.
       </p>
 
       {board.slice(0, activeRow).map((row, index) => (
-        <div className="board" key={index}>
+        <div key={index}>
           <div className="board-row">
             {row.pegs.map((peg, pegIndex) => (
               <Peg key={pegIndex} id={pegIndex} peg={peg} />
@@ -44,7 +44,7 @@ const AlgorithmBoard = () => {
 
       {ready ? (
         <>
-          <div className="board">
+          <div>
             <div className="board-row" style={{ outline: "2px solid #888" }}>
               {board[activeRow].pegs.map((peg, pegIndex) => (
                 <Peg key={pegIndex} id={pegIndex} peg={peg} />
@@ -57,9 +57,7 @@ const AlgorithmBoard = () => {
           />
         </>
       ) : (
-        <p className="board" style={{ textAlign: "center" }}>
-          The computer is thinking…
-        </p>
+        <p style={{ textAlign: "center" }}>The computer is thinking…</p>
       )}
     </div>
   );

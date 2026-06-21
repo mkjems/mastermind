@@ -25,7 +25,7 @@ const SecretSetup = () => {
   const isComplete = secret.length === SECRET_LENGTH;
 
   return (
-    <div className="board">
+    <div>
       <h2>Set a secret code</h2>
       <p>Pick 4 different colors for the computer to crack.</p>
 

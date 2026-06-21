@@ -1,0 +1,13 @@
+.ridgeBottom {
+  border: var(--clr-board-bg) solid 2px;
+}
+
+.inset {
+  border-style: solid;
+  border-width: 2px;
+  border-top-color: var(--clr-board-highlight);
+  border-left-color: var(--clr-board-highlight);
+  border-right-color: var(--clr-board-shadow);
+  border-bottom-color: var(--clr-board-shadow);
+  padding: 10px;
+}

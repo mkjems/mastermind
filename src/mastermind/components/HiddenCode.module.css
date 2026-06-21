@@ -1,0 +1,29 @@
+.secret {
+  margin-bottom: 14px;
+  border: solid 0 var(--clr-board-shadow);
+}
+
+.cover {
+  border: solid 1px var(--clr-board-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.hiddenRow {
+  display: flex;
+  margin: 5px;
+  height: 52px;
+}
+
+.slider {
+  position: absolute;
+  bottom: 0;
+  height: 0;
+  left: 0;
+  width: 10%;
+  background-color: var(--clr-board-bg);
+}
+
+.sliderClosed {
+  height: 100%;
+}

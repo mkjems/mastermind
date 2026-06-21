@@ -2,21 +2,25 @@ import React from "react";
 
 import { useGame } from "../GameContext";
 import Peg from "./Peg";
+import styles from "./HiddenCode.module.css";
 
-const HiddenCode = () => {
+interface Params {}
+
+const HiddenCode = (params: Params) => {
   const { secretCode, isCodeHidden } = useGame();
-
   return (
-    <div className="board board__secret">
-      <div className="cover">
-        <div className="hidden-row">
+    <div className={styles.secret}>
+      <div className={styles.cover}>
+        <div className={styles.hiddenRow}>
           {secretCode.map((peg, index) => {
             return <Peg key={index} id={index} peg={peg} />;
           })}
         </div>
         <div
           className={
-            isCodeHidden ? "cover-slider cover-slider_closed" : "cover-slider"
+            isCodeHidden
+              ? `${styles.slider} ${styles.sliderClosed}`
+              : styles.slider
           }
         ></div>
       </div>

@@ -15,7 +15,7 @@ const AlgorithmResult = () => {
       <SecretBar />
 
       {board.slice(0, activeRow + 1).map((row, index) => (
-        <div className="board" key={index}>
+        <div key={index}>
           <div className="board-row">
             {row.pegs.map((peg, pegIndex) => (
               <Peg key={pegIndex} id={pegIndex} peg={peg} />

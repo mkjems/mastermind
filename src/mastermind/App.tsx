@@ -81,11 +81,9 @@ function App({ state, dispatch }: AppProps) {
   };
 
   return (
-    <div>
-      <GameContext.Provider value={game}>
-        {mode === "algorithm" ? <AlgorithmGame /> : <Gameplay />}
-      </GameContext.Provider>
-    </div>
+    <GameContext.Provider value={game}>
+      {mode === "algorithm" ? <AlgorithmGame /> : <Gameplay />}
+    </GameContext.Provider>
   );
 }
 
