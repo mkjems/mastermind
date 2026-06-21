@@ -18,3 +18,16 @@
 .reversed {
   flex-direction: column-reverse;
 }
+
+/* The secret cover and its action (Peek) side by side as one box. */
+.secret-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.secret-box > :first-child {
+  flex: 1;
+  margin-bottom: 0;
+}

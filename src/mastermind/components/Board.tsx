@@ -28,7 +28,15 @@ interface BoardProps {
   // Whether a row can be the active, clickable one. Off in algorithm mode, where
   // the human never fills a row (the computer guesses).
   interactive?: boolean;
-  // Controls below the board (palette, feedback picker, Peek, Give up).
+  // Feedback to show on the active row instead of its stored value — algorithm mode
+  // uses it to show the score being entered live against the computer's guess.
+  liveFeedback?: FeedbackPeg[];
+  // Content rendered next to the active row (e.g. the feedback scoring buttons). In
+  // bottom-up orientation it appears just above the active guess.
+  activeRowExtra?: React.ReactNode;
+  // Content rendered beside the cover (e.g. the Peek button), inside the secret box.
+  coverAction?: React.ReactNode;
+  // Controls below the board (palette, Give up, status text).
   footer?: React.ReactNode;
   // A panel floating over the board (main menu, rules, result message).
   overlay?: React.ReactNode;
@@ -44,6 +52,9 @@ const Board = ({
   coverState,
   revealedRows,
   interactive = true,
+  liveFeedback,
+  activeRowExtra,
+  coverAction,
   footer,
   overlay,
 }: BoardProps) => {
@@ -58,17 +69,31 @@ const Board = ({
     <div className={styles.frame}>
       <BoardRidge>
         <div className={stackClass}>
-          {showCover ? <HiddenCode coverState={coverState} /> : null}
+          {showCover ? (
+            <div className={styles["secret-box"]}>
+              <HiddenCode coverState={coverState} />
+              {coverAction}
+            </div>
+          ) : null}
 
           {board.map((row, index) => {
             const hidden = index >= shown;
+            const isActive = index === activeRow;
+            const feedback =
+              isActive && !hidden && liveFeedback
+                ? liveFeedback
+                : hidden
+                  ? BLANK_FEEDBACK
+                  : row.feedback;
             return (
-              <BoardRow
-                key={index}
-                pegs={hidden ? BLANK_PEGS : row.pegs}
-                feedbackPegs={hidden ? BLANK_FEEDBACK : row.feedback}
-                isActiveRow={interactive && activeRow === index}
-              />
+              <React.Fragment key={index}>
+                <BoardRow
+                  pegs={hidden ? BLANK_PEGS : row.pegs}
+                  feedbackPegs={feedback}
+                  isActiveRow={interactive && isActive}
+                />
+                {isActive && activeRowExtra ? activeRowExtra : null}
+              </React.Fragment>
             );
           })}
         </div>

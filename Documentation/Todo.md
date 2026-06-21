@@ -145,8 +145,11 @@ else is built on top of this one board.
       untouched. **Deviations:** kept `SecretSetup` (rewritten through `Board`) and
       `AlgorithmGame` (now the single algorithm entry) rather than deleting them — both
       hold genuinely distinct logic and folding them in would bloat one file.
-- [ ] **P3.1 polish:** in the mockup the feedback controls sit just above the active
-      guess; currently they're in the bottom footer. Reposition during the polish pass.
+- [x] **Polish (img 2/3):** feedback scoring lifted into [AlgorithmGame.tsx]; the score
+      shows live as dots on the guess row (Board `liveFeedback`), the red/white/✗ buttons
+      sit just above the guess (Board `activeRowExtra`), and Peek sits beside the secret
+      in a bottom box (Board `coverAction` + `.secret-box`). [FeedbackPicker.tsx] is now a
+      controlled buttons+error component.
 
 ### P3.4 - Rules page
 
