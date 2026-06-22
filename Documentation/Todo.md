@@ -245,9 +245,9 @@ same VPS, and automate deploys from `master`.
 - [ ] Decide the VPS deploy directory, for example
       `/opt/mastermind/<instance-name>`.
 - [ ] Decide which reverse proxy owns public HTTPS on the VPS (`nginx`,
-      `Caddy`, `Traefik`, or existing VPS setup).
+      `Caddy`, `Traefik`, or existing VPS setup). - Answer: Caddy
 - [ ] Decide whether the production image is built on the VPS from a git pull
-      (current plan) or built in GitHub Actions and pushed to a registry.
+      (current plan) or built in GitHub Actions and pushed to a registry. - Answer: it is pushed to a registry.
 - [ ] Decide a naming convention for multiple instances: compose project name,
       container name, domain, and local upstream port/service name.
 
