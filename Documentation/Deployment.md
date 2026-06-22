@@ -45,3 +45,23 @@ The planned GHCR image is:
 ```text
 ghcr.io/mkjems/mastermind:latest
 ```
+
+## Local Docker Check
+
+Build the production image:
+
+```sh
+docker build -t ghcr.io/mkjems/mastermind:latest .
+```
+
+Run Mastermind locally on host port `8081`, mapped to the container's internal
+port `8080`:
+
+```sh
+docker run --rm -p 8081:8080 ghcr.io/mkjems/mastermind:latest
+```
+
+This means `http://localhost:8081` serves Mastermind. It is fine if another
+project, such as Gunfight, is already using `http://localhost:8080`; each
+project needs its own host port, while the containers can all use internal port
+`8080`.

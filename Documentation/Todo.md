@@ -268,11 +268,11 @@ unique private localhost port.
 - [x] Add a [.dockerignore](../.dockerignore) that excludes `node_modules`,
       `dist`, local logs, editor files, and git metadata from the Docker build
       context.
-- [ ] Build the image locally with Docker/OrbStack/Apple container tooling and
+- [x] Build the image locally with Docker/OrbStack/Apple container tooling and
       tag it as `ghcr.io/mkjems/mastermind:latest` for parity with CI.
-- [ ] Run the production container locally with a host-port mapping to internal
+- [x] Run the production container locally with a host-port mapping to internal
       port `8080`.
-- [ ] Verify the app loads from the local container and that browser refreshes
+- [x] Verify the app loads from the local container and that browser refreshes
       still return the SPA.
 - [x] Decide whether to add a dedicated `npm run check:deploy` script or use
       the existing `npm run check` directly in the GitHub Action. Decision: use
