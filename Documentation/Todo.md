@@ -324,7 +324,9 @@ unique private localhost port.
 - [x] Add a post-deploy smoke check that verifies
       `https://mastermind.mkjems.dk` returns the built app.
 - [ ] Confirm a push to `master` deploys successfully and leaves the old
-      container replaced by the new one.
+      container replaced by the new one. First attempt: `check` and `build`
+      passed, `deploy` failed because `VPS_SSH_KEY` was not parsed as a private
+      key.
 
 ### P4.4 - Verify the live deployment
 

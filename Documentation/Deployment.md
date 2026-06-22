@@ -89,3 +89,25 @@ Required GitHub repository secrets:
 Until the first successful workflow run pushes the image, the VPS command
 `docker compose pull` will fail with `not found` for
 `ghcr.io/mkjems/mastermind:latest`.
+
+## Deployment Troubleshooting
+
+If the GitHub Actions `check` and `build` jobs pass but `deploy` fails with:
+
+```text
+ssh.ParsePrivateKey: ssh: no key found
+ssh: handshake failed: ssh: unable to authenticate
+```
+
+then the workflow reached the SSH step, but `VPS_SSH_KEY` is not a usable
+private key. Check that the GitHub secret contains the complete private key,
+including the begin/end lines:
+
+```text
+-----BEGIN OPENSSH PRIVATE KEY-----
+...
+-----END OPENSSH PRIVATE KEY-----
+```
+
+Do not put a public key (`ssh-ed25519 ...` or `ssh-rsa ...`) in `VPS_SSH_KEY`.
+The matching public key must be in the VPS user's `~/.ssh/authorized_keys`.
