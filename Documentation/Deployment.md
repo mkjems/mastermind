@@ -65,3 +65,27 @@ This means `http://localhost:8081` serves Mastermind. It is fine if another
 project, such as Gunfight, is already using `http://localhost:8080`; each
 project needs its own host port, while the containers can all use internal port
 `8080`.
+
+## GitHub Actions Deployment
+
+The workflow at [.github/workflows/deploy.yml](../.github/workflows/deploy.yml)
+runs on pushes to `master` and can also be started manually from GitHub Actions.
+
+The flow is:
+
+1. Run `npm ci` and `npm run check`.
+2. Build the Docker image and push `ghcr.io/mkjems/mastermind:latest` to GHCR.
+3. SSH into the VPS.
+4. Run `docker compose pull` and `docker compose up -d` in `/opt/mastermind`.
+5. Smoke-test the local container health endpoint and
+   `https://mastermind.mkjems.dk`.
+
+Required GitHub repository secrets:
+
+- `VPS_HOST`
+- `VPS_USER`
+- `VPS_SSH_KEY`
+
+Until the first successful workflow run pushes the image, the VPS command
+`docker compose pull` will fail with `not found` for
+`ghcr.io/mkjems/mastermind:latest`.

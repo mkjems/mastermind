@@ -286,11 +286,11 @@ unique private localhost port.
 - [x] Create a DNS `A` record for `mastermind.mkjems.dk` pointing to the same
       Hetzner VPS IP as `gunfight.mkjems.dk` (`178.105.241.87`; verified with
       `dig` and Caddy HTTP->HTTPS redirect).
-- [ ] SSH into the VPS and create the separate app directory:
+- [x] SSH into the VPS and create the separate app directory:
       `/opt/mastermind`.
 - [x] Check existing bound ports on the VPS with `ss -ltnp` before selecting
       Mastermind's private localhost port. Result: `127.0.0.1:8081` is free.
-- [ ] Create `/opt/mastermind/compose.yaml` with one `mastermind` service using
+- [x] Create `/opt/mastermind/compose.yaml` with one `mastermind` service using
       image `ghcr.io/mkjems/mastermind:latest`.
 - [ ] In the VPS Compose file, publish only the private localhost port
       `"127.0.0.1:8081:8080"`; do not expose a public host port.
@@ -306,22 +306,22 @@ unique private localhost port.
 
 ### P4.3 - Create github action for project that will deploy new version on pushes to master branch.
 
-- [ ] Create `.github/workflows/deploy.yml` triggered by pushes to `master`.
-- [ ] Give the workflow `contents: read` and `packages: write` permissions.
-- [ ] Add a `check` job that checks out the repo, sets up Node 22 with npm
+- [x] Create `.github/workflows/deploy.yml` triggered by pushes to `master`.
+- [x] Give the workflow `contents: read` and `packages: write` permissions.
+- [x] Add a `check` job that checks out the repo, sets up Node 22 with npm
       caching, runs `npm ci`, and runs the chosen deploy check.
-- [ ] Add a `build` job that logs in to `ghcr.io` with `GITHUB_TOKEN`, builds
+- [x] Add a `build` job that logs in to `ghcr.io` with `GITHUB_TOKEN`, builds
       the Docker image, and pushes `ghcr.io/mkjems/mastermind:latest`.
 - [ ] Add GitHub repository secrets for SSH deploy access: `VPS_HOST`,
       `VPS_USER`, and `VPS_SSH_KEY`.
 - [ ] Prepare the VPS deploy user so the SSH key can connect and the user can
       run Docker Compose in `/opt/mastermind`.
-- [ ] Add a `deploy` job using `appleboy/ssh-action` that runs:
+- [x] Add a `deploy` job using `appleboy/ssh-action` that runs:
       `cd /opt/mastermind`, `docker compose pull`, `docker compose up -d`, and
       `docker image prune -f`.
-- [ ] Make sure the image name pushed by the workflow exactly matches the image
+- [x] Make sure the image name pushed by the workflow exactly matches the image
       name in `/opt/mastermind/compose.yaml`.
-- [ ] Add a post-deploy smoke check that verifies
+- [x] Add a post-deploy smoke check that verifies
       `https://mastermind.mkjems.dk` returns the built app.
 - [ ] Confirm a push to `master` deploys successfully and leaves the old
       container replaced by the new one.
