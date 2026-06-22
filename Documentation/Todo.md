@@ -312,7 +312,7 @@ unique private localhost port.
       caching, runs `npm ci`, and runs the chosen deploy check.
 - [x] Add a `build` job that logs in to `ghcr.io` with `GITHUB_TOKEN`, builds
       the Docker image, and pushes `ghcr.io/mkjems/mastermind:latest`.
-- [ ] Add GitHub repository secrets for SSH deploy access: `VPS_HOST`,
+- [x] Add GitHub repository secrets for SSH deploy access: `VPS_HOST`,
       `VPS_USER`, and `VPS_SSH_KEY`.
 - [ ] Prepare the VPS deploy user so the SSH key can connect and the user can
       run Docker Compose in `/opt/mastermind`.
