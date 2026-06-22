@@ -253,8 +253,9 @@ unique private localhost port.
 - [x] GHCR image name: `ghcr.io/mkjems/mastermind:latest`.
 - [x] Container port: `8080`.
 - [x] Deploy branch: `master`.
-- [ ] Choose the VPS private host port after checking `ss -ltnp`; likely
-      `127.0.0.1:8081` if Gunfight keeps `127.0.0.1:8080`.
+- [x] Choose the VPS private host port after checking `ss -ltnp`:
+      `127.0.0.1:8081`. Gunfight uses `127.0.0.1:8080`; Caddy owns public
+      `80`/`443`.
 
 ### P4.1 - Make local docker file
 
@@ -282,16 +283,17 @@ unique private localhost port.
 
 ### P4.2 - Make support for multiple simultaneous docker instances running on my vps on different domains
 
-- [ ] Create a DNS `A` record for `mastermind.mkjems.dk` pointing to the same
-      Hetzner VPS IP as `gunfight.mkjems.dk`.
+- [x] Create a DNS `A` record for `mastermind.mkjems.dk` pointing to the same
+      Hetzner VPS IP as `gunfight.mkjems.dk` (`178.105.241.87`; verified with
+      `dig` and Caddy HTTP->HTTPS redirect).
 - [ ] SSH into the VPS and create the separate app directory:
       `/opt/mastermind`.
-- [ ] Check existing bound ports on the VPS with `ss -ltnp` before selecting
-      Mastermind's private localhost port.
+- [x] Check existing bound ports on the VPS with `ss -ltnp` before selecting
+      Mastermind's private localhost port. Result: `127.0.0.1:8081` is free.
 - [ ] Create `/opt/mastermind/compose.yaml` with one `mastermind` service using
       image `ghcr.io/mkjems/mastermind:latest`.
-- [ ] In the VPS Compose file, publish only a private localhost port, for
-      example `"127.0.0.1:8081:8080"`; do not expose a public host port.
+- [ ] In the VPS Compose file, publish only the private localhost port
+      `"127.0.0.1:8081:8080"`; do not expose a public host port.
 - [ ] Use `restart: unless-stopped` in the VPS Compose file.
 - [ ] If the GHCR package is private, log in once on the VPS with a GitHub token
       that has package read access.

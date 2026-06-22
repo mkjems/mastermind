@@ -19,7 +19,7 @@ Why this choice:
 
 The VPS already has Caddy on public ports `80` and `443`. Caddy should keep
 handling HTTPS and domain routing, then proxy `mastermind.mkjems.dk` to the
-container's private localhost port.
+container's private localhost port, `127.0.0.1:8081`.
 
 Target shape:
 
@@ -27,7 +27,7 @@ Target shape:
 Browser
   -> https://mastermind.mkjems.dk
   -> Caddy on the VPS
-  -> http://127.0.0.1:<unique-port>
+  -> http://127.0.0.1:8081
   -> Mastermind container port 8080
 ```
 
