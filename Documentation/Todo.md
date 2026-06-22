@@ -284,7 +284,7 @@ unique private localhost port.
 ### P4.2 - Make support for multiple simultaneous docker instances running on my vps on different domains
 
 - [x] Create a DNS `A` record for `mastermind.mkjems.dk` pointing to the same
-      Hetzner VPS IP as `gunfight.mkjems.dk` (`178.105.241.87`; verified with
+      Hetzner VPS IP as `gunfight.mkjems.dk` (ip verified with
       `dig` and Caddy HTTP->HTTPS redirect).
 - [x] SSH into the VPS and create the separate app directory:
       `/opt/mastermind`.
@@ -292,15 +292,16 @@ unique private localhost port.
       Mastermind's private localhost port. Result: `127.0.0.1:8081` is free.
 - [x] Create `/opt/mastermind/compose.yaml` with one `mastermind` service using
       image `ghcr.io/mkjems/mastermind:latest`.
-- [ ] In the VPS Compose file, publish only the private localhost port
+- [x] In the VPS Compose file, publish only the private localhost port
       `"127.0.0.1:8081:8080"`; do not expose a public host port.
-- [ ] Use `restart: unless-stopped` in the VPS Compose file.
-- [ ] If the GHCR package is private, log in once on the VPS with a GitHub token
-      that has package read access.
-- [ ] Add a `mastermind.mkjems.dk` site block to `/etc/caddy/Caddyfile` that
+- [x] Use `restart: unless-stopped` in the VPS Compose file.
+- [x] If the GHCR package is private, log in once on the VPS with a GitHub token
+      that has package read access. Result: GitHub Actions deploy can pull
+      `ghcr.io/mkjems/mastermind:latest` successfully.
+- [x] Add a `mastermind.mkjems.dk` site block to `/etc/caddy/Caddyfile` that
       reverse-proxies to Mastermind's private localhost port.
-- [ ] Validate and reload Caddy with `sudo caddy validate --config
-      /etc/caddy/Caddyfile` and `sudo systemctl reload caddy`.
+- [x] Validate and reload Caddy with `sudo caddy validate --config
+    /etc/caddy/Caddyfile` and `sudo systemctl reload caddy`.
 - [ ] Confirm Gunfight still keeps its existing route:
       `gunfight.mkjems.dk -> Caddy -> 127.0.0.1:8080`.
 
@@ -314,7 +315,7 @@ unique private localhost port.
       the Docker image, and pushes `ghcr.io/mkjems/mastermind:latest`.
 - [x] Add GitHub repository secrets for SSH deploy access: `VPS_HOST`,
       `VPS_USER`, and `VPS_SSH_KEY`.
-- [ ] Prepare the VPS deploy user so the SSH key can connect and the user can
+- [x] Prepare the VPS deploy user so the SSH key can connect and the user can
       run Docker Compose in `/opt/mastermind`.
 - [x] Add a `deploy` job using `appleboy/ssh-action` that runs:
       `cd /opt/mastermind`, `docker compose pull`, `docker compose up -d`, and
@@ -326,13 +327,15 @@ unique private localhost port.
 - [ ] Confirm a push to `master` deploys successfully and leaves the old
       container replaced by the new one. First attempt: `check` and `build`
       passed, `deploy` failed because `VPS_SSH_KEY` was not parsed as a private
-      key.
+      key. Second attempt: SSH, GHCR pull, and `docker compose up -d` worked;
+      deploy failed on the public HTTPS smoke check with a TLS error, so Caddy
+      routing/certificate setup is next.
 
 ### P4.4 - Verify the live deployment
 
-- [ ] From a local machine, run `curl -I http://mastermind.mkjems.dk` and
+- [x] From a local machine, run `curl -I http://mastermind.mkjems.dk` and
       confirm HTTP redirects to HTTPS.
-- [ ] From a local machine, run `curl -I https://mastermind.mkjems.dk` and
+- [x] From a local machine, run `curl -I https://mastermind.mkjems.dk` and
       confirm HTTPS returns the Mastermind app.
 - [ ] Confirm `https://gunfight.mkjems.dk` still works after adding
       Mastermind.
@@ -340,13 +343,13 @@ unique private localhost port.
 - [ ] On the VPS, inspect recent logs with
       `cd /opt/mastermind && docker compose logs --tail=100`.
 - [ ] Validate Caddy again after deployment with `sudo caddy validate --config
-      /etc/caddy/Caddyfile`.
+    /etc/caddy/Caddyfile`.
 - [ ] Check recent Caddy logs with `sudo journalctl -u caddy --no-pager -n
-      100` if routing or HTTPS fails.
+    100` if routing or HTTPS fails.
 
 ### P4.5 - Write documentation about how deployment is done in this project
 
-- [ ] Expand [Deployment.md](Deployment.md) with the final architecture:
+- [x] Expand [Deployment.md](Deployment.md) with the final architecture:
       GHCR image, VPS Compose file in `/opt/mastermind`, private localhost
       port, Caddy domain routing, and GitHub Actions.
 - [ ] Document local Docker usage: build, run, stop, logs, and how to change the

@@ -46,6 +46,45 @@ The planned GHCR image is:
 ghcr.io/mkjems/mastermind:latest
 ```
 
+## VPS Compose
+
+Mastermind runs from `/opt/mastermind` on the VPS. The Compose file is
+`/opt/mastermind/compose.yaml`:
+
+```yaml
+services:
+  mastermind:
+    image: ghcr.io/mkjems/mastermind:latest
+    ports:
+      - "127.0.0.1:8081:8080"
+    restart: unless-stopped
+```
+
+The left side, `127.0.0.1:8081`, is the private host port on the VPS. The right
+side, `8080`, is the port inside the container. Do not expose this as a public
+host port; Caddy is the public entrypoint.
+
+## Caddy
+
+The VPS Caddyfile at `/etc/caddy/Caddyfile` routes
+`mastermind.mkjems.dk` to the Mastermind container:
+
+```caddyfile
+mastermind.mkjems.dk {
+    reverse_proxy 127.0.0.1:8081
+}
+```
+
+After editing the Caddyfile, validate and reload Caddy:
+
+```sh
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+```
+
+With DNS pointed at the VPS, Caddy handles the HTTP-to-HTTPS redirect and the
+TLS certificate automatically.
+
 ## Local Docker Check
 
 Build the production image:
@@ -111,3 +150,13 @@ including the begin/end lines:
 
 Do not put a public key (`ssh-ed25519 ...` or `ssh-rsa ...`) in `VPS_SSH_KEY`.
 The matching public key must be in the VPS user's `~/.ssh/authorized_keys`.
+
+If the workflow pulls the image and starts the container, but then fails with:
+
+```text
+curl: (35) TLS connect error
+```
+
+on `https://mastermind.mkjems.dk`, the Docker deploy itself worked. Finish or
+verify the Caddy site block for `mastermind.mkjems.dk`, reload Caddy, and then
+rerun the workflow or the public smoke check.
