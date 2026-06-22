@@ -235,95 +235,129 @@ else is built on top of this one board.
 
 ## P4 - Deployment
 
-Goal: Deploy the Vite/React SPA to the VPS as a production Docker container,
-run it with Docker Compose, support more than one deployed instance/domain on the
-same VPS, and automate deploys from `master`.
+Goal: Deploy Mastermind as a parallel project on the same Hetzner VPS as
+Gunfight, following
+[How-to-deploy-parallel-project-on-vps.md](How-to-deploy-parallel-project-on-vps.md):
+GitHub Actions builds and pushes a GHCR image, the VPS pulls it with Docker
+Compose from `/opt/mastermind`, and Caddy routes `mastermind.mkjems.dk` to a
+unique private localhost port.
 
-### P4.0 - Deployment decisions to settle first
+### P4.0 - Locked deployment shape
 
-- [ ] Decide the first production domain/subdomain for this app. - answer: mastermind.mkjems.dk
-- [ ] Decide the VPS deploy directory, for example
-      `/opt/mastermind/<instance-name>`.
-- [ ] Decide which reverse proxy owns public HTTPS on the VPS (`nginx`,
-      `Caddy`, `Traefik`, or existing VPS setup). - Answer: Caddy
-- [ ] Decide whether the production image is built on the VPS from a git pull
-      (current plan) or built in GitHub Actions and pushed to a registry. - Answer: it is pushed to a registry.
-- [ ] Decide a naming convention for multiple instances: compose project name,
-      container name, domain, and local upstream port/service name.
+- [x] Project slug / Compose service name: `mastermind`.
+- [x] Production domain: `mastermind.mkjems.dk`.
+- [x] VPS app directory: `/opt/mastermind`.
+- [x] Reverse proxy: existing Caddy on public ports `80` and `443`.
+- [x] Image strategy: GitHub Actions builds the Docker image and pushes it to a
+      registry; the VPS pulls the image.
+- [x] GHCR image name: `ghcr.io/mkjems/mastermind:latest`.
+- [x] Container port: `8080`.
+- [x] Deploy branch: `master`.
+- [ ] Choose the VPS private host port after checking `ss -ltnp`; likely
+      `127.0.0.1:8081` if Gunfight keeps `127.0.0.1:8080`.
 
 ### P4.1 - Make local docker file
 
-- [ ] Add a production [Dockerfile](../Dockerfile) with a multi-stage build:
-      install dependencies, run `npm run build`, then serve `dist/` from a small
-      static web server image.
-- [ ] Configure the static server for SPA fallback so refreshing a client-side
+- [x] Add a production [Dockerfile](../Dockerfile) with a multi-stage build:
+      use Node 22, run `npm ci`, run `npm run build`, then serve `dist/` from a
+      small static web server image.
+- [x] Configure the container's static web server to listen on internal port
+      `8080`, matching the VPS Compose convention.
+- [x] Configure the static server for SPA fallback so refreshing a client-side
       route still serves `index.html`.
-- [ ] Add a [.dockerignore](../.dockerignore) that excludes `node_modules`,
+- [x] Add a [.dockerignore](../.dockerignore) that excludes `node_modules`,
       `dist`, local logs, editor files, and git metadata from the Docker build
       context.
-- [ ] Add a local [compose.yml](../compose.yml) with one `mastermind` service,
-      a stable container name, restart policy, and a configurable host port.
-- [ ] Add a sample environment file, for example `.env.example`, documenting
-      the local port and instance/domain variables used by Compose.
-- [ ] Build the image locally with Docker/OrbStack/Apple container tooling.
-- [ ] Run the app locally through Compose and verify the production container
-      serves the game correctly.
-- [ ] Run `npm run check` before treating the Docker setup as ready
-
-## P.4.1.1 - Update DNS for mastermind.mkjems.dk
-
-- [ ] Make mastermind.mkjems.dk point to my VPS
+- [ ] Build the image locally with Docker/OrbStack/Apple container tooling and
+      tag it as `ghcr.io/mkjems/mastermind:latest` for parity with CI.
+- [ ] Run the production container locally with a host-port mapping to internal
+      port `8080`.
+- [ ] Verify the app loads from the local container and that browser refreshes
+      still return the SPA.
+- [x] Decide whether to add a dedicated `npm run check:deploy` script or use
+      the existing `npm run check` directly in the GitHub Action. Decision: use
+      the existing `npm run check`.
+- [x] Run the chosen deploy check before treating the Docker setup as ready
+      (`npm run check` passes).
 
 ### P4.2 - Make support for multiple simultaneous docker instances running on my vps on different domains
 
-- [ ] Update the Compose setup so every instance can use a unique project name,
-      container name, domain, and internal service identity without port/name
-      collisions.
-- [ ] Add or document a reverse-proxy pattern where each public domain routes to
-      the matching Compose service/container.
-- [ ] Put deployed app containers on a shared external Docker network if the
-      reverse proxy needs to reach them by service/container name.
-- [ ] Keep per-instance settings in `.env` files on the VPS, not committed
-      secrets.
-- [ ] Define the first instance's VPS folder structure: repo checkout,
-      `.env`, Compose file, and any reverse-proxy config.
-- [ ] Test two local or VPS-style Compose instances at once with different
-      project names and domains/ports to prove the setup scales past one app.
-- [ ] Document how to add a second domain/instance without disturbing the first.
+- [ ] Create a DNS `A` record for `mastermind.mkjems.dk` pointing to the same
+      Hetzner VPS IP as `gunfight.mkjems.dk`.
+- [ ] SSH into the VPS and create the separate app directory:
+      `/opt/mastermind`.
+- [ ] Check existing bound ports on the VPS with `ss -ltnp` before selecting
+      Mastermind's private localhost port.
+- [ ] Create `/opt/mastermind/compose.yaml` with one `mastermind` service using
+      image `ghcr.io/mkjems/mastermind:latest`.
+- [ ] In the VPS Compose file, publish only a private localhost port, for
+      example `"127.0.0.1:8081:8080"`; do not expose a public host port.
+- [ ] Use `restart: unless-stopped` in the VPS Compose file.
+- [ ] If the GHCR package is private, log in once on the VPS with a GitHub token
+      that has package read access.
+- [ ] Add a `mastermind.mkjems.dk` site block to `/etc/caddy/Caddyfile` that
+      reverse-proxies to Mastermind's private localhost port.
+- [ ] Validate and reload Caddy with `sudo caddy validate --config
+      /etc/caddy/Caddyfile` and `sudo systemctl reload caddy`.
+- [ ] Confirm Gunfight still keeps its existing route:
+      `gunfight.mkjems.dk -> Caddy -> 127.0.0.1:8080`.
 
 ### P4.3 - Create github action for project that will deploy new version on pushes to master branch.
 
 - [ ] Create `.github/workflows/deploy.yml` triggered by pushes to `master`.
-- [ ] Make the workflow run the project gate (`npm ci` and `npm run check`)
-      before any deploy step.
-- [ ] Add GitHub repository secrets for SSH deploy access, for example
-      `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_DEPLOY_PATH`, and
-      `VPS_SSH_PORT` if needed.
-- [ ] Prepare the VPS deploy user with read access to the repo, permission to
-      run Docker Compose for this project, and the deploy directory already
-      cloned.
-- [ ] Make the workflow SSH into the VPS and run a deploy script/command:
-      `git pull --ff-only`, `docker compose build`, and
-      `docker compose up -d`.
-- [ ] Add a post-deploy smoke check from the VPS or GitHub Action that verifies
-      the configured domain returns the built app.
-- [ ] Decide and document rollback behavior, for example checking out the
-      previous commit on the VPS and running `docker compose up -d --build`.
+- [ ] Give the workflow `contents: read` and `packages: write` permissions.
+- [ ] Add a `check` job that checks out the repo, sets up Node 22 with npm
+      caching, runs `npm ci`, and runs the chosen deploy check.
+- [ ] Add a `build` job that logs in to `ghcr.io` with `GITHUB_TOKEN`, builds
+      the Docker image, and pushes `ghcr.io/mkjems/mastermind:latest`.
+- [ ] Add GitHub repository secrets for SSH deploy access: `VPS_HOST`,
+      `VPS_USER`, and `VPS_SSH_KEY`.
+- [ ] Prepare the VPS deploy user so the SSH key can connect and the user can
+      run Docker Compose in `/opt/mastermind`.
+- [ ] Add a `deploy` job using `appleboy/ssh-action` that runs:
+      `cd /opt/mastermind`, `docker compose pull`, `docker compose up -d`, and
+      `docker image prune -f`.
+- [ ] Make sure the image name pushed by the workflow exactly matches the image
+      name in `/opt/mastermind/compose.yaml`.
+- [ ] Add a post-deploy smoke check that verifies
+      `https://mastermind.mkjems.dk` returns the built app.
 - [ ] Confirm a push to `master` deploys successfully and leaves the old
       container replaced by the new one.
 
-### P4.4 - Write documentation about how deployment is done in this project
+### P4.4 - Verify the live deployment
+
+- [ ] From a local machine, run `curl -I http://mastermind.mkjems.dk` and
+      confirm HTTP redirects to HTTPS.
+- [ ] From a local machine, run `curl -I https://mastermind.mkjems.dk` and
+      confirm HTTPS returns the Mastermind app.
+- [ ] Confirm `https://gunfight.mkjems.dk` still works after adding
+      Mastermind.
+- [ ] On the VPS, run `cd /opt/mastermind && docker compose ps`.
+- [ ] On the VPS, inspect recent logs with
+      `cd /opt/mastermind && docker compose logs --tail=100`.
+- [ ] Validate Caddy again after deployment with `sudo caddy validate --config
+      /etc/caddy/Caddyfile`.
+- [ ] Check recent Caddy logs with `sudo journalctl -u caddy --no-pager -n
+      100` if routing or HTTPS fails.
+
+### P4.5 - Write documentation about how deployment is done in this project
 
 - [ ] Expand [Deployment.md](Deployment.md) with the final architecture:
-      Dockerfile, Compose, reverse proxy, domain routing, and GitHub Actions.
+      GHCR image, VPS Compose file in `/opt/mastermind`, private localhost
+      port, Caddy domain routing, and GitHub Actions.
 - [ ] Document local Docker usage: build, run, stop, logs, and how to change the
       local host port.
-- [ ] Document one-time VPS setup: install Docker/Compose, create deploy user,
-      clone repo, create `.env`, join reverse-proxy network, and configure DNS.
-- [ ] Document the normal deploy flow from `master` and the exact commands the
-      GitHub Action runs on the VPS.
-- [ ] Document how to add another instance/domain on the same VPS.
+- [ ] Document one-time VPS setup: DNS, `/opt/mastermind/compose.yaml`, GHCR
+      read access if needed, Caddy site block, Caddy validate/reload.
+- [ ] Document the normal deploy flow from `master`: check, build/push GHCR,
+      SSH to VPS, `docker compose pull`, `docker compose up -d`.
+- [ ] Document how to add another project on the same VPS: new domain, new
+      `/opt/<project>` directory, new GHCR image, unique private localhost port,
+      and new Caddy site block.
 - [ ] Document troubleshooting commands: `docker compose ps`, logs, rebuild,
-      reverse-proxy reload, and smoke-test URL checks.
+      `ss -ltnp`, Caddy validate/reload, Caddy logs, and smoke-test URL checks.
+- [ ] Document common mistakes from the parallel-project guide, especially
+      reusing Gunfight's `127.0.0.1:8080`, exposing a public port, forgetting
+      DNS/Caddy reload, and mismatching GHCR image names.
 - [ ] Keep the TODO checked off as each deployment piece is implemented and move
       the finished deployment plan to Completed-plans when P4 is complete.
