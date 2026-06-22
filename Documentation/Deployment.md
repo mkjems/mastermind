@@ -109,6 +109,8 @@ project needs its own host port, while the containers can all use internal port
 
 The workflow at [.github/workflows/deploy.yml](../.github/workflows/deploy.yml)
 runs on pushes to `master` and can also be started manually from GitHub Actions.
+The pipeline has been verified end to end: a push to `master` builds, pushes,
+deploys, and smoke-tests the live site.
 
 The flow is:
 
@@ -125,9 +127,10 @@ Required GitHub repository secrets:
 - `VPS_USER`
 - `VPS_SSH_KEY`
 
-Until the first successful workflow run pushes the image, the VPS command
-`docker compose pull` will fail with `not found` for
-`ghcr.io/mkjems/mastermind:latest`.
+Before the first successful workflow run pushed the image, the VPS command
+`docker compose pull` failed with `not found` for
+`ghcr.io/mkjems/mastermind:latest`. If that happens again, check that the build
+job pushed the same image tag that `/opt/mastermind/compose.yaml` pulls.
 
 ## Deployment Troubleshooting
 

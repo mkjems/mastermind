@@ -324,12 +324,12 @@ unique private localhost port.
       name in `/opt/mastermind/compose.yaml`.
 - [x] Add a post-deploy smoke check that verifies
       `https://mastermind.mkjems.dk` returns the built app.
-- [ ] Confirm a push to `master` deploys successfully and leaves the old
+- [x] Confirm a push to `master` deploys successfully and leaves the old
       container replaced by the new one. First attempt: `check` and `build`
       passed, `deploy` failed because `VPS_SSH_KEY` was not parsed as a private
       key. Second attempt: SSH, GHCR pull, and `docker compose up -d` worked;
-      deploy failed on the public HTTPS smoke check with a TLS error, so Caddy
-      routing/certificate setup is next.
+      deploy failed on the public HTTPS smoke check with a TLS error. Latest
+      push deployed successfully after fixing the Caddy route.
 
 ### P4.4 - Verify the live deployment
 
@@ -352,11 +352,11 @@ unique private localhost port.
 - [x] Expand [Deployment.md](Deployment.md) with the final architecture:
       GHCR image, VPS Compose file in `/opt/mastermind`, private localhost
       port, Caddy domain routing, and GitHub Actions.
-- [ ] Document local Docker usage: build, run, stop, logs, and how to change the
+- [x] Document local Docker usage: build, run, stop, logs, and how to change the
       local host port.
-- [ ] Document one-time VPS setup: DNS, `/opt/mastermind/compose.yaml`, GHCR
+- [x] Document one-time VPS setup: DNS, `/opt/mastermind/compose.yaml`, GHCR
       read access if needed, Caddy site block, Caddy validate/reload.
-- [ ] Document the normal deploy flow from `master`: check, build/push GHCR,
+- [x] Document the normal deploy flow from `master`: check, build/push GHCR,
       SSH to VPS, `docker compose pull`, `docker compose up -d`.
 - [ ] Document how to add another project on the same VPS: new domain, new
       `/opt/<project>` directory, new GHCR image, unique private localhost port,
