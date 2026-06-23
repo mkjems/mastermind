@@ -11,12 +11,19 @@
 }
 
 .panel {
-  background-color: rgb(20 20 20 / 92%);
-  border-radius: 16px;
-  padding: 28px 24px;
+  /* background-color: rgb(20 20 20 / 92%); */
+  /* border-radius: 16px; */
+  padding: 50px;
   max-width: 86%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 16px;
+
+  /* From https://css.glass */
+  background: rgba(42, 40, 40, 0.37);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5.3px);
+  border: 1px solid rgba(93, 90, 90, 0.49);
 }
