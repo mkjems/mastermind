@@ -22,23 +22,23 @@ physical board in front of you — that works well on mobile and desktop.
 
 ### Key files (current state)
 
-- Layout grid + all classes: [style/mastermind.css](../src/mastermind/style/mastermind.css)
+- Layout grid + all classes: [style/mastermind.css](../src/style/mastermind.css)
   (`#app` grid, `.board`, `.board-row`, `.picker-box`, `.bottom-part`).
-- Board frame: [components/BoardRidge.tsx](../src/mastermind/components/BoardRidge.tsx)
-  - [BoardRidge.module.css](../src/mastermind/components/BoardRidge.module.css).
-- Cover: [components/HiddenCode.tsx](../src/mastermind/components/HiddenCode.tsx)
-  - [HiddenCode.module.css](../src/mastermind/components/HiddenCode.module.css)
+- Board frame: [components/BoardRidge.tsx](../src/components/BoardRidge.tsx)
+  - [BoardRidge.module.css](../src/components/BoardRidge.module.css).
+- Cover: [components/HiddenCode.tsx](../src/components/HiddenCode.tsx)
+  - [HiddenCode.module.css](../src/components/HiddenCode.module.css)
     (currently animates `height`; needs to animate `transform`).
-- Human screen: [Gameplay.tsx](../src/mastermind/components/Gameplay.tsx),
-  [BoardRow.tsx](../src/mastermind/components/BoardRow.tsx),
-  [ColorPicker.tsx](../src/mastermind/components/ColorPicker.tsx).
-- Algorithm screen (to retire): [AlgorithmGame.tsx](../src/mastermind/components/AlgorithmGame.tsx),
-  [AlgorithmBoard.tsx](../src/mastermind/components/AlgorithmBoard.tsx),
-  [SecretBar.tsx](../src/mastermind/components/SecretBar.tsx),
-  [SecretSetup.tsx](../src/mastermind/components/SecretSetup.tsx),
-  [AlgorithmResult.tsx](../src/mastermind/components/AlgorithmResult.tsx).
-- Intro: [Intro.tsx](../src/mastermind/components/Intro.tsx) (title, buttons, inline `Rules`).
-- Wiring: [App.tsx](../src/mastermind/App.tsx), [GameContext.ts](../src/mastermind/GameContext.ts).
+- Human screen: [Gameplay.tsx](../src/components/Gameplay.tsx),
+  [BoardRow.tsx](../src/components/BoardRow.tsx),
+  [ColorPicker.tsx](../src/components/ColorPicker.tsx).
+- Algorithm screen (to retire): [AlgorithmGame.tsx](../src/components/AlgorithmGame.tsx),
+  [AlgorithmBoard.tsx](../src/components/AlgorithmBoard.tsx),
+  [SecretBar.tsx](../src/components/SecretBar.tsx),
+  [SecretSetup.tsx](../src/components/SecretSetup.tsx),
+  [AlgorithmResult.tsx](../src/components/AlgorithmResult.tsx).
+- Intro: [Intro.tsx](../src/components/Intro.tsx) (title, buttons, inline `Rules`).
+- Wiring: [App.tsx](../src/App.tsx), [GameContext.ts](../src/GameContext.ts).
 
 ---
 
@@ -198,7 +198,7 @@ else is built on top of this one board.
       feedback state: bottom-up board, current computer guess visible near the bottom,
       score preview shown in the row's feedback holes, scoring controls above the
       current guess, and the Peek control staying beside the covered secret.
-- [x] Rework [FeedbackPicker.tsx](../src/mastermind/components/FeedbackPicker.tsx)
+- [x] Rework [FeedbackPicker.tsx](../src/components/FeedbackPicker.tsx)
       from the temporary three gray capsule buttons into the intended physical
       controls: red feedback peg button, white feedback peg button, green circular
       submit/checkmark button, and a `<` undo button. Remove the red `x` as the
@@ -213,7 +213,7 @@ else is built on top of this one board.
 - [x] Add the undo control as a subdued secondary piece so it is discoverable but
       does not compete visually with red/white scoring or the green submit action.
 - [x] Update the feedback-entry flow in
-      [AlgorithmGame.tsx](../src/mastermind/components/AlgorithmGame.tsx):
+      [AlgorithmGame.tsx](../src/components/AlgorithmGame.tsx):
       red/white append to the current score, undo removes the latest score peg, the
       green check submits the score padded with `none`, validation errors clear on
       the next edit, and the score does not auto-submit just because four pegs were
@@ -221,7 +221,7 @@ else is built on top of this one board.
 - [x] Keep using `Board`'s `liveFeedback` and `activeRowExtra` hooks, but tune the
       active-row layout so the controls sit visually like board pieces, not as a
       generic form block.
-- [x] Add styling in [style/mastermind.css](../src/mastermind/style/mastermind.css)
+- [x] Add styling in [style/mastermind.css](../src/style/mastermind.css)
       for the feedback controls: consistent peg sizing, green circular checkmark,
       compact undo button, no inline styles, and responsive spacing that still fits
       the narrow board.

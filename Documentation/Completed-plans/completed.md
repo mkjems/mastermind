@@ -11,7 +11,7 @@ first four are worth completing before starting the algorithm mode.
 #### P1.1. Compute derived state, and make feedback correct in the general case
 
 **Problem.** Whether the player won is recomputed and stored. `calculateFeedback` uses
-`answer.includes(color)` ([row.js:13](../src/mastermind/reducers/row.js#L13)), which only
+`answer.includes(color)` ([row.js:13](../src/reducers/row.js#L13)), which only
 produces correct white counts because the secret currently has unique colors. It silently
 miscounts if duplicate colors are ever allowed.
 
@@ -24,16 +24,16 @@ prerequisite for that work.
 - [x] Rewrite `calculateFeedback` to be correct for codes with duplicate colors (the
       standard two-pass count: exact matches first, then match remaining by color counts),
       so a future rules change cannot quietly corrupt feedback. Added tests for the
-      duplicate case in [row.test.js](../src/mastermind/reducers/row.test.js).
+      duplicate case in [row.test.js](../src/reducers/row.test.js).
 - [x] Extracted the win check into a shared pure `isSolved(feedback)` helper
-      ([row.js](../src/mastermind/reducers/row.js)), now used by the root reducer.
+      ([row.js](../src/reducers/row.js)), now used by the root reducer.
 - [ ] Derive win/lose from the board + feedback rather than storing it. **Deferred to
       item 3** — removing the stored `gameStatus` is part of the state-machine work and
       shouldn't be done piecemeal here.
 
 #### P1.2. Make the combined reducers truly independent
 
-**Problem.** In [stateReducers.js](../src/mastermind/reducers/stateReducers.js),
+**Problem.** In [stateReducers.js](../src/reducers/stateReducers.js),
 `reduceSingleAction` computes `activeRow`, `selectedPeg`, and `secretCode` first and then
 _passes them into_ `boardReducer`. So the board reducer depends on the freshly-computed
 output of its sibling reducers within the same tick — a hidden ordering dependency, which
@@ -48,7 +48,7 @@ the next two steps much easier.
 - [x] Removed the cross-reducer arguments — `boardReducer` is now `(state, action)` and
       every slice reducer in `reduceSingleAction` depends only on its own previous state
       and the action, so their order no longer matters.
-- [x] Added a `decorateAction` step in [stateReducers.js](../src/mastermind/reducers/stateReducers.js)
+- [x] Added a `decorateAction` step in [stateReducers.js](../src/reducers/stateReducers.js)
       that attaches the context the board needs (`activeRow`, `selectedPeg`, `secretCode`)
       to the action, all derived from the _previous_ state (`BEGIN_NEW_ROW` carries the
       incremented row index). Added a regression test that the next row becomes active and
@@ -70,16 +70,16 @@ piece of work.
 **Fix.**
 
 - [x] Introduced a hand-rolled transition table + `nextStatus(status, event)` in
-      [gameStatus.js](../src/mastermind/gameStatus.js). Illegal transitions are ignored
+      [gameStatus.js](../src/gameStatus.js). Illegal transitions are ignored
       (status unchanged); `EVENT_RESET` returns to intro from anywhere. The status reducer
       now just maps an action to an event and runs it through the table.
 - [x] Stopped storing `isCodeHidden`/`isRevealHidden`. They're derived from the status via
       selectors (`isCodeHidden`, `canGiveUp`, `isGameOver`) computed in
-      [App.jsx](../src/mastermind/App.jsx), so they can't drift. (`isRevealHidden` was also
+      [App.jsx](../src/App.jsx), so they can't drift. (`isRevealHidden` was also
       renamed to the clearer `canGiveUp`.) `showColorPicker` stays stored — it's genuine
       in-play interaction state, not a function of the status — but is forced false on any
       status-changing action.
-- [x] Added [gameStatus.test.js](../src/mastermind/gameStatus.test.js) covering the
+- [x] Added [gameStatus.test.js](../src/gameStatus.test.js) covering the
       transitions, ignored illegal events, reset-from-anywhere, and the selectors.
 
 **Behavior change (latent bug fixed):** previously `isRevealHidden` had no `lose` case, so
@@ -89,7 +89,7 @@ removes that. Captured by a new assertion in the lose test.
 
 #### P1.4. Stop orchestrating sequences of actions inside the root reducer
 
-**Problem.** [reducers/index.js](../src/mastermind/reducers/index.js) takes one high-level
+**Problem.** [reducers/index.js](../src/reducers/index.js) takes one high-level
 action and manually runs a _sequence_ of low-level actions through `reduceSingleAction`,
 threading state between them (e.g. `SUBMIT_ROW` chains `GIVE_FEEDBACK` → `HIDE_COLOR_PICKER`
 → a win/lose decision). A reducer is meant to be a pure `(state, action) → state` with no
@@ -103,23 +103,23 @@ it immediately after, as part of the same effort.
 
 - [x] The low-level action layer (`GIVE_FEEDBACK`, `BEGIN_NEW_ROW`, `REVEAL_SECRET_CODE`,
       `GAME_BEGIN/WIN/LOSE/...`, etc.) is gone. Every slice reducer now responds directly to
-      the real high-level action, and [index.js](../src/mastermind/reducers/index.js) is a
+      the real high-level action, and [index.js](../src/reducers/index.js) is a
       single-pass composition — no more `reduceSingleAction` chains and no reducer calling
       another reducer.
 - [x] The submit outcome (win / lose / continue) is decided once in `decorateAction`
-      ([index.js](../src/mastermind/reducers/index.js)) and carried on the action; the
+      ([index.js](../src/reducers/index.js)) and carried on the action; the
       status reducer turns it into a machine event. Transitions live only in the item-3
       table.
 - [x] `row.js` is now just the pure `calculateFeedback`/`isSolved` helpers; the per-row peg
-      and feedback writes moved into [board.js](../src/mastermind/reducers/board.js), which
+      and feedback writes moved into [board.js](../src/reducers/board.js), which
       also handles high-level actions directly. Removed the now-dead `beginNewRow` action
       and `ROW_START` constant.
 
 #### P1.5. Replace blanket prop-drilling with context (or explicit props)
 
-**Problem.** [App.jsx](../src/mastermind/App.jsx) builds one large props object that is
-`{...props}`-spread through [Gameplay.jsx](../src/mastermind/components/Gameplay.jsx) into
-[BoardRow.jsx](../src/mastermind/components/BoardRow.jsx) and on into its children. You
+**Problem.** [App.jsx](../src/App.jsx) builds one large props object that is
+`{...props}`-spread through [Gameplay.jsx](../src/components/Gameplay.jsx) into
+[BoardRow.jsx](../src/components/BoardRow.jsx) and on into its children. You
 cannot tell what a component actually consumes without reading its body, and every
 component is coupled to the full state shape.
 
@@ -128,8 +128,8 @@ which adds new components to wire in.
 
 **Fix.**
 
-- [x] Added a small [GameContext.js](../src/mastermind/GameContext.js) (`GameContext` +
-      `useGame()`). [App.jsx](../src/mastermind/App.jsx) provides the whole-game view state
+- [x] Added a small [GameContext.js](../src/GameContext.js) (`GameContext` +
+      `useGame()`). [App.jsx](../src/App.jsx) provides the whole-game view state
       and handlers once; gameplay components read what they need via `useGame()`.
 - [x] Removed every blanket `{...props}` spread. Genuinely per-instance values (a row's
       `pegs`/`feedbackPegs`/`isActiveRow`, a peg's `id`) stay explicit props; reusable leaf
@@ -139,7 +139,7 @@ which adds new components to wire in.
 #### P1.6. Replace overloaded sentinel strings and add type safety
 
 **Problem.** Peg slots hold `'none'`, `'select'`, and color names in the same field
-([row.js](../src/mastermind/reducers/row.js)), overloading one value with three meanings.
+([row.js](../src/reducers/row.js)), overloading one value with three meanings.
 There are no types to catch a mismatched sentinel or a bad action shape.
 
 **Why sixth.** Adopting TypeScript is disruptive. Either commit to it _first of all_ (so
@@ -156,12 +156,12 @@ they aren't type-checked). Vite/Vitest resolve the existing `.js` import specifi
 
 - [x] Added `typescript` + [tsconfig.json](../tsconfig.json) (strict) and a `typecheck`
       script; `npm run check` now runs `typecheck → test → build`.
-- [x] Typed the domain in [types.ts](../src/mastermind/types.ts): `Color`, `PegValue`,
+- [x] Typed the domain in [types.ts](../src/types.ts): `Color`, `PegValue`,
       `FeedbackPeg`, `Row`, `Board`, `GameState`. The status machine
-      ([gameStatus.ts](../src/mastermind/gameStatus.ts)) has `GameStatus`/`GameEvent`
-      unions; actions ([gameActions.ts](../src/mastermind/gameActions.ts)) are a typed
+      ([gameStatus.ts](../src/gameStatus.ts)) has `GameStatus`/`GameEvent`
+      unions; actions ([gameActions.ts](../src/gameActions.ts)) are a typed
       discriminated `Action` union plus a `DecoratedAction`. All reducers and
-      [constants.ts](../src/mastermind/script/constants.ts) are typed.
+      [constants.ts](../src/script/constants.ts) are typed.
 - [~] The overloaded sentinels (`'none'`/`'select'`) are now a type-safe `PegValue` union
   (`Color | 'none' | 'select'`) rather than the suggested discriminated _object_ shape.
   The union prevents mismatched sentinels with far less churn and keeps the board data
@@ -188,13 +188,13 @@ state persisted as-is.
       [tsconfig.json](../tsconfig.json) now sets `jsx: "react-jsx"` and `DOM`/`DOM.Iterable`
       lib. Added `src/declarations.d.ts` (`declare module '*.css'`) for the stylesheet
       import. `allowJs` was on during the migration, then flipped off at the end.
-- [x] **P1.8.2 — Context boundary.** [GameContext.ts](../src/mastermind/GameContext.ts)
+- [x] **P1.8.2 — Context boundary.** [GameContext.ts](../src/GameContext.ts)
       defines `GameContextValue` and a `useGame()` that throws outside a provider (so
       consumers get a non-null type).
 - [x] **P1.8.3 — Leaf components.** `Hole`, `Peg`, `PegIllu`, `PegSideways`,
       `SmallFeedbackPeg`, `SmallFeedbackHole`, `Checkmark`, `Feedback` → `.tsx` with prop
       interfaces. Exported `TopViewColor`/`SidewaysColor` from
-      [constants.ts](../src/mastermind/script/constants.ts) for the peg `colors` props.
+      [constants.ts](../src/script/constants.ts) for the peg `colors` props.
 - [x] **P1.8.4 — Overlay / picker / intro.** `Won`, `Lost`, `Gaveup`, `HiddenCode`,
       `ColorPicker`, `Intro` → `.tsx`.
 - [x] **P1.8.5 — Containers + entry + infra.** `BoardRow`, `Gameplay`, `App` → `.tsx`;
@@ -243,31 +243,31 @@ with `npm run check` green.
 
 ### P2.1 — Solver core (pure + tested) ✅
 
-- [x] [solver.ts](../src/mastermind/solver.ts): `allCodes()` (the 1680 unique-color
+- [x] [solver.ts](../src/solver.ts): `allCodes()` (the 1680 unique-color
       permutations); `consistentCodes(history)` keeping codes where
       `calculateFeedback(candidate, guess)` matches the recorded reds/whites for every past
       (guess, feedback); `nextGuess(history)` returning the first consistent code.
 - [x] `nextGuess` returns `undefined` when no code is consistent (contradictory feedback).
-- [x] Tests in [solver.test.ts](../src/mastermind/solver.test.ts): `allCodes` shape,
+- [x] Tests in [solver.test.ts](../src/solver.test.ts): `allCodes` shape,
       filtering correctness, contradictory feedback → empty, and a solve loop.
 - Note: a full sweep over all 1680 secrets showed **worst case 7 guesses, avg 4.9** — so
   "first consistent candidate" always solves within the 10-row board; minimax not needed.
 
 ### P2.2 — Mode selection + state shape ✅
 
-- [x] Added `mode: 'human' | 'algorithm'` ([types.ts](../src/mastermind/types.ts)) with a
+- [x] Added `mode: 'human' | 'algorithm'` ([types.ts](../src/types.ts)) with a
       `modeReducer` and initial value `'human'`; `START_ALGORITHM` → algorithm, `START_GAME`
       / `RESET_ALL` → human. `mode` is on `GameContextValue`.
 - [x] Intro screen: added a "Play against algorithm" button beside "Start game".
 - [x] `START_ALGORITHM` action + creator wired to the button; App routes algorithm-mode
-      statuses to a placeholder [AlgorithmGame](../src/mastermind/components/AlgorithmGame.tsx).
+      statuses to a placeholder [AlgorithmGame](../src/components/AlgorithmGame.tsx).
 - [x] Tests: the action sets `mode` + `algo_setup`, and reset returns to human/intro.
 
 ### P2.3 — State machine for algorithm mode ✅
 
 - [x] Added statuses `algo_setup`, `algo_guessing`, `algo_solved`, `algo_failed` and events
       `START_ALGORITHM`, `CONFIRM_SECRET`, `SOLVED`, `FAILED` to
-      [gameStatus.ts](../src/mastermind/gameStatus.ts); `RESET` → intro still applies. (The
+      [gameStatus.ts](../src/gameStatus.ts); `RESET` → intro still applies. (The
       `CONFIRM_SECRET`/`SOLVED`/`FAILED` transitions exist now; their driving actions land in
       P2.4/P2.5.)
 - [x] `isGameOver` now covers `algo_solved`/`algo_failed`.
@@ -275,7 +275,7 @@ with `npm run check` green.
 
 ### P2.4 — Secret-setup interface ✅
 
-- [x] [SecretSetup.tsx](../src/mastermind/components/SecretSetup.tsx): pick 4 colors from a
+- [x] [SecretSetup.tsx](../src/components/SecretSetup.tsx): pick 4 colors from a
       `PegIllu` palette that disables already-used colors (codes never repeat a color);
       "Let the computer guess" is enabled only once 4 are chosen.
 - [x] `CONFIRM_SECRET` reducer: stores the secret, transitions to `algo_guessing`, and
@@ -284,15 +284,15 @@ with `npm run check` green.
 ### P2.5 — Guess/feedback loop (reducer ↔ solver) ✅
 
 - [x] `SUBMIT_FEEDBACK` reducer (`decorateAction` in
-      [index.ts](../src/mastermind/reducers/index.ts)): records the human's feedback on the
+      [index.ts](../src/reducers/index.ts)): records the human's feedback on the
       active row; all-red → `algo_solved`; else derives `nextGuess` from board history and
       places it on the next row; no codes left or out of rows → `algo_failed`.
 - [x] Candidate set is derived from the board rows each turn — nothing stored.
 - [x] Tests: confirm-secret placement, a full honest-feedback solve reaching `algo_solved`,
       and impossible feedback reaching `algo_failed`.
 - Note: the algorithm-mode screens exist but are minimal — `algo_guessing` shows the board
-  read-only ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)) pending the
-  P2.6 scoring UI, and results use a basic [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx).
+  read-only ([AlgorithmBoard](../src/components/AlgorithmBoard.tsx)) pending the
+  P2.6 scoring UI, and results use a basic [AlgorithmResult](../src/components/AlgorithmResult.tsx).
 
 ### P2.6 — Feedback input UI
 
@@ -306,34 +306,34 @@ The active slot offers three choices — **red**, **white**, or **✗ (done)**:
 - Reds/whites may be entered in any order — only the counts matter. So "all wrong" is just
   ✗ on the first slot; "2 red, 1 white" is red → red → white → ✗.
 
-- [x] [FeedbackPicker.tsx](../src/mastermind/components/FeedbackPicker.tsx): red/white
+- [x] [FeedbackPicker.tsx](../src/components/FeedbackPicker.tsx): red/white
       `SmallFeedbackPeg` options plus an ✗ "no more pegs" option, an active-slot indicator,
       and fill-and-advance / ✗-finalizes / auto-finalize-at-four behavior. Wired into the
-      active row of [AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)
+      active row of [AlgorithmBoard](../src/components/AlgorithmBoard.tsx)
       (keyed by `activeRow` so it resets per guess).
 - [x] On finalize it dispatches `SUBMIT_FEEDBACK` (`onSubmitFeedback`).
 - [x] Validates the finalized score against the set secret; on mismatch it warns and clears
       so the human re-scores, rather than feeding the solver a wrong number.
-- [x] Tests (in [App.test.tsx](../src/mastermind/App.test.tsx)): a correct score dispatches
+- [x] Tests (in [App.test.tsx](../src/App.test.tsx)): a correct score dispatches
       `SUBMIT_FEEDBACK`; an incorrect score dispatches nothing and shows the warning.
 
 ### P2.7 — Result + reset ✅
 
-- [x] [AlgorithmResult](../src/mastermind/components/AlgorithmResult.tsx) shows the secret
+- [x] [AlgorithmResult](../src/components/AlgorithmResult.tsx) shows the secret
       bar + the full guess history + a "cracked it in N guesses" or
       contradictory-feedback message, with an Ok button that resets to intro.
 
 **Layout fix (from testing):** the guessing screen now renders a
-[SecretBar](../src/mastermind/components/SecretBar.tsx) (the human's secret, shown openly)
+[SecretBar](../src/components/SecretBar.tsx) (the human's secret, shown openly)
 on top, then the computer's guessed rows with their colors, then the
-[FeedbackPicker](../src/mastermind/components/FeedbackPicker.tsx) as its own block **below**
+[FeedbackPicker](../src/components/FeedbackPicker.tsx) as its own block **below**
 the board. (Previously the picker was nested inside the 62px `.board-row`, which squashed
 the guess pegs and floated the 400px picker box.)
 
 ### P2.8 — Polish
 
 - [x] Brief "thinking" delay before each computer guess is revealed; scoring is withheld
-      until it appears ([AlgorithmBoard](../src/mastermind/components/AlgorithmBoard.tsx)).
+      until it appears ([AlgorithmBoard](../src/components/AlgorithmBoard.tsx)).
 - [ ] **Styling pass** for the setup / guessing / feedback interfaces — deferred; the
       screens are functional but need a couple of visual passes to land where we want.
 
